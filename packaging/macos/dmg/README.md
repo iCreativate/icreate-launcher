@@ -7,7 +7,7 @@ these files into the image; nothing here is generated at build time, so the DMG 
 
 | File | What |
 |---|---|
-| `background.svg` | Source of the background: the iCreate leaping-figure mark in black (`docs/brand/icreate-mark-black.svg`, linked, not copied) on iCreativate cyan (`#00A1F1`), plus the words iCreate / by iCreativate / Based on ArtCraft Launcher. |
+| `background.svg` | Source of the background: the iCreate geometric-i monogram in black (`docs/brand/icreate-mark-black.svg`, linked, not copied) on iCreativate cyan (`#00A1F1`), plus the words iCreate / by iCreativate / Based on ArtCraft Launcher. |
 | `background.tiff` | The background at 1x (660 × 400 px, 72 dpi) and 2x (1320 × 800 px, 144 dpi) in one HiDPI TIFF (16-colour palette, Deflate, sRGB). Goes to `.background/background.tiff`. |
 | `dmg-layout.DS_Store` | Finder's view settings for the volume: window size, icon size 128, iCreate.app at (326, 205), `Applications` at (574, 205), and the background. Goes to `.DS_Store` in the image; named so it isn't mistaken for (or ignored like) a Finder-generated `.DS_Store`. |
 | `generate.py` | Writes `background.tiff` and `dmg-layout.DS_Store` from the SVG and the layout above. |

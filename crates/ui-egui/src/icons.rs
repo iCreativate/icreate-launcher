@@ -44,7 +44,7 @@ fn desaturate(pixels: &mut [u8]) {
     }
 }
 
-/// The iCreate mark (iCreativate cyan leaping figure).
+/// The iCreate mark (iCreativate geometric i monogram (Slate family)).
 pub fn icreate_mark() -> ImageSource<'static> {
     egui::include_image!("../../../docs/brand/icreate-mark.svg")
 }

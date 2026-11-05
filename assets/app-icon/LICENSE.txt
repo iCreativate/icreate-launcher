@@ -1,7 +1,5 @@
-iCreate app icon (every file in this directory)
+iCreate Slate launcher icon and derived files in this directory.
 
-These files are the iCreate leaping-figure mark, rendered by packaging/icons.sh from
-docs/brand/icreate-mark.svg. They are trademarks of iCreativate.
-
-This directory no longer contains the ArtCraft "A" mark. That mark is a trademark of the
-ArtCraft Team and is not included in this fork.
+Owned by iCreativate. Trademark terms: docs/brand/LICENSE-brand.txt.
+Derived raster/container files may ship with this repository and official builds under
+MIT OR Apache-2.0 (LICENSE-MIT, LICENSE-APACHE), subject to those brand-mark terms.

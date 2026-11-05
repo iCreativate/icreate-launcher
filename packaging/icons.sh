@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Regenerate every app and tray icon from the iCreate mark in docs/brand/.
 #
-# - App icon (Dock, taskbar, Start menu, Linux menus, installers): the cyan leaping figure.
+# - App icon (Dock, taskbar, Start menu, Linux menus, installers): the geometric i monogram (Slate family).
 # - Tray: the black mark as the macOS menu-bar template; the cyan mark on Windows, Linux and BSD.
 #
 # Needs: resvg (brew install resvg / cargo install resvg). The .ico and .icns are packed by

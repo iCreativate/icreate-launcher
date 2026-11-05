@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/app-icon/hicolor/256x256/apps/za.co.icreativate.icreate.png" width="128" height="128" alt="iCreate icon: a cyan leaping figure">
+  <img src="assets/app-icon/hicolor/256x256/apps/za.co.icreativate.icreate.png" width="128" height="128" alt="iCreate icon: a geometric i monogram (Slate family)">
 </p>
 
 <h1 align="center">iCreate</h1>
@@ -314,7 +314,7 @@ from its repository and licensed like that app (MIT OR Apache-2.0).
 
 **The ArtCraft name, logo and "A" mark are not licensed under MIT or Apache-2.0.** They are
 trademarks of the ArtCraft Team and are not included in this fork. You may say, in plain text,
-that this work is based on ArtCraft Launcher. The iCreate name and leaping-figure mark in
+that this work is based on ArtCraft Launcher. The iCreate name and geometric-i monogram in
 [`docs/brand/`](docs/brand/) and [`assets/app-icon/`](assets/app-icon/) are trademarks of
 iCreativate; see [`docs/brand/LICENSE-brand.txt`](docs/brand/LICENSE-brand.txt).
 

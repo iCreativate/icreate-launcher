@@ -1,12 +1,13 @@
 iCreate brand assets: license
 
-The iCreate name and leaping-figure mark in this directory (the "iCreate Marks"), including
-every file here in every color, size and format, are owned by iCreativate. They are trademarks
-and are not a grant of the ArtCraft Marks.
+The iCreate name, geometric-i monogram and Slate-family app icons in this repository (the
+"iCreate Marks"), including every file derived from them in every colour, size and format,
+are owned by iCreativate. They are trademarks and are not a grant of any ArtCraft Marks.
 
-This fork of ArtCraft Launcher does not include the ArtCraft name, wordmark, logo or "A" mark.
-Those remain trademarks of the ArtCraft Team. You may say, in plain text, that this work is
-based on ArtCraft Launcher by the ArtCraft team.
+This fork of ArtCraft Launcher does not ship the ArtCraft name, wordmark, logo or "A" mark
+in the UI, installers, catalogue icons or marketing art. Those remain trademarks of the
+ArtCraft Team. You may say, in plain text, that this work is based on ArtCraft Launcher /
+PhotoCraft by the ArtCraft team (credit belongs in About / Licences, not in the icons).
 
 The iCreate Marks may be used as part of copies of this repository and within iCreate itself,
 its documentation and official builds, to identify the product as made by iCreativate.

@@ -12,11 +12,25 @@
       "category": "Photo",
       "publisher": "iCreativate",
       "bundle": "za.co.icreativate.icreate-photo",
-      "former_bundles": ["ai.storyteller.photocraft"],
+      "former_bundles": [
+        "ai.storyteller.photocraft"
+      ],
       "mac_team": "",
-      "color": [47, 123, 245],
-      "ink_light": [26, 91, 196],
-      "ink_dark": [127, 176, 255]
+      "color": [
+        74,
+        144,
+        232
+      ],
+      "ink_light": [
+        40,
+        79,
+        127
+      ],
+      "ink_dark": [
+        137,
+        182,
+        240
+      ]
     },
     {
       "id": "vectorcraft",
@@ -28,9 +42,21 @@
       "repo": "storytold/vectorcraft",
       "status": "beta",
       "category": "Design",
-      "color": [232, 87, 63],
-      "ink_light": [184, 58, 36],
-      "ink_dark": [255, 138, 112]
+      "color": [
+        255,
+        92,
+        69
+      ],
+      "ink_light": [
+        140,
+        50,
+        37
+      ],
+      "ink_dark": [
+        255,
+        149,
+        134
+      ]
     },
     {
       "id": "filmcraft",
@@ -42,9 +68,21 @@
       "repo": "storytold/filmcraft",
       "status": "beta",
       "category": "Video",
-      "color": [139, 92, 246],
-      "ink_light": [106, 63, 214],
-      "ink_dark": [182, 156, 255]
+      "color": [
+        124,
+        108,
+        240
+      ],
+      "ink_light": [
+        68,
+        59,
+        132
+      ],
+      "ink_dark": [
+        169,
+        159,
+        245
+      ]
     },
     {
       "id": "lightcraft",
@@ -56,9 +94,21 @@
       "repo": "storytold/lightcraft",
       "status": "beta",
       "category": "Photo",
-      "color": [242, 165, 22],
-      "ink_light": [138, 88, 0],
-      "ink_dark": [255, 193, 77]
+      "color": [
+        232,
+        163,
+        23
+      ],
+      "ink_light": [
+        127,
+        89,
+        12
+      ],
+      "ink_dark": [
+        240,
+        195,
+        104
+      ]
     },
     {
       "id": "pdfcraft",
@@ -70,11 +120,27 @@
       "repo": "storytold/pdfcraft",
       "status": "beta",
       "category": "Documents",
-      "former_ids": ["printcraft"],
-      "former_names": ["PrintCraft"],
-      "color": [232, 32, 79],
-      "ink_light": [183, 2, 40],
-      "ink_dark": [242, 58, 98]
+      "former_ids": [
+        "printcraft"
+      ],
+      "former_names": [
+        "PrintCraft"
+      ],
+      "color": [
+        212,
+        43,
+        76
+      ],
+      "ink_light": [
+        116,
+        23,
+        41
+      ],
+      "ink_dark": [
+        227,
+        117,
+        138
+      ]
     },
     {
       "id": "effectcraft",
@@ -86,9 +152,21 @@
       "repo": "storytold/effectcraft",
       "status": "alpha",
       "category": "Video",
-      "color": [224, 54, 143],
-      "ink_light": [176, 32, 108],
-      "ink_dark": [255, 122, 184]
+      "color": [
+        224,
+        72,
+        154
+      ],
+      "ink_light": [
+        123,
+        39,
+        84
+      ],
+      "ink_dark": [
+        234,
+        136,
+        189
+      ]
     },
     {
       "id": "designcraft",
@@ -100,9 +178,21 @@
       "repo": "storytold/designcraft",
       "status": "alpha",
       "category": "Design",
-      "color": [123, 181, 28],
-      "ink_light": [69, 112, 8],
-      "ink_dark": [166, 224, 74]
+      "color": [
+        143,
+        191,
+        47
+      ],
+      "ink_light": [
+        78,
+        105,
+        25
+      ],
+      "ink_dark": [
+        182,
+        213,
+        119
+      ]
     },
     {
       "id": "figcraft",
@@ -114,9 +204,21 @@
       "repo": "storytold/figcraft",
       "status": "alpha",
       "category": "Design",
-      "color": [2, 218, 150],
-      "ink_light": [4, 122, 86],
-      "ink_dark": [79, 232, 182]
+      "color": [
+        29,
+        191,
+        154
+      ],
+      "ink_light": [
+        15,
+        105,
+        84
+      ],
+      "ink_dark": [
+        108,
+        213,
+        189
+      ]
     },
     {
       "id": "wordcraft",
@@ -128,9 +230,21 @@
       "repo": "storytold/wordcraft",
       "status": "beta",
       "category": "Documents",
-      "color": [63, 95, 224],
-      "ink_light": [42, 68, 184],
-      "ink_dark": [142, 162, 255]
+      "color": [
+        75,
+        111,
+        232
+      ],
+      "ink_light": [
+        41,
+        61,
+        127
+      ],
+      "ink_dark": [
+        138,
+        161,
+        240
+      ]
     },
     {
       "id": "soundcraft",
@@ -142,9 +256,21 @@
       "repo": "storytold/soundcraft",
       "status": "beta",
       "category": "Audio",
-      "color": [31, 165, 201],
-      "ink_light": [14, 114, 144],
-      "ink_dark": [95, 208, 238]
+      "color": [
+        43,
+        179,
+        201
+      ],
+      "ink_light": [
+        23,
+        98,
+        110
+      ],
+      "ink_dark": [
+        117,
+        205,
+        219
+      ]
     },
     {
       "id": "deckcraft",
@@ -156,9 +282,21 @@
       "repo": "storytold/deckcraft",
       "status": "alpha",
       "category": "Office",
-      "color": [240, 122, 30],
-      "ink_light": [168, 79, 10],
-      "ink_dark": [255, 160, 96]
+      "color": [
+        240,
+        120,
+        40
+      ],
+      "ink_light": [
+        132,
+        66,
+        22
+      ],
+      "ink_dark": [
+        245,
+        167,
+        115
+      ]
     },
     {
       "id": "cadcraft",
@@ -170,9 +308,21 @@
       "repo": "storytold/cadcraft",
       "status": "alpha",
       "category": "Design",
-      "color": [62, 166, 232],
-      "ink_light": [26, 111, 168],
-      "ink_dark": [124, 200, 255]
+      "color": [
+        59,
+        168,
+        224
+      ],
+      "ink_light": [
+        32,
+        92,
+        123
+      ],
+      "ink_dark": [
+        127,
+        198,
+        234
+      ]
     },
     {
       "id": "gridcraft",
@@ -184,9 +334,21 @@
       "repo": "storytold/gridcraft",
       "status": "alpha",
       "category": "Office",
-      "color": [31, 157, 85],
-      "ink_light": [18, 112, 58],
-      "ink_dark": [79, 214, 138]
+      "color": [
+        46,
+        155,
+        88
+      ],
+      "ink_light": [
+        25,
+        85,
+        48
+      ],
+      "ink_dark": [
+        119,
+        190,
+        146
+      ]
     },
     {
       "id": "texturecraft",
@@ -198,9 +360,21 @@
       "repo": "storytold/texturecraft",
       "status": "alpha",
       "category": "Design",
-      "color": [194, 103, 43],
-      "ink_light": [156, 74, 21],
-      "ink_dark": [229, 138, 78]
+      "color": [
+        201,
+        107,
+        46
+      ],
+      "ink_light": [
+        110,
+        58,
+        25
+      ],
+      "ink_dark": [
+        219,
+        158,
+        119
+      ]
     },
     {
       "id": "materialcraft",
@@ -213,9 +387,21 @@
       "status": "alpha",
       "category": "Design",
       "site": "https://github.com/storytold/materialcraft",
-      "color": [23, 138, 156],
-      "ink_light": [16, 101, 115],
-      "ink_dark": [99, 197, 211]
+      "color": [
+        26,
+        154,
+        171
+      ],
+      "ink_light": [
+        14,
+        84,
+        94
+      ],
+      "ink_dark": [
+        106,
+        189,
+        200
+      ]
     },
     {
       "id": "craft-anything",
@@ -227,9 +413,21 @@
       "repo": "storytold/craft-anything",
       "status": "alpha",
       "category": "Design",
-      "color": [78, 123, 251],
-      "ink_light": [22, 89, 196],
-      "ink_dark": [116, 170, 255]
+      "color": [
+        91,
+        124,
+        255
+      ],
+      "ink_light": [
+        50,
+        68,
+        140
+      ],
+      "ink_dark": [
+        148,
+        169,
+        255
+      ]
     },
     {
       "id": "solidcraft",
@@ -245,12 +443,27 @@
       "publisher": "Tangency Labs",
       "msi_publisher": "SolidCraft contributors",
       "bundle": "io.tangencylabs.solidcraft",
-      "former_bundles": ["ai.storyteller.solidcraft", "ai.storyteller.solvecraft"],
+      "former_bundles": [
+        "ai.storyteller.solidcraft",
+        "ai.storyteller.solvecraft"
+      ],
       "site": "https://solidcraft.io",
       "mac_team": "G5QA5U5X2S",
-      "color": [70, 161, 251],
-      "ink_light": [22, 83, 174],
-      "ink_dark": [140, 196, 255]
+      "color": [
+        74,
+        157,
+        245
+      ],
+      "ink_light": [
+        40,
+        86,
+        134
+      ],
+      "ink_dark": [
+        137,
+        191,
+        248
+      ]
     }
   ]
 }

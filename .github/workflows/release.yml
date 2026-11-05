@@ -183,7 +183,7 @@ jobs:
         include:
           - arch: x86_64
             runner: ubuntu-22.04
-            nfpm: amd64
+            nfpm: x86_64
           - arch: aarch64
             runner: ubuntu-22.04-arm
             nfpm: arm64
@@ -200,9 +200,10 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev libxi-dev \
             libgl1-mesa-dev desktop-file-utils zsync
-          nfpm_ver=2.47.0
+          # Asset names are Linux_x86_64 / Linux_arm64 (goreleaser nfpm ≥ 2.48).
+          nfpm_ver=2.48.0
           curl -fsSL -o nfpm.tgz \
-            "https://github.com/goreleaser/nfpm/releases/download/v${nfpm_ver}/nfpm_${nfpm_ver}_linux_${{ matrix.nfpm }}.tar.gz"
+            "https://github.com/goreleaser/nfpm/releases/download/v${nfpm_ver}/nfpm_${nfpm_ver}_Linux_${{ matrix.nfpm }}.tar.gz"
           tar -xzf nfpm.tgz nfpm
           sudo install -m755 nfpm /usr/local/bin/nfpm
           nfpm --version

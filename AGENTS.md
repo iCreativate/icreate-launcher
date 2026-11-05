@@ -112,7 +112,7 @@ borrows the system's Georgian font the same way.
    (`docs/brand/LICENSE-brand.txt`): use them exactly as supplied, never redraw or recolor them.
 2. **Icons are generated.** The app icon and the tray icon are the supplied ArtCraft "A" mark from
    `docs/brand/` (a trademark, not MIT/Apache); never edit the renders by hand. Run `packaging/icons.sh` (needs `resvg`; runs on any OS) and commit the outputs.
-   `assets/app-icons/` is copied verbatim from each app's repo (`assets/app-icon/hicolor/128x128/apps/ai.storyteller.<app>.png`);
+   `assets/app-icons/` is are the iCreate Slate family icons (see branding/icon-system-2026/);
    refresh it from there, never redraw.
 3. **Never break wasm.** `cargo xtask wasm` must pass. File-system, process and OS code is
    `cfg(not(target_arch = "wasm32"))`.
