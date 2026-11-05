@@ -202,8 +202,18 @@ jobs:
             libgl1-mesa-dev desktop-file-utils zsync
           # Asset names are Linux_x86_64 / Linux_arm64 (goreleaser nfpm ≥ 2.48).
           nfpm_ver=2.48.0
-          curl -fsSL -o nfpm.tgz \
-            "https://github.com/goreleaser/nfpm/releases/download/v${nfpm_ver}/nfpm_${nfpm_ver}_Linux_${{ matrix.nfpm }}.tar.gz"
+          nfpm_url="https://github.com/goreleaser/nfpm/releases/download/v${nfpm_ver}/nfpm_${nfpm_ver}_Linux_${{ matrix.nfpm }}.tar.gz"
+          for attempt in 1 2 3 4 5; do
+            if curl -fsSL --retry 3 --retry-all-errors --retry-delay 5 -o nfpm.tgz "$nfpm_url"; then
+              break
+            fi
+            if [[ "$attempt" = 5 ]]; then
+              echo "::error::failed to download nfpm from $nfpm_url" >&2
+              exit 1
+            fi
+            echo "nfpm download failed (attempt $attempt); retrying in $((attempt * 10))s" >&2
+            sleep $((attempt * 10))
+          done
           tar -xzf nfpm.tgz nfpm
           sudo install -m755 nfpm /usr/local/bin/nfpm
           nfpm --version
