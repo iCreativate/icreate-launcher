@@ -10,8 +10,9 @@ wasm-bindgen). **No Tauri, Electron or webview shells**, ever.
 The product name is always **iCreate** in user-facing text: UI, window titles, About,
 tray menu, notifications, installers, release names, docs prose. The About screen must keep
 **Based on ArtCraft Launcher**. The suite is still the **Craft App Suite** (those apps keep their
-names). Machine names stay lowercase: crates and binaries (`artcraft-launcher`,
-`artcraft-launcher-*`) so GitHub release assets still match. The app id is
+names). Machine crate/binary names stay `artcraft-launcher` for now; GitHub release
+assets and self-update stems use `icreate-launcher-*` (older `artcraft-launcher-*`
+stems remain as former ids). The app id is
 `za.co.icreativate.icreate`. The GitHub repo is `iCreativate/icreate-launcher`.
 
 ## 1. Workspace map
