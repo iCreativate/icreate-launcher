@@ -108,6 +108,15 @@ pub(crate) enum UiAction {
     },
 }
 
+/// Top-level workspace the left rail selects. Settings and Account open the settings dialog.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub(crate) enum Screen {
+    #[default]
+    Home,
+    Applications,
+    Updates,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) enum Dialog {
     Notes(String),
@@ -161,6 +170,7 @@ pub struct LauncherUi {
     /// Alerts from the feed, shown as popups until acknowledged.
     pub(crate) alerts: Vec<artcraft_launcher_core::feed::Notice>,
     pub(crate) search: String,
+    pub(crate) screen: Screen,
     pub(crate) toasts: Vec<Toast>,
     pub(crate) dialog: Option<Dialog>,
     /// Release-note text scale for this session, independent of the main UI zoom.
@@ -281,6 +291,7 @@ impl LauncherUi {
             announcements: Vec::new(),
             alerts: Vec::new(),
             search: String::new(),
+            screen: Screen::Home,
             toasts: Vec::new(),
             dialog: None,
             notes_zoom: 1.0,
@@ -872,20 +883,40 @@ impl LauncherUi {
             ctx.request_repaint_after(Duration::from_millis(50));
         }
 
-        // The bars' separator lines are the hairlines under the header and over the footer.
-        egui::Panel::top("header")
-            .frame(egui::Frame::new().fill(tokens.bg))
-            .exact_size(crate::views::HEADER_H)
+        let title_bar = host.title_bar();
+        // Slim title strip for custom / macOS chrome; native OS title bars skip it.
+        if title_bar != TitleBar::Native {
+            egui::Panel::top("header")
+                .frame(egui::Frame::new().fill(tokens.bg))
+                .exact_size(crate::views::HEADER_H)
+                .resizable(false)
+                .show(ui, |ui| self.header(ui, title_bar));
+        }
+        let window_w = ui.available_width();
+        let sidebar_w = if window_w < theme::SIDEBAR_COMPACT_BELOW + theme::SIDEBAR_W {
+            theme::SIDEBAR_COMPACT_W
+        } else {
+            theme::SIDEBAR_W
+        };
+        egui::Panel::left("sidebar")
+            .frame(
+                egui::Frame::new()
+                    .fill(if tokens.dark { theme::rgb([0x0d, 0x0f, 0x1a]) } else { tokens.sunken })
+                    .stroke(egui::Stroke::new(1.0, tokens.line))
+                    .inner_margin(egui::Margin::symmetric(16, 18)),
+            )
+            .exact_size(sidebar_w)
             .resizable(false)
-            .show(ui, |ui| self.header(ui, host.title_bar()));
+            .show(ui, |ui| self.sidebar(ui, sidebar_w <= theme::SIDEBAR_COMPACT_W + 1.0));
         egui::Panel::bottom("footer")
             .frame(egui::Frame::new().fill(tokens.bg).inner_margin(egui::Margin::symmetric(20, 0)))
             .exact_size(crate::views::FOOTER_H)
             .resizable(false)
             .show(ui, |ui| self.footer(ui));
         egui::CentralPanel::default()
-            .frame(egui::Frame::new().fill(tokens.bg).inner_margin(egui::Margin { left: 20, right: 20, top: 18, bottom: 0 }))
+            .frame(egui::Frame::new().fill(tokens.bg).inner_margin(egui::Margin { left: 22, right: 22, top: 18, bottom: 0 }))
             .show(ui, |ui| {
+                self.sync_screen_filter();
                 self.toolbar(ui);
                 ui.add_space(18.0);
                 let ids = self.visible_ids();
@@ -897,11 +928,14 @@ impl LauncherUi {
                 scroll.auto_shrink(false).show(ui, |ui| {
                     // Escape must run even when search/filter leaves no rows (grid/table skipped).
                     self.clear_pin_drag_on_escape(ui);
+                    if self.detail.is_none()
+                        && !self.search.is_empty()
+                        && ui.input(|i| i.key_pressed(egui::Key::Escape))
+                    {
+                        self.search.clear();
+                    }
                     if ids.is_empty() {
-                        ui.add_space(40.0);
-                        ui.vertical_centered(|ui| {
-                            crate::widgets::hud(ui, tl!("No apps match"), tokens.muted);
-                        });
+                        self.empty_catalog(ui, &tokens);
                     } else {
                         match self.settings.view {
                             ViewMode::Grid => self.grid(ui, &ids),
@@ -919,8 +953,56 @@ impl LauncherUi {
         self.dialogs(&ctx, host);
         self.flush_actions();
         self.draw_toasts(&ctx);
-        if host.title_bar() == TitleBar::Custom {
+        if title_bar == TitleBar::Custom {
             crate::widgets::window_edges(&ctx);
+        }
+    }
+
+    /// Empty catalog: clearer copy and one recovery action (clear search or show all).
+    fn empty_catalog(&mut self, ui: &mut egui::Ui, tokens: &Tokens) {
+        ui.add_space(48.0);
+        ui.vertical_centered(|ui| {
+            let (title, tip) = if self.screen == Screen::Updates || self.settings.filter == Filter::Updates {
+                (tl!("You're up to date"), tl!("Installed apps are current"))
+            } else if !self.search.trim().is_empty() {
+                (tl!("No apps match"), tl!("Try another search or clear it"))
+            } else {
+                (tl!("No apps match"), tl!("Try another category or show all apps"))
+            };
+            ui.label(egui::RichText::new(title).size(18.0).family(theme::display()).color(tokens.ink_strong));
+            ui.add_space(6.0);
+            ui.label(egui::RichText::new(tip).size(13.0).color(tokens.muted));
+            ui.add_space(16.0);
+            if !self.search.trim().is_empty() {
+                if crate::widgets::button(ui, tl!("Clear search"), crate::widgets::Kind::Secondary, 0.0).clicked() {
+                    self.search.clear();
+                }
+            } else if self.settings.filter != Filter::All || self.settings.category != crate::settings::CategoryFilter::All {
+                if crate::widgets::button(ui, tl!("Show all apps"), crate::widgets::Kind::Secondary, 0.0).clicked() {
+                    self.settings.filter = Filter::All;
+                    self.settings.category = crate::settings::CategoryFilter::All;
+                    if self.screen == Screen::Updates {
+                        self.screen = Screen::Applications;
+                    }
+                }
+            }
+        });
+    }
+
+    /// Keeps the left-rail screen and the catalog status filter in sync.
+    fn sync_screen_filter(&mut self) {
+        match self.screen {
+            Screen::Updates => {
+                if self.settings.filter != Filter::Updates && self.settings.filter != Filter::Hidden {
+                    self.settings.filter = Filter::Updates;
+                }
+            }
+            Screen::Home | Screen::Applications => {
+                // Choosing the Updates chip in the toolbar jumps to the Updates screen.
+                if self.settings.filter == Filter::Updates {
+                    self.screen = Screen::Updates;
+                }
+            }
         }
     }
 
@@ -1103,12 +1185,13 @@ impl LauncherUi {
                     let r = egui::Frame::new()
                         .fill(t.bg)
                         .stroke(egui::Stroke::new(1.0, t.line_strong))
+                        .corner_radius(theme::RADIUS_MD)
                         .shadow(theme::shadow(&t))
                         .inner_margin(egui::Margin::symmetric(14, 10))
                         .show(ui, |ui| {
                             ui.horizontal(|ui| {
-                                let (rect, _) = ui.allocate_exact_size(egui::vec2(6.0, 6.0), egui::Sense::hover());
-                                ui.painter().rect_filled(rect, egui::CornerRadius::ZERO, accent);
+                                let (rect, _) = ui.allocate_exact_size(egui::vec2(8.0, 8.0), egui::Sense::hover());
+                                ui.painter().rect_filled(rect, theme::RADIUS_SM, accent);
                                 ui.add(egui::Label::new(egui::RichText::new(crate::i18n::msg(&toast.text)).color(t.ink)).wrap());
                             });
                         });

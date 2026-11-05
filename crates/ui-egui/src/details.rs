@@ -150,9 +150,9 @@ impl LauncherUi {
             .show(ctx, |ui| {
                 ui.set_opacity(k.clamp(0.0, 1.0));
                 let painter = ui.painter();
-                painter.add(theme::shadow(t).as_shape(panel, CornerRadius::ZERO));
-                painter.rect_filled(panel, CornerRadius::ZERO, t.bg);
-                painter.rect_stroke(panel, CornerRadius::ZERO, Stroke::new(1.0, t.line_strong), egui::StrokeKind::Inside);
+                painter.add(theme::shadow(t).as_shape(panel, theme::RADIUS_LG));
+                painter.rect_filled(panel, theme::RADIUS_LG, t.bg);
+                painter.rect_stroke(panel, theme::RADIUS_LG, Stroke::new(1.0, t.line_strong), egui::StrokeKind::Inside);
 
                 ui.set_min_size(panel.size());
                 ui.set_max_size(panel.size());
@@ -311,7 +311,7 @@ impl LauncherUi {
         let hero = egui::Frame::new().fill(tint(app_color, if t.dark { 0.09 } else { 0.07 })).inner_margin(Margin::same(PAD as i8)).show(ui, |ui| {
             ui.set_width(ui.available_width());
             ui.horizontal(|ui| {
-                widgets::hud(ui, tl!("App details"), t.faint);
+                ui.label(RichText::new(tl!("App details")).size(12.0).color(t.faint));
                 self.hero_top_row(ui, around, t);
             });
             self.hero_identity(ui, entry, details, &status, t, wide);
@@ -324,7 +324,7 @@ impl LauncherUi {
             link_buttons(ui, app);
         });
         let r = hero.response.rect;
-        ui.painter().rect_filled(Rect::from_min_size(r.min, vec2(r.width(), 2.0)), CornerRadius::ZERO, app_color);
+        ui.painter().rect_filled(Rect::from_min_size(r.min + vec2(PAD, 0.0), vec2((r.width() - PAD * 2.0).max(0.0), 3.0)), theme::RADIUS_PILL, app_color);
         ui.painter().hline(r.x_range(), r.bottom() - 0.5, t.hairline());
     }
 
@@ -411,7 +411,7 @@ impl LauncherUi {
 
     /// The facts of the latest release in cells, then its notes.
     fn release_section(&self, ui: &mut Ui, entry: &AppEntry, details: &AppDetails, t: &Tokens, per_row: usize) {
-        widgets::eyebrow(ui, "02", tl!("Latest release"));
+        widgets::section_title(ui, tl!("Latest release"));
         ui.add_space(4.0);
         let Some(r) = entry.release() else {
             ui.label(RichText::new(tl!("No release published yet")).color(t.muted));
@@ -433,11 +433,11 @@ impl LauncherUi {
         for pair in facts.chunks(per_row) {
             ui.columns(per_row, |cols| {
                 for (col, (label, value)) in cols.iter_mut().zip(pair) {
-                    egui::Frame::new().stroke(t.hairline()).inner_margin(theme::BOX_MARGIN).show(col, |ui| {
+                    egui::Frame::new().fill(t.sunken).stroke(t.hairline()).corner_radius(theme::RADIUS_MD).inner_margin(theme::BOX_MARGIN).show(col, |ui| {
                         ui.set_width(ui.available_width());
                         ui.spacing_mut().item_spacing.y = 2.0;
-                        widgets::hud(ui, label, t.faint);
-                        ui.add(egui::Label::new(RichText::new(value).size(14.0).color(t.ink_strong)).wrap());
+                        ui.label(RichText::new(*label).size(12.0).color(t.faint));
+                        ui.add(egui::Label::new(RichText::new(value.as_str()).size(14.0).color(t.ink_strong)).wrap());
                     });
                 }
             });
@@ -470,11 +470,11 @@ impl LauncherUi {
                 let w = room.width().min(room.height() / SHOT_ASPECT).clamp(1.0, 1400.0);
                 let pic = Rect::from_center_size(rect.center(), vec2(w, w * SHOT_ASPECT));
                 match src {
-                    Some(src) => egui::Image::new(src).paint_at(ui, pic),
+                    Some(src) => egui::Image::new(src).corner_radius(theme::RADIUS_MD).paint_at(ui, pic),
                     // Flipped to a picture that hasn't arrived: the same frame, saying so.
                     None => placeholder(ui, pic, Id::unique("lightbox-placeholder"), failed.as_deref(), t, true),
                 }
-                ui.painter().rect_stroke(pic, CornerRadius::ZERO, Stroke::new(1.0, theme::backdrop_ink(40)), egui::StrokeKind::Outside);
+                ui.painter().rect_stroke(pic, theme::RADIUS_MD, Stroke::new(1.0, theme::backdrop_ink(40)), egui::StrokeKind::Outside);
                 let caption = if count > 1 { format!("{} · {}/{count}", shot.caption, at + 1) } else { shot.caption.to_string() };
                 let ink = theme::backdrop_ink(190);
                 let galley = widgets::hud_galley(ui, &caption, ink);
@@ -527,10 +527,10 @@ impl LauncherUi {
                 rect
             }
         };
-        ui.painter().rect_stroke(pic, CornerRadius::ZERO, t.hairline(), egui::StrokeKind::Inside);
+        ui.painter().rect_stroke(pic, theme::RADIUS_MD, t.hairline(), egui::StrokeKind::Inside);
         let count = details.shots.len();
         if count < 2 {
-            widgets::hud(ui, current.caption, t.faint);
+            ui.label(RichText::new(current.caption).size(12.0).color(t.faint));
             return;
         }
         // Previous and next, over the sides of the picture.
@@ -543,7 +543,7 @@ impl LauncherUi {
         if arrow_button(ui, next, Id::unique("shot-next"), false, tl!("Next picture (→)"), t) {
             self.flip_shot(count, true);
         }
-        widgets::hud(ui, &format!("{} · {}/{count}", current.caption, self.detail_shot.min(count - 1) + 1), t.faint);
+        ui.label(RichText::new(format!("{} · {}/{count}", current.caption, self.detail_shot.min(count - 1) + 1)).size(12.0).color(t.faint));
         let gap = 8.0;
         let thumb_w = ((w - gap * (count as f32 - 1.0)) / count as f32).floor().max(1.0);
         ui.horizontal(|ui| {
@@ -552,11 +552,11 @@ impl LauncherUi {
                 let selected = i == self.detail_shot;
                 let size = vec2(thumb_w, thumb_w * SHOT_ASPECT);
                 let resp = match self.picture_source(details.id, shot.key) {
-                    Some(src) => ui.add(egui::Image::new(src).fit_to_exact_size(size).sense(Sense::click())),
+                    Some(src) => ui.add(egui::Image::new(src).fit_to_exact_size(size).corner_radius(theme::RADIUS_SM).sense(Sense::click())),
                     // Too small for words: a blank frame, still there to pick.
                     None => {
                         let (rect, resp) = ui.allocate_exact_size(size, Sense::click());
-                        ui.painter().rect_filled(rect, CornerRadius::ZERO, t.sunken);
+                        ui.painter().rect_filled(rect, theme::RADIUS_SM, t.sunken);
                         resp
                     }
                 };
@@ -564,10 +564,10 @@ impl LauncherUi {
                 // they fade toward the page, not toward grey, in both themes.
                 if !selected {
                     let veil = if resp.hovered() { 0.25 } else { 0.55 };
-                    ui.painter().rect_filled(resp.rect, CornerRadius::ZERO, t.bg.gamma_multiply(veil));
+                    ui.painter().rect_filled(resp.rect, theme::RADIUS_SM, t.bg.gamma_multiply(veil));
                 }
                 let stroke = if selected { Stroke::new(2.0, app_color) } else { t.hairline() };
-                ui.painter().rect_stroke(resp.rect, CornerRadius::ZERO, stroke, egui::StrokeKind::Inside);
+                ui.painter().rect_stroke(resp.rect, theme::RADIUS_SM, stroke, egui::StrokeKind::Inside);
                 resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, shot.caption));
                 if resp.on_hover_cursor(egui::CursorIcon::PointingHand).on_hover_text(shot.caption).clicked() {
                     self.detail_shot = i;
@@ -581,7 +581,7 @@ impl LauncherUi {
 /// is the reason the picture couldn't be had; without one it is still on its way.
 fn placeholder(ui: &mut Ui, rect: Rect, id: Id, failed: Option<&str>, t: &Tokens, over_backdrop: bool) {
     let text = if failed.is_some() { tl!("Pictures couldn't be loaded. Reopen this page to try again.") } else { tl!("Loading pictures…") };
-    ui.painter().rect_filled(rect, CornerRadius::ZERO, if over_backdrop { theme::backdrop_panel() } else { t.sunken });
+    ui.painter().rect_filled(rect, theme::RADIUS_MD, if over_backdrop { theme::backdrop_panel() } else { t.sunken });
     let ink = if over_backdrop { theme::backdrop_ink(190) } else { t.faint };
     let galley = ui.painter().layout(text.to_string(), egui::FontId::proportional(13.5), ink, (rect.width() - 32.0).max(1.0));
     ui.painter().galley(rect.center() - galley.size() / 2.0, galley, ink);
@@ -592,12 +592,15 @@ fn placeholder(ui: &mut Ui, rect: Rect, id: Id, failed: Option<&str>, t: &Tokens
     }
 }
 
-/// A square header-style button with a chevron: previous (`left`) or next app. True when clicked.
+/// A rounded header-style button with a chevron: previous (`left`) or next app. True when clicked.
 fn step_button(ui: &mut Ui, left: bool, tip: &str, t: &Tokens) -> bool {
     let (rect, resp) = ui.allocate_exact_size(vec2(theme::CONTROL_H, theme::CONTROL_H), Sense::click());
     let (fill, ink) = if resp.hovered() { (t.invert_bg, t.invert_fg) } else { (Color32::TRANSPARENT, t.muted) };
     let painter = ui.painter();
-    painter.rect(rect, CornerRadius::ZERO, fill, t.hairline(), egui::StrokeKind::Inside);
+    painter.rect(rect, theme::RADIUS_MD, fill, t.hairline(), egui::StrokeKind::Inside);
+    if resp.has_focus() {
+        painter.rect_stroke(rect.expand(2.0), theme::RADIUS_MD, Stroke::new(2.0, t.accent), egui::StrokeKind::Outside);
+    }
     let (c, s) = (rect.center(), if left { -1.0 } else { 1.0 });
     painter.add(egui::Shape::line(
         vec![pos2(c.x - s * 3.0, c.y - 5.5), pos2(c.x + s * 3.0, c.y), pos2(c.x - s * 3.0, c.y + 5.5)],
@@ -621,30 +624,27 @@ fn link_buttons(ui: &mut Ui, app: &CraftApp) {
     });
 }
 
-/// The numbered feature cells.
+/// Feature cells without ArtCraft-style numbered indexes.
 fn features(ui: &mut Ui, details: &AppDetails, app: &CraftApp, t: &Tokens) {
-    widgets::eyebrow(ui, "01", tl!("Features"));
+    let _ = app;
+    widgets::section_title(ui, tl!("Features"));
     ui.add_space(4.0);
-    for (i, f) in details.features.iter().enumerate() {
-        egui::Frame::new().stroke(t.hairline()).inner_margin(theme::BOX_MARGIN).show(ui, |ui| {
+    for f in details.features.iter() {
+        egui::Frame::new().fill(t.sunken).stroke(t.hairline()).corner_radius(theme::RADIUS_MD).inner_margin(theme::BOX_MARGIN).show(ui, |ui| {
             ui.set_width(ui.available_width());
             ui.spacing_mut().item_spacing.y = 3.0;
-            ui.horizontal(|ui| {
-                widgets::hud(ui, &format!("{:02}", i + 1), t.app_ink(app));
-                ui.label(RichText::new(tr_ctx(current(), details.id, f.title)).size(15.0).family(theme::semibold()).color(t.ink_strong));
-            });
+            ui.label(RichText::new(tr_ctx(current(), details.id, f.title)).size(15.0).family(theme::semibold()).color(t.ink_strong));
             ui.add(egui::Label::new(RichText::new(tr_ctx(current(), details.id, f.text)).size(13.5).color(t.muted)).wrap());
         });
     }
 }
 
-/// A square button with a chevron, drawn over a picture: opaque enough to read on any image,
-/// inverted on hover like the site's outlined buttons. True when clicked.
+/// A rounded chevron over a picture: opaque enough to read on any image. True when clicked.
 fn arrow_button(ui: &mut Ui, rect: Rect, id: Id, left: bool, tip: &str, t: &Tokens) -> bool {
     let resp = ui.interact(rect, id, Sense::click());
     let (fill, ink) = if resp.hovered() { (t.invert_bg, t.invert_fg) } else { (t.bg.gamma_multiply(0.92), t.ink) };
     let painter = ui.painter();
-    painter.rect(rect, CornerRadius::ZERO, fill, Stroke::new(1.0, t.line_strong), egui::StrokeKind::Inside);
+    painter.rect(rect, theme::RADIUS_MD, fill, Stroke::new(1.0, t.line_strong), egui::StrokeKind::Inside);
     let (c, s) = (rect.center(), if left { -1.0 } else { 1.0 });
     let points = vec![pos2(c.x - s * 3.5, c.y - 6.0), pos2(c.x + s * 3.5, c.y), pos2(c.x - s * 3.5, c.y + 6.0)];
     painter.add(egui::Shape::line(points, Stroke::new(1.75, ink)));

@@ -6,7 +6,7 @@
 //! Invariants: every colour comes from [`Tokens`]; nothing here owns state; the card is never
 //! larger than the window, and a window too narrow for two columns gets one.
 
-use egui::{Color32, Context, CornerRadius, Frame, ImageSource, Margin, Ui, Vec2, vec2};
+use egui::{Color32, Context, Frame, ImageSource, Margin, Ui, Vec2, vec2};
 
 use crate::theme::{self, Tokens, tint};
 use crate::widgets;
@@ -19,7 +19,12 @@ pub(crate) fn size(ctx: &Context, max: Vec2) -> Vec2 {
 
 /// The modal's frame: no inner margin, so the header can run to the edges.
 pub(crate) fn frame(t: &Tokens) -> Frame {
-    Frame::new().fill(t.bg).stroke(egui::Stroke::new(1.0, t.line_strong)).shadow(crate::theme::shadow(t)).inner_margin(0)
+    Frame::new()
+        .fill(t.bg)
+        .stroke(egui::Stroke::new(1.0, t.line_strong))
+        .corner_radius(theme::RADIUS_LG)
+        .shadow(crate::theme::shadow(t))
+        .inner_margin(0)
 }
 
 /// The header: an icon, the title and a small caption, with whatever `right` puts at the right
@@ -47,7 +52,7 @@ pub(crate) fn hero(ui: &mut Ui, icon: Option<ImageSource<'static>>, title: &str,
             });
         });
     let r = shown.response.rect;
-    ui.painter().rect_filled(egui::Rect::from_min_size(r.min, vec2(r.width(), 2.0)), CornerRadius::ZERO, t.accent);
+    ui.painter().rect_filled(egui::Rect::from_min_size(r.min + vec2(theme::PAD, 0.0), vec2((r.width() - theme::PAD * 2.0).max(0.0), 3.0)), theme::RADIUS_PILL, t.accent);
     ui.painter().hline(r.x_range(), r.bottom() - 0.5, t.hairline());
     ui.cursor().top() - top
 }
@@ -89,12 +94,12 @@ pub(crate) fn columns(ui: &mut Ui, wide: bool, gap: f32, left: impl FnOnce(&mut 
     });
 }
 
-/// A titled box: a hairline frame with a small caps heading, for one group of settings.
+/// A titled box: a rounded frame with a sentence-case heading, for one group of settings.
 pub(crate) fn panel(ui: &mut Ui, title: &str, body: impl FnOnce(&mut Ui)) {
     let t = Tokens::get(ui.ctx());
-    Frame::new().stroke(t.hairline()).inner_margin(theme::BOX_MARGIN).show(ui, |ui| {
+    Frame::new().fill(t.sunken).stroke(t.hairline()).corner_radius(theme::RADIUS_MD).inner_margin(theme::BOX_MARGIN).show(ui, |ui| {
         ui.set_width(ui.available_width());
-        widgets::hud(ui, title, t.faint);
+        ui.label(egui::RichText::new(title).size(13.0).family(theme::semibold()).color(t.ink_strong));
         ui.add_space(8.0);
         body(ui);
     });
@@ -105,9 +110,9 @@ pub(crate) fn panel(ui: &mut Ui, title: &str, body: impl FnOnce(&mut Ui)) {
 /// visible heading (egui 0.37's `Response::labelled_by`), without adding a second identical label.
 pub(crate) fn panel_with_heading(ui: &mut Ui, title: &str, body: impl FnOnce(&mut Ui, egui::Id)) {
     let t = Tokens::get(ui.ctx());
-    Frame::new().stroke(t.hairline()).inner_margin(theme::BOX_MARGIN).show(ui, |ui| {
+    Frame::new().fill(t.sunken).stroke(t.hairline()).corner_radius(theme::RADIUS_MD).inner_margin(theme::BOX_MARGIN).show(ui, |ui| {
         ui.set_width(ui.available_width());
-        let heading = widgets::hud(ui, title, t.faint);
+        let heading = ui.label(egui::RichText::new(title).size(13.0).family(theme::semibold()).color(t.ink_strong));
         ui.add_space(8.0);
         body(ui, heading.id);
     });

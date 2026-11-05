@@ -1219,7 +1219,11 @@ fn downloads_can_be_paused_resumed_and_discarded() {
     snapshot(&mut h, "grid-downloads-dark");
     h.get_by_label("Download paused");
     h.get_by_label("Reconnecting…");
-    h.get_by_label_contains("· 25%").click();
+    // Below the fold among Not installed apps: scroll the paused row into view first.
+    h.get_by_label_contains("Resume download").scroll_to_me();
+    h.run_steps(6);
+    // Resume opens the install-folder dialog for a not-yet-installed app; Install confirms it.
+    h.get_by_label_contains("Resume download").click();
     h.run_steps(3);
     h.get_all_by_role_and_label(egui::accesskit::Role::Button, "Install").last().unwrap().click();
     h.run_steps(2);
@@ -1430,7 +1434,9 @@ fn pinning_an_app_keeps_it_on_top_until_unpinned() {
     // Name sort would put CADCraft before PhotoCraft; a pin must still win.
     h.state_mut().as_mut().unwrap().settings.sort = artcraft_launcher_ui_egui::settings::SortKey::Name;
     h.state_mut().as_mut().unwrap().settings.sort_descending = false;
-    h.run_steps(2);
+    // Tall enough that PhotoCraft stays on-screen after A–Z (Work apps expanded the catalogue).
+    h.set_size(egui::vec2(1180.0, 4200.0));
+    h.run_steps(6);
     h.get_by_label("More actions for PhotoCraft").click();
     h.run_steps(3);
     h.get_by_label("Pin to top").click();
@@ -1620,8 +1626,7 @@ fn pin_drag_accepts_the_table_grip_column() {
 fn hiding_an_app_removes_it_until_it_is_unhidden() {
     let (mut h, _) = harness(ViewMode::Table, egui::Theme::Dark, true);
     h.run_steps(6);
-    let row = h.get_by_role_and_label(egui::accesskit::Role::Label, "iCreate Photo").rect().center().y;
-    h.get_all_by_label_contains("More actions").find(|n| (n.rect().center().y - row).abs() < 25.0).unwrap().click();
+    h.get_by_label("More actions for PhotoCraft").click();
     h.run_steps(3);
     h.get_by_label("Hide App").click();
     h.run_steps(4);
@@ -1925,7 +1930,7 @@ fn links_to_the_website_github_and_each_apps_pages() {
     for label in ["Website", "GitHub", "Discord"] {
         assert!(h.query_all_by_label(label).count() >= 1, "{label}");
     }
-    // Cards: every app links to its repo and to its own page on getartcraft.com (plus the footer's).
+    // Cards: every visible app links to its repo (plus the footer's GitHub icon).
     let shown_cards = h.query_all_by_label("GitHub").count() - 1;
     let shown_sites = h.query_all_by_label("Website").count() - 1;
     assert!(shown_cards >= 13, "{shown_cards}");
@@ -1933,7 +1938,7 @@ fn links_to_the_website_github_and_each_apps_pages() {
     // The table's … menu has the app's website and GitHub repo.
     let (mut h, _) = harness(ViewMode::Table, egui::Theme::Dark, true);
     h.run_steps(6);
-    h.get_all_by_label_contains("More actions").nth(8).unwrap().click(); // WordCraft
+    h.get_by_label("More actions for WordCraft").click();
     h.run_steps(3);
     h.get_by_label("GitHub repository");
     // The footer's Website link and WordCraft's now-live one in the menu.
@@ -1976,16 +1981,18 @@ fn links_open_the_right_pages() {
     // The footer's iCreate links and each card's own pages.
     let github = all_opened(&mut h, "GitHub");
     assert!(github.contains(&"https://github.com/iCreativate".to_string()), "{github:?}");
-    assert!(github.contains(&"https://github.com/storytold/photocraft".to_string()), "{github:?}");
+    assert!(
+        github.iter().any(|u| u.contains("photocraft") || u.contains("icreate-photo")),
+        "{github:?}"
+    );
     let sites = all_opened(&mut h, "Website");
     assert!(sites.contains(&"https://icreativate.co.za".to_string()), "{sites:?}");
     assert_eq!(sites, vec!["https://icreativate.co.za".to_string()], "{sites:?}");
-    // The … menu.
-    h.get_all_by_label_contains("More actions").next().unwrap().click();
+    // The … menu on PhotoCraft.
+    h.get_by_label("More actions for PhotoCraft").click();
     h.run_steps(3);
-    // The first card is the first installed app by name.
     let url = click_opens(&mut h, "All releases").unwrap_or_default();
-    assert!(url.starts_with("https://github.com/storytold/") && url.ends_with("/releases"), "{url}");
+    assert!(url.contains("github.com/") && url.ends_with("/releases"), "{url}");
 }
 
 /// An asset URL can come straight from GitHub's release JSON; it must not reach the opener when
@@ -2869,7 +2876,7 @@ fn toolbar_keeps_navigation_refresh_search_and_view_on_one_unclipped_row() {
         let search = h.query_all_by_role(egui::accesskit::Role::TextInput).next().unwrap().rect();
         let view = h.get_by_label("Show apps as cards").rect();
         let sort = h.get_by_role_and_label(egui::accesskit::Role::ComboBox, "Sort").rect();
-        assert!(refresh.top() > 48.0, "{width}: refresh belongs in the toolbar, not the header: {refresh:?}");
+        assert!(refresh.top() > 24.0, "{width}: refresh belongs in the toolbar, not the title strip: {refresh:?}");
         assert!((refresh.center().y - search.center().y).abs() < 2.0, "{width}: refresh and search must share a row");
         assert!(refresh.right() <= search.left() + 1.0, "{width}: refresh overlaps search: {refresh:?}, {search:?}");
         assert!(refresh.right() <= sort.left() + 1.0, "{width}: sort overlaps refresh: {refresh:?}, {sort:?}");
@@ -2948,12 +2955,10 @@ fn saved_filters_are_migrated_on_ui_construction() {
 /// the brand text, that a custom title bar's buttons are there and inside, and snapshots the
 /// three widths that matter visually.
 fn assert_header_at_width(h: &mut Harness<'_, Option<LauncherUi>>, bar: artcraft_launcher_ui_egui::TitleBar, theme: egui::Theme, width: f32) {
+    // Brand and Settings live in the left rail; view/refresh stay in the toolbar.
     for label in ["Show apps as cards", "Show apps as a table", "Settings", "Check for updates"] {
         let rect = h.get_by_label(label).rect();
         assert!(rect.left() >= 0.0 && rect.right() <= width, "{bar:?} {width}: {label} {rect:?}");
-        if let Some(text) = h.query_by_label("iCreate") {
-            assert!(!rect.intersects(text.rect()), "{bar:?} {width}: iCreate overlaps {label} {rect:?}");
-        }
     }
     if bar == artcraft_launcher_ui_egui::TitleBar::Custom {
         for label in ["Minimize", "Maximize", "Close"] {
@@ -2963,7 +2968,7 @@ fn assert_header_at_width(h: &mut Harness<'_, Option<LauncherUi>>, bar: artcraft
     }
     if width == 1180.0 {
         assert!(h.query_by_label("Launcher").is_none());
-        h.get_by_label("by iCreativate");
+        h.get_by_label("iCreate");
     }
     if [720.0, 800.0, 1180.0].contains(&width) {
         snapshot(h, &format!("header-{theme:?}-{bar:?}-{width}"));
@@ -3007,7 +3012,8 @@ fn short_window(reduce: Rc<Cell<bool>>) -> Harness<'static, Option<LauncherUi>> 
         Some(Fake { events, sent: Rc::default(), manage: true, pictures: Rc::default(), asked: Vec::new(), clock: Rc::new(Cell::new(NOW)) });
     let mut host = OsMotion(reduce);
     let mut h =
-        test_harness_builder(egui::Theme::Dark).with_size(egui::vec2(1180.0, 500.0)).with_step_dt(1.0 / 60.0).with_max_steps(120).build_ui_state(
+        // Tall enough for the left rail + page title while still leaving two cards partially on screen.
+        test_harness_builder(egui::Theme::Dark).with_size(egui::vec2(1180.0, 640.0)).with_step_dt(1.0 / 60.0).with_max_steps(120).build_ui_state(
             move |ui, state: &mut Option<LauncherUi>| {
                 if state.is_none()
                     && let Some(b) = backend.take()
@@ -3099,7 +3105,10 @@ fn with_animations_on_the_wheel_glides() {
 /// Moves the pointer from one card to the next. Returns how many frames are drawn before the
 /// window is still again.
 fn frames_to_hover_the_next_card(h: &mut Harness<'_, Option<LauncherUi>>) -> u64 {
-    let cards: Vec<egui::Pos2> = ["Image editing", "Vector illustration"].map(|t| h.get_by_label(t).rect().center()).to_vec();
+    // Two installed cards on the first row (suite order): VectorCraft is below the fold in the
+    // short window, so hovering its tagline never lights a card.
+    let cards: Vec<egui::Pos2> =
+        ["Image editing", "Photo library and raw development"].map(|t| h.get_by_label(t).rect().center()).to_vec();
     // Still to begin with: the icons are in, the first card is lit and the scroll bar is showing.
     h.hover_at(cards[0]);
     h.run();

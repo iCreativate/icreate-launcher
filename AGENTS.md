@@ -82,10 +82,11 @@ settings file must produce an error the user can act on, never a panic.
 
 ### Look and feel
 
-The UI matches the apps page on getartcraft.com (`artcraft-website-next` in `artcraft-services`):
-hard square corners, 1 px hairlines instead of shadows, Archivo (620, 118 % width) for headings
-and app names, Inter for body text, upper-case Geist Mono labels and buttons, and the site's
-colour tokens by name (`theme::Tokens`). Build new UI from `widgets.rs`; never hard-code a colour.
+The UI is iCreate's glass command centre: purple/cyan tokens (`theme::Tokens`), rounded controls
+(`RADIUS_SM` / `RADIUS_MD` / `RADIUS_LG`), a left rail for Home / Applications / Updates, Syne for
+headings and app names, DM Sans for body text, and upper-case Source Code Pro labels and buttons.
+Build new UI from `widgets.rs`; never hard-code a colour. Soft shadows are allowed on cards and
+dialogs; prefer translucent panel fills over flat slabs.
 
 Animations follow the OS: with Windows' "Animation effects" off, macOS' "Reduce motion" on, a Linux
 desktop's animations off or a browser's `prefers-reduced-motion`, nothing fades, wipes or glides

@@ -1,14 +1,14 @@
-//! The header, toolbar, footer, the grid of cards and the table, laid out like the apps page on
-//! getartcraft.com: hairline cells, mono labels and square controls.
+//! The header, left rail, toolbar, footer, the grid of cards and the table for the glass
+//! command-centre shell: rounded cards, pill filters and mono labels.
 
 use artcraft_launcher_core::details::AppDetails;
 use artcraft_launcher_core::platform::pick_asset;
 use artcraft_launcher_core::protocol::{Command, JobPhase};
 use artcraft_launcher_core::status::AppStatus;
 use artcraft_launcher_core::time;
-use egui::{Color32, CornerRadius, FontId, Rect, RichText, Sense, Stroke, Ui, vec2};
+use egui::{Color32, FontId, Rect, RichText, Sense, Stroke, Ui, vec2};
 
-use crate::app::{Dialog, LauncherUi, TitleBar};
+use crate::app::{Dialog, LauncherUi, Screen, TitleBar};
 use crate::i18n::{current, fmt, t, tn, tr_ctx};
 use crate::model::{self, AppEntry};
 use crate::settings::{CategoryFilter, Filter, SortKey, ViewMode};
@@ -63,13 +63,14 @@ enum Primary {
     Unavailable(&'static str),
 }
 
-/// Height of the header bar (the site's nav).
-pub(crate) const HEADER_H: f32 = 48.0;
+/// Height of the slim window chrome strip.
+pub(crate) const HEADER_H: f32 = 36.0;
 /// Height of the footer bar.
 pub(crate) const FOOTER_H: f32 = 34.0;
 
-const CARD_MIN_W: f32 = 320.0;
+const CARD_MIN_W: f32 = 300.0;
 const CARD_H: f32 = 314.0;
+const CARD_GAP: f32 = 14.0;
 /// The app column's name and tagline sizes, to centre them on the icon.
 const TITLE_SIZE: f32 = 16.0;
 const TAGLINE_SIZE: f32 = 12.0;
@@ -80,9 +81,8 @@ const CARD_PAD: f32 = 20.0;
 const TRAFFIC_LIGHTS_W: f32 = 72.0;
 
 impl LauncherUi {
-    /// The header bar; with a custom or macOS title bar it is also the window's title bar.
+    /// Slim window chrome; brand and navigation live in the left rail.
     pub(crate) fn header(&mut self, ui: &mut Ui, bar: TitleBar) {
-        let t = Tokens::get(ui.ctx());
         let h = HEADER_H;
         if bar != TitleBar::Native {
             widgets::title_bar_drag(ui);
@@ -92,35 +92,116 @@ impl LauncherUi {
             if bar == TitleBar::MacOs {
                 ui.add_space(TRAFFIC_LIGHTS_W);
             }
-            // iCreate mark and wordmark in the title bar.
-            let (cell, _) = ui.allocate_exact_size(vec2(148.0, h), Sense::hover());
-            let mark = vec2(22.0, 22.0);
-            let mark_pos = egui::pos2(cell.left() + 18.0, cell.center().y);
-            egui::Image::new(crate::icons::icreate_mark()).alt_text(tl!("iCreate")).paint_at(ui, Rect::from_center_size(mark_pos, mark));
-            ui.painter().text(
-                egui::pos2(mark_pos.x + 18.0, cell.center().y),
-                egui::Align2::LEFT_CENTER,
-                "iCreate",
-                egui::FontId::new(18.0, crate::theme::display()),
-                t.ink_strong,
-            );
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                 if bar == TitleBar::Custom {
                     widgets::window_buttons(ui, h);
                 }
-                if widgets::nav_icon(ui, widgets::Glyph::Settings, tl!("Settings"), h, false).clicked() {
-                    self.dialog = Some(Dialog::Settings);
-                }
-                // The controls reserve their actual widths before the secondary text gets space.
-                ui.with_layout(egui::Layout::left_to_right(egui::Align::Center), |ui| {
-                    if ui.available_width() >= 17.0 + widgets::hud_galley(ui, tl!("by iCreativate"), t.muted).size().x {
-                        widgets::rule(ui, h);
-                        ui.add_space(16.0);
-                        widgets::hud(ui, tl!("by iCreativate"), t.muted);
-                    }
-                });
+                // Settings lives in the left rail only — avoid a second identical control.
             });
         });
+    }
+
+    /// Left rail: brand, primary screens, Settings.
+    pub(crate) fn sidebar(&mut self, ui: &mut Ui, compact: bool) {
+        let t = Tokens::get(ui.ctx());
+        let updates = self.count(Filter::Updates);
+
+        if !compact {
+            ui.horizontal(|ui| {
+                ui.spacing_mut().item_spacing.x = 12.0;
+                let mark = vec2(42.0, 42.0);
+                let (slot, _) = ui.allocate_exact_size(mark, Sense::hover());
+                ui.painter().rect_filled(slot, theme::RADIUS_MD, tint(t.accent, 0.35));
+                egui::Image::new(crate::icons::icreate_mark()).alt_text(tl!("iCreate")).paint_at(ui, slot.shrink(6.0));
+                ui.vertical(|ui| {
+                    ui.spacing_mut().item_spacing.y = 2.0;
+                    ui.label(RichText::new("iCreate").size(17.0).family(theme::display()).color(t.ink_strong));
+                    ui.label(RichText::new(tl!("Creative suite")).size(11.0).color(t.faint));
+                });
+            });
+            ui.add_space(16.0);
+        } else {
+            let mark = vec2(42.0, 42.0);
+            ui.horizontal(|ui| {
+                let (slot, _) = ui.allocate_exact_size(mark, Sense::hover());
+                ui.painter().rect_filled(slot, theme::RADIUS_MD, tint(t.accent, 0.35));
+                egui::Image::new(crate::icons::icreate_mark()).alt_text(tl!("iCreate")).paint_at(ui, slot.shrink(6.0));
+            });
+            ui.add_space(12.0);
+        }
+
+        let nav = [
+            (Screen::Home, tl!("Home"), NavGlyph::Home, None),
+            (Screen::Applications, tl!("Applications"), NavGlyph::Apps, None),
+            (Screen::Updates, tl!("Updates"), NavGlyph::Updates, Some(updates)),
+        ];
+        for (screen, label, glyph, count) in nav {
+            if self.sidebar_nav_item(ui, compact, label, glyph, count, self.screen == screen).clicked() {
+                self.screen = screen;
+                if screen == Screen::Updates {
+                    self.settings.filter = Filter::Updates;
+                } else if self.settings.filter == Filter::Updates {
+                    self.settings.filter = Filter::All;
+                }
+            }
+        }
+
+        ui.add_space(8.0);
+        ui.with_layout(egui::Layout::bottom_up(egui::Align::Min), |ui| {
+            if self
+                .sidebar_nav_item(ui, compact, tl!("Settings"), NavGlyph::Settings, None, self.dialog == Some(Dialog::Settings))
+                .clicked()
+            {
+                self.dialog = Some(Dialog::Settings);
+            }
+        });
+    }
+
+    fn sidebar_nav_item(
+        &self,
+        ui: &mut Ui,
+        compact: bool,
+        label: &str,
+        glyph: NavGlyph,
+        count: Option<usize>,
+        on: bool,
+    ) -> egui::Response {
+        let t = Tokens::get(ui.ctx());
+        let height = 40.0;
+        let width = ui.available_width();
+        let (rect, resp) = ui.allocate_exact_size(vec2(width, height), Sense::click());
+        let hovered = resp.hovered();
+        let focused = resp.has_focus();
+        let fill = if on {
+            t.invert_bg
+        } else if hovered {
+            tint(t.ink, if t.dark { 0.04 } else { 0.06 })
+        } else {
+            Color32::TRANSPARENT
+        };
+        let ink = if on { t.invert_fg } else if hovered { t.ink_strong } else { t.muted };
+        ui.painter().rect_filled(rect, theme::RADIUS_MD, fill);
+        if focused {
+            ui.painter().rect_stroke(rect.expand(2.0), theme::RADIUS_MD, Stroke::new(2.0, t.accent), egui::StrokeKind::Outside);
+        }
+        if compact {
+            paint_nav_glyph(ui.painter(), Rect::from_center_size(rect.center(), vec2(18.0, 18.0)), glyph, ink);
+        } else {
+            let icon = Rect::from_center_size(egui::pos2(rect.left() + 22.0, rect.center().y), vec2(18.0, 18.0));
+            paint_nav_glyph(ui.painter(), icon, glyph, ink);
+            let text_pos = egui::pos2(rect.left() + 40.0, rect.center().y);
+            ui.painter().text(text_pos, egui::Align2::LEFT_CENTER, label, FontId::new(14.0, theme::medium()), ink);
+            if let Some(n) = count.filter(|n| *n > 0) {
+                let badge = format!("{n}");
+                let badge_galley = ui.painter().layout_no_wrap(badge, FontId::new(11.0, theme::semibold()), Color32::WHITE);
+                let bw = badge_galley.size().x + 12.0;
+                let badge_rect = Rect::from_center_size(egui::pos2(rect.right() - 10.0 - bw / 2.0, rect.center().y), vec2(bw, 20.0));
+                ui.painter().rect_filled(badge_rect, theme::RADIUS_PILL, t.accent);
+                ui.painter().galley(badge_rect.center() - badge_galley.size() / 2.0, badge_galley, Color32::WHITE);
+            }
+        }
+        resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, true, on, label));
+        resp.on_hover_text(label).on_hover_cursor(egui::CursorIcon::PointingHand)
     }
 
     pub(crate) fn toolbar(&mut self, ui: &mut Ui) {
@@ -135,21 +216,37 @@ impl LauncherUi {
             ui.add_space(14.0);
         }
         self.announcements(ui);
+        let title = match self.screen {
+            Screen::Home => tl!("Home"),
+            Screen::Applications => tl!("Applications"),
+            Screen::Updates => tl!("Updates"),
+        };
+        let subtitle = match self.screen {
+            Screen::Home => tl!("Your installed apps and what to try next"),
+            Screen::Applications => tl!("The full catalogue"),
+            Screen::Updates => tl!("Installed apps with a newer version"),
+        };
+        ui.label(RichText::new(title).size(20.0).family(theme::display()).color(t.ink_strong));
+        ui.label(RichText::new(subtitle).size(12.5).color(t.muted));
+        ui.add_space(8.0);
         let updates = self.count(Filter::Updates);
-        self.home_nav_row(ui, &t, updates);
-        ui.add_space(6.0);
+        if self.screen != Screen::Updates {
+            self.home_nav_row(ui, &t, updates);
+            ui.add_space(6.0);
+        }
         let compact = self.toolbar_row(ui, &t, updates);
         if compact {
             self.toolbar_compact_row(ui, &t, updates);
         }
     }
 
-    /// A banner over the toolbar when a newer ArtCraft Launcher release is known: either the
+    /// A banner over the toolbar when a newer iCreate release is known: either the
     /// update-in-place controls, or a plain link when this build can't update itself.
     fn launcher_update_banner(&mut self, ui: &mut Ui, t: &Tokens, r: &artcraft_launcher_core::Release) {
         egui::Frame::new()
-            .fill(tint(t.accent, if t.dark { 0.10 } else { 0.07 }))
-            .stroke(Stroke::new(1.0, tint(t.accent, 0.6)))
+            .fill(tint(t.accent, if t.dark { 0.14 } else { 0.09 }))
+            .stroke(Stroke::new(1.0, tint(t.accent, 0.55)))
+            .corner_radius(theme::RADIUS_MD)
             .inner_margin(egui::Margin::symmetric(16, 10))
             .show(ui, |ui| {
                 ui.horizontal(|ui| {
@@ -253,7 +350,9 @@ impl LauncherUi {
     /// search field, and the sort picker / update-all button while there is room. Returns
     /// whether the window is narrow enough that a second row follows.
     fn toolbar_row(&mut self, ui: &mut Ui, t: &Tokens, updates: usize) -> bool {
-        let mut compact = false;
+        // Measure before allocating the refresh control so a left rail does not force the second
+        // row on widths that still fit search + sort + view on one line.
+        let compact = ui.available_width() < theme::TOOLBAR_COMPACT_BELOW;
         ui.horizontal(|ui| {
             self.refresh_button(ui);
             // Hiding an app is only undone from here, so the way back to the hidden ones stays
@@ -268,7 +367,6 @@ impl LauncherUi {
                     self.settings.filter = if showing { Filter::All } else { Filter::Hidden };
                 }
             }
-            compact = ui.available_width() < theme::TOOLBAR_COMPACT_BELOW;
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                 // Right to left: the view switch at the far right, then the search.
                 crate::bar::view_toggle(ui, &mut self.settings.view, [tl!("Show apps as cards"), tl!("Show apps as a table")]);
@@ -287,7 +385,7 @@ impl LauncherUi {
                     // The caption only where it fits beside the filters (longer in some languages).
                     let sort = tl!("Sort");
                     if widgets::hud_galley(ui, sort, t.faint).size().x + ui.spacing().item_spacing.x <= ui.available_width() {
-                        widgets::hud(ui, sort, t.faint);
+                        ui.label(RichText::new(sort).size(12.0).color(t.faint));
                     }
                 }
                 if !compact && self.caps.manage_apps && updates > 0 {
@@ -304,7 +402,7 @@ impl LauncherUi {
         ui.horizontal(|ui| {
             if self.settings.view == ViewMode::Grid {
                 // "Sort" before the picker, as in the full-width row.
-                widgets::hud(ui, tl!("Sort"), t.faint);
+                ui.label(RichText::new(tl!("Sort")).size(12.0).color(t.faint));
                 self.sort_picker(ui);
             }
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
@@ -359,7 +457,7 @@ impl LauncherUi {
         let shown: Vec<artcraft_launcher_core::feed::Notice> =
             self.announcements.iter().filter(|n| !self.settings.dismissed_notices.contains(&n.id)).take(3).cloned().collect();
         for notice in shown {
-            egui::Frame::new().fill(t.sunken).stroke(t.hairline()).inner_margin(egui::Margin::symmetric(14, 10)).show(ui, |ui| {
+            egui::Frame::new().fill(t.sunken).stroke(t.hairline()).corner_radius(theme::RADIUS_MD).inner_margin(egui::Margin::symmetric(14, 10)).show(ui, |ui| {
                 ui.horizontal(|ui| {
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Min), |ui| {
                         if widgets::glyph_button(ui, widgets::Glyph::Close, tl!("Dismiss")).clicked() {
@@ -446,6 +544,7 @@ impl LauncherUi {
                     if w <= avail * 0.7 { (full, None, w) } else { (short.clone(), Some(full), width(ui, &short)) }
                 });
                 let notice_w = notice.as_ref().map_or(0.0, |(_, _, w)| *w);
+                // Dense mono keeps the check-time line short enough that the rate-limit notice still fits.
                 widgets::hud_elided(ui, &status, t.faint, (avail - notice_w).max(avail * 0.3));
                 if let Some((shown, full, _)) = notice {
                     let resp = ui.add(egui::Label::new(text(&shown)).truncate());
@@ -465,7 +564,7 @@ impl LauncherUi {
         let (pinned, rest) = ids.split_at(pinned_n);
         if !pinned.is_empty() {
             let t = Tokens::get(ui.ctx());
-            widgets::hud(ui, tl!("Pinned"), t.faint);
+            ui.label(RichText::new(tl!("Pinned")).size(13.0).family(theme::semibold()).color(t.faint));
             ui.add_space(12.0);
             self.grid_block(ui, pinned);
             if !rest.is_empty() {
@@ -478,7 +577,7 @@ impl LauncherUi {
         if !top.is_empty() && !rest.is_empty() {
             let t = Tokens::get(ui.ctx());
             ui.add_space(28.0);
-            widgets::hud(ui, tl!("Not installed"), t.faint);
+            ui.label(RichText::new(tl!("Not installed")).size(13.0).family(theme::semibold()).color(t.faint));
             ui.add_space(12.0);
         }
         self.grid_block(ui, rest);
@@ -490,15 +589,14 @@ impl LauncherUi {
             return;
         }
         let width = ui.available_width();
-        // Neighbouring cards share their 1 px hairline, like the site's `gap-px` grid.
-        let cols = ((width / CARD_MIN_W).floor() as usize).max(1);
-        let card_w = (width + (cols as f32 - 1.0)) / cols as f32;
+        let cols = (((width + CARD_GAP) / (CARD_MIN_W + CARD_GAP)).floor() as usize).max(1);
+        let card_w = (width - CARD_GAP * (cols.saturating_sub(1) as f32)) / cols as f32;
         let rows = ids.len().div_ceil(cols);
-        let height = rows as f32 * (CARD_H - 1.0) + 1.0;
+        let height = rows as f32 * CARD_H + rows.saturating_sub(1) as f32 * CARD_GAP;
         let (area, _) = ui.allocate_exact_size(vec2(width, height), Sense::hover());
         for (i, id) in ids.iter().enumerate() {
             let (row, col) = (i / cols, i % cols);
-            let min = area.min + vec2(col as f32 * (card_w - 1.0), row as f32 * (CARD_H - 1.0));
+            let min = area.min + vec2(col as f32 * (card_w + CARD_GAP), row as f32 * (CARD_H + CARD_GAP));
             self.card(ui, id, Rect::from_min_size(min, vec2(card_w, CARD_H)));
         }
     }
@@ -515,6 +613,10 @@ impl LauncherUi {
         let hovered = ui.rect_contains_pointer(rect);
         let wipe = if self.reduce_motion { 0.0 } else { 0.3 };
         let lift = ui.ctx().animate_bool_with_time(ui.scope_id().with(("card-hover", id)), hovered, wipe);
+        // Painter-only lift still needs frames: without this, `run()` can settle before the wipe finishes.
+        if lift > 0.0 && lift < 1.0 {
+            ui.ctx().request_repaint();
+        }
         // An app that is not installed is drawn in greys (icon, name, version, accent), and in its
         // colours while the pointer is over its card.
         let installed = entry.status(self.platform, self.caps.manage_apps).is_installed();
@@ -531,14 +633,12 @@ impl LauncherUi {
             }
         }
         let painter = ui.painter_at(rect.expand(16.0));
-        // A faint wash in the app's colour fades in under the pointer.
-        let fill = t.bg.lerp_to_gamma(app_color, 0.05 * lift);
-        painter.rect(rect, CornerRadius::ZERO, fill, t.hairline(), egui::StrokeKind::Inside);
-        // On hover, a 2 px rule in the app's colour wipes in from the left along the top, inside the
-        // hairlines the card shares with its neighbours (the site's rule sits within its grid gaps).
+        // Glass card: sunken panel with a soft app-colour wash on hover.
+        let fill = t.sunken.lerp_to_gamma(app_color, 0.08 * lift);
+        painter.rect(rect, theme::RADIUS_LG, fill, Stroke::new(1.0, if lift > 0.0 { tint(app_color, 0.45) } else { t.line }), egui::StrokeKind::Inside);
         if lift > 0.0 {
-            let inside = rect.shrink(1.0);
-            painter.rect_filled(Rect::from_min_size(inside.min, vec2(inside.width() * lift, 2.0)), CornerRadius::ZERO, app_color);
+            let accent_bar = Rect::from_min_size(rect.min + vec2(14.0, 0.0), vec2((rect.width() - 28.0) * lift, 3.0));
+            painter.rect_filled(accent_bar, theme::RADIUS_PILL, app_color);
         }
 
         // The top strip: the version in the app's colour, and its GitHub page.
@@ -546,7 +646,6 @@ impl LauncherUi {
         let behind = self.behind_latest(&entry);
         let version = crate::card_parts::strip_version(&entry, &status, behind.as_deref());
         let strip = Rect::from_min_size(rect.min, vec2(rect.width(), STRIP_H));
-        painter.hline(strip.x_range(), strip.bottom() - 0.5, t.hairline());
         {
             let mut strip_ui = ui.new_child(
                 egui::UiBuilder::new().max_rect(strip.shrink2(vec2(CARD_PAD, 0.0))).layout(egui::Layout::left_to_right(egui::Align::Center)),
@@ -557,6 +656,7 @@ impl LauncherUi {
                 let highlight = if in_colour { t.app_ink(app) } else { t.muted };
                 let spans: Vec<(&str, egui::Color32)> =
                     version.iter().map(|(text, lit)| (text.as_str(), if *lit { highlight } else { t.muted })).collect();
+                // Dense strip keeps mono labels so AccessKit names stay stable for tests and screen readers.
                 widgets::hud_elided_spans(&mut strip_ui, &spans, room);
             }
             strip_ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
@@ -582,7 +682,7 @@ impl LauncherUi {
             let icon_rect = Rect::from_center_size(slot.center(), vec2(ICON, ICON)).translate(vec2(0.0, -4.0 * lift));
             ui.painter().add(
                 egui::epaint::Shadow { offset: [0, 6], blur: 14, spread: 0, color: Color32::from_black_alpha(71) }
-                    .as_shape(icon_rect.shrink(4.0), CornerRadius::same(12)),
+                    .as_shape(icon_rect.shrink(4.0), theme::RADIUS_MD),
             );
             if let Some(icon) = crate::icons::app_image(ui.ctx(), app.id, in_colour) {
                 icon.paint_at(ui, icon_rect);
@@ -646,19 +746,25 @@ impl LauncherUi {
         let span = ui.available_rect_before_wrap().x_range();
         let grip_w = self.grip_w(ui, ids);
 
-        egui::Frame::new().fill(t.bg).stroke(t.hairline()).inner_margin(egui::Margin::symmetric(16, 0)).show(ui, |ui| {
-            TableBuilder::new(ui)
+        // Keep the actions column on-screen at the default shell width (sidebar + margins leave
+        // ~880 px). A table that forces horizontal scroll makes … menus and Update unclickable.
+        let narrow = ui.available_width() < 980.0;
+        egui::Frame::new().fill(t.sunken).stroke(t.hairline()).corner_radius(theme::RADIUS_LG).inner_margin(egui::Margin::symmetric(16, 0)).show(ui, |ui| {
+            let mut table = TableBuilder::new(ui)
                 .striped(false)
                 .vscroll(false)
                 .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
-                .column(Column::remainder().at_least(220.0).clip(true))
-                .column(Column::exact(176.0))
-                .column(Column::exact(150.0))
-                .column(Column::exact(132.0))
-                .column(Column::exact(104.0))
+                .column(Column::remainder().at_least(if narrow { 160.0 } else { 220.0 }).clip(true))
+                .column(Column::exact(if narrow { 140.0 } else { 176.0 }))
+                .column(Column::exact(if narrow { 120.0 } else { 150.0 }))
+                .column(Column::exact(if narrow { 100.0 } else { 132.0 }));
+            if !narrow {
+                table = table.column(Column::exact(104.0));
+            }
+            table
                 .column(Column::exact(206.0 + grip_w))
-                .header(42.0, |header| self.table_header(header, &mut sort_clicked, &t, span, clip))
-                .body(|body| self.table_rows(body, ids, &t, (title_h, tagline_h), now, (span, clip)));
+                .header(42.0, |header| self.table_header(header, &mut sort_clicked, &t, span, clip, !narrow))
+                .body(|body| self.table_rows(body, ids, &t, (title_h, tagline_h), now, (span, clip), !narrow));
         });
         if let Some(k) = sort_clicked {
             if self.settings.sort == k {
@@ -723,8 +829,8 @@ impl LauncherUi {
         if resp.on_hover_text(tip).on_hover_cursor(egui::CursorIcon::PointingHand).clicked() { Some(k) } else { None }
     }
 
-    /// The header row: the four sortable column labels with their arrows, and the two that are
-    /// plain.
+    /// The header row: the four sortable column labels with their arrows, and the plain ones.
+    /// `show_author` drops the Author column on narrow windows so actions stay reachable.
     fn table_header(
         &self,
         mut header: egui_extras::TableRow<'_, '_>,
@@ -732,15 +838,19 @@ impl LauncherUi {
         t: &Tokens,
         span: egui::emath::Rangef,
         clip: egui::Rect,
+        show_author: bool,
     ) {
-        for (key, label) in [
+        let mut cols: Vec<(Option<SortKey>, &str)> = vec![
             (Some(SortKey::Name), tl!("App")),
             (Some(SortKey::Status), tl!("Status")),
             (None, tr_ctx(current(), "column", "Version")),
             (Some(SortKey::Released), tr_ctx(current(), "column", "Released")),
-            (None, tr_ctx(current(), "column", "Author")),
-            (None, ""),
-        ] {
+        ];
+        if show_author {
+            cols.push((None, tr_ctx(current(), "column", "Author")));
+        }
+        cols.push((None, ""));
+        for (key, label) in cols {
             header.col(|ui| {
                 if key == Some(SortKey::Name) {
                     Self::table_rule(ui, t, span, clip);
@@ -762,6 +872,7 @@ impl LauncherUi {
         fonts: (f32, f32),
         now: i64,
         rule: (egui::emath::Rangef, egui::Rect),
+        show_author: bool,
     ) {
         let last = ids.len().saturating_sub(1);
         let grip_w = self.grip_w(body.ui_mut(), ids);
@@ -773,9 +884,11 @@ impl LauncherUi {
                 row.col(|ui| self.table_status_cell(ui, &entry, &status, t));
                 row.col(|ui| self.table_version_cell(ui, &entry, &status, t));
                 row.col(|ui| self.table_released_cell(ui, &entry, now, t));
-                row.col(|ui| {
-                    ui.label(RichText::new(entry.app.publisher).color(t.muted));
-                });
+                if show_author {
+                    row.col(|ui| {
+                        ui.label(RichText::new(entry.app.publisher).color(t.muted));
+                    });
+                }
                 // A pinned row's grip leads its actions; the other rows leave its room empty, so
                 // every row's buttons stay in line.
                 row.col(|ui| {
@@ -1362,6 +1475,38 @@ pub(crate) fn version_line(e: &AppEntry, status: &AppStatus) -> String {
         (_, None, Some(l)) => format!("{}{released}", fmt(tl!("Version {latest}"), &[("latest", l)])),
         (AppStatus::NoRelease, None, None) => tl!("No release published yet").to_string(),
         _ => " ".to_string(),
+    }
+}
+
+#[derive(Clone, Copy)]
+enum NavGlyph {
+    Home,
+    Apps,
+    Updates,
+    Settings,
+}
+
+fn paint_nav_glyph(painter: &egui::Painter, rect: Rect, glyph: NavGlyph, color: Color32) {
+    let c = rect.center();
+    let s = rect.width() * 0.42;
+    match glyph {
+        NavGlyph::Home => {
+            let roof = [egui::pos2(c.x, c.y - s), egui::pos2(c.x - s, c.y - 0.1 * s), egui::pos2(c.x + s, c.y - 0.1 * s)];
+            painter.add(egui::Shape::convex_polygon(roof.to_vec(), color, Stroke::NONE));
+            painter.rect_filled(Rect::from_min_max(egui::pos2(c.x - 0.55 * s, c.y - 0.05 * s), egui::pos2(c.x + 0.55 * s, c.y + s)), theme::RADIUS_SM, color);
+        }
+        NavGlyph::Apps => {
+            for (dx, dy) in [(-1.0, -1.0), (1.0, -1.0), (-1.0, 1.0), (1.0, 1.0)] {
+                painter.rect_filled(Rect::from_center_size(c + vec2(dx * 0.42 * s, dy * 0.42 * s), vec2(0.55 * s, 0.55 * s)), theme::RADIUS_SM, color);
+            }
+        }
+        NavGlyph::Updates => {
+            painter.circle_stroke(c, s * 0.72, Stroke::new(1.6, color));
+            painter.arrow(c + vec2(0.0, 0.35 * s), vec2(0.0, -0.9 * s), Stroke::new(1.6, color));
+        }
+        NavGlyph::Settings => {
+            widgets::paint_glyph(painter, rect, widgets::Glyph::Settings, color);
+        }
     }
 }
 

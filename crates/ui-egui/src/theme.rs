@@ -1,4 +1,4 @@
-//! Colours, type and shapes for iCreate: iCreativate navy and cyan, Syne display type,
+//! Colours, type and shapes for iCreate: purple/cyan glass command centre, Syne display type,
 //! DM Sans body text and Source Code Pro labels. Widgets read [`Tokens::get`]; nothing
 //! hard-codes a colour.
 
@@ -54,9 +54,9 @@ pub struct Tokens {
     pub line: Color32,
     /// Outlined buttons and stronger rules.
     pub line_strong: Color32,
-    /// The brand blue, for surfaces.
+    /// Brand purple, for surfaces and primary actions.
     pub accent: Color32,
-    /// The brand blue, for text and icons.
+    /// Cyan accent for links and secondary emphasis.
     pub accent_ink: Color32,
     /// Primary buttons and hover inversion.
     pub invert_bg: Color32,
@@ -79,37 +79,37 @@ const fn hex(rgb: u32) -> Color32 {
 impl Tokens {
     pub const DARK: Self = Self {
         dark: true,
-        bg: hex(0x0b1220),
-        sunken: hex(0x0f172a),
-        ink: hex(0xe8edf5),
+        bg: hex(0x07080f),
+        sunken: hex(0x12141f),
+        ink: hex(0xf4f6ff),
         ink_strong: hex(0xffffff),
-        muted: ink_alpha(0xe8edf5, 153),
-        faint: ink_alpha(0xe8edf5, 97),
-        line: ink_alpha(0x0ea5e9, 56),
-        line_strong: ink_alpha(0x0ea5e9, 102),
-        accent: hex(0x0ea5e9),
-        accent_ink: hex(0x38bdf8),
-        invert_bg: hex(0xe8edf5),
-        invert_fg: hex(0x0b1220),
+        muted: hex(0x9aa3bd),
+        faint: hex(0x6d7691),
+        line: ink_alpha(0xffffff, 20),
+        line_strong: ink_alpha(0xffffff, 36),
+        accent: hex(0x8b5cf6),
+        accent_ink: hex(0x22d3ee),
+        invert_bg: hex(0x9333ea),
+        invert_fg: hex(0xffffff),
         good: hex(0x34d399),
-        warn: hex(0xf5b942),
+        warn: hex(0xfbbf24),
         bad: hex(0xf87171),
     };
 
     pub const LIGHT: Self = Self {
         dark: false,
-        bg: hex(0xf4f7fb),
-        sunken: hex(0xe8eef5),
-        ink: hex(0x0f172a),
+        bg: hex(0xeef0f8),
+        sunken: hex(0xffffff),
+        ink: hex(0x111827),
         ink_strong: hex(0x020617),
-        muted: ink_alpha(0x0f172a, 158),
-        faint: ink_alpha(0x0f172a, 107),
-        line: ink_alpha(0x0ea5e9, 48),
-        line_strong: ink_alpha(0x0ea5e9, 102),
-        accent: hex(0x0ea5e9),
-        accent_ink: hex(0x0369a1),
-        invert_bg: hex(0x0b1220),
-        invert_fg: hex(0xf4f7fb),
+        muted: hex(0x5b647a),
+        faint: hex(0x8891a8),
+        line: ink_alpha(0x111827, 20),
+        line_strong: ink_alpha(0x111827, 36),
+        accent: hex(0x7c3aed),
+        accent_ink: hex(0x0891b2),
+        invert_bg: hex(0x7c3aed),
+        invert_fg: hex(0xffffff),
         good: hex(0x047857),
         warn: hex(0xb45309),
         bad: hex(0xb91c1c),
@@ -174,8 +174,8 @@ fn visuals(t: &Tokens) -> Visuals {
     v.faint_bg_color = t.sunken;
     v.code_bg_color = t.sunken;
     v.window_stroke = Stroke::new(1.0, t.line_strong);
-    v.window_corner_radius = CornerRadius::ZERO;
-    v.menu_corner_radius = CornerRadius::ZERO;
+    v.window_corner_radius = RADIUS_LG;
+    v.menu_corner_radius = RADIUS_MD;
     v.window_shadow = shadow(t);
     v.popup_shadow = shadow(t);
     v.override_text_color = Some(t.ink);
@@ -194,7 +194,7 @@ fn visuals(t: &Tokens) -> Visuals {
         w.bg_fill = fill;
         w.weak_bg_fill = fill;
         w.bg_stroke = Stroke::new(1.0, stroke);
-        w.corner_radius = CornerRadius::ZERO;
+        w.corner_radius = RADIUS_MD;
         w.fg_stroke = Stroke::new(1.0, fg);
         w.expansion = 0.0;
     }
@@ -229,14 +229,30 @@ pub fn apply(ctx: &egui::Context, choice: ThemeChoice) {
     });
 }
 
-/// Height of buttons, inputs and filter cells (the site's medium button).
+/// Height of buttons, inputs and filter cells.
 pub const CONTROL_H: f32 = 34.0;
 
-/// The site's `.hud-label`: 11 px Geist Mono 500, upper case, 0.15 em apart.
+/// Caps label size: 11 px mono 500, upper case, 0.15 em apart.
 pub const HUD_SIZE: f32 = 11.0;
 pub const HUD_SPACING: f32 = HUD_SIZE * 0.15;
-/// Buttons: 11 px Geist Mono 700, upper case, 0.12 em apart.
+/// Buttons: 11 px mono 700, upper case, 0.12 em apart.
 pub const BUTTON_SPACING: f32 = HUD_SIZE * 0.12;
+
+// ---- shape -------------------------------------------------------------------------------------
+/// Small controls (badges, icon buttons).
+pub const RADIUS_SM: CornerRadius = CornerRadius::same(8);
+/// Buttons, nav items, inputs.
+pub const RADIUS_MD: CornerRadius = CornerRadius::same(12);
+/// Cards, panels, dialogs.
+pub const RADIUS_LG: CornerRadius = CornerRadius::same(18);
+/// Pill chips and search fields.
+pub const RADIUS_PILL: CornerRadius = CornerRadius::same(20);
+
+/// Full sidebar width (labels visible).
+pub const SIDEBAR_W: f32 = 248.0;
+/// Icon-only sidebar below this window width.
+pub const SIDEBAR_COMPACT_BELOW: f32 = 900.0;
+pub const SIDEBAR_COMPACT_W: f32 = 78.0;
 
 // ---- layout ------------------------------------------------------------------------------------
 // The app page and the large dialogs (Settings, release notes) share these, so they read as one
@@ -249,7 +265,8 @@ pub const COLUMN_GAP: f32 = 32.0;
 /// Padding inside a hairline box: a group of settings, a feature, a release fact.
 pub const BOX_MARGIN: egui::Margin = egui::Margin::symmetric(14, 12);
 /// Below this width the toolbar moves the sort and "Update all" to a second row.
-pub const TOOLBAR_COMPACT_BELOW: f32 = 640.0;
+/// Sized for the main column after the left rail (about 720−78 on a narrow window).
+pub const TOOLBAR_COMPACT_BELOW: f32 = 560.0;
 /// From this width the large dialogs read in two columns.
 pub const DIALOG_COLUMNS_FROM: f32 = 760.0;
 /// From this width the app page reads in two columns (its pictures need the room).
