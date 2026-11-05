@@ -464,6 +464,456 @@
         191,
         248
       ]
+    },
+    {
+      "id": "email",
+      "name": "Email",
+      "display_name": "iCreate Email",
+      "replaces": "Microsoft Outlook",
+      "description": "Mail for IMAP, SMTP, Google and Microsoft 365",
+      "icon": "email.png",
+      "repo": "iCreativate/icreate-email",
+      "status": "planned",
+      "category": "Work",
+      "publisher": "iCreativate",
+      "bundle": "za.co.icreativate.icreate-email",
+      "mac_team": "",
+      "licence": "MPL-2.0 (Thunderbird-derived; TBA until fork ships)",
+      "color": [
+        74,
+        144,
+        232
+      ],
+      "ink_light": [
+        40,
+        79,
+        127
+      ],
+      "ink_dark": [
+        137,
+        182,
+        240
+      ]
+    },
+    {
+      "id": "calendar",
+      "name": "Calendar",
+      "display_name": "iCreate Calendar",
+      "replaces": "Google Calendar",
+      "description": "Schedules, invites and shared calendars",
+      "icon": "calendar.png",
+      "repo": "iCreativate/icreate-calendar",
+      "status": "research",
+      "category": "Work",
+      "publisher": "iCreativate",
+      "bundle": "za.co.icreativate.icreate-calendar",
+      "mac_team": "",
+      "licence": "Licence TBA",
+      "color": [
+        232,
+        140,
+        74
+      ],
+      "ink_light": [
+        127,
+        77,
+        40
+      ],
+      "ink_dark": [
+        240,
+        182,
+        137
+      ]
+    },
+    {
+      "id": "notes",
+      "name": "Notes",
+      "display_name": "iCreate Notes",
+      "replaces": "Apple Notes",
+      "description": "Local-first notes with search and export",
+      "icon": "notes.png",
+      "repo": "iCreativate/icreate-notes",
+      "status": "research",
+      "category": "Work",
+      "publisher": "iCreativate",
+      "bundle": "za.co.icreativate.icreate-notes",
+      "mac_team": "",
+      "licence": "Licence TBA",
+      "color": [
+        232,
+        196,
+        74
+      ],
+      "ink_light": [
+        127,
+        108,
+        40
+      ],
+      "ink_dark": [
+        240,
+        214,
+        137
+      ]
+    },
+    {
+      "id": "drive",
+      "name": "Drive",
+      "display_name": "iCreate Drive",
+      "replaces": "Google Drive",
+      "description": "Files and folders that stay under your control",
+      "icon": "drive.png",
+      "repo": "iCreativate/icreate-drive",
+      "status": "research",
+      "category": "Work",
+      "publisher": "iCreativate",
+      "bundle": "za.co.icreativate.icreate-drive",
+      "mac_team": "",
+      "licence": "Licence TBA",
+      "color": [
+        74,
+        180,
+        140
+      ],
+      "ink_light": [
+        40,
+        99,
+        77
+      ],
+      "ink_dark": [
+        137,
+        210,
+        182
+      ]
+    },
+    {
+      "id": "chat",
+      "name": "Chat",
+      "display_name": "iCreate Chat",
+      "replaces": "Slack",
+      "description": "Team messaging without surrendering your workspace",
+      "icon": "chat.png",
+      "repo": "iCreativate/icreate-chat",
+      "status": "research",
+      "category": "Work",
+      "publisher": "iCreativate",
+      "bundle": "za.co.icreativate.icreate-chat",
+      "mac_team": "",
+      "licence": "Licence TBA",
+      "color": [
+        120,
+        160,
+        232
+      ],
+      "ink_light": [
+        66,
+        88,
+        127
+      ],
+      "ink_dark": [
+        168,
+        196,
+        240
+      ]
+    },
+    {
+      "id": "meet",
+      "name": "Meet",
+      "display_name": "iCreate Meet",
+      "replaces": "Zoom",
+      "description": "Video meetings and screen share",
+      "icon": "meet.png",
+      "repo": "iCreativate/icreate-meet",
+      "status": "research",
+      "category": "Work",
+      "publisher": "iCreativate",
+      "bundle": "za.co.icreativate.icreate-meet",
+      "mac_team": "",
+      "licence": "Licence TBA",
+      "color": [
+        160,
+        120,
+        232
+      ],
+      "ink_light": [
+        88,
+        66,
+        127
+      ],
+      "ink_dark": [
+        196,
+        168,
+        240
+      ]
+    },
+    {
+      "id": "sign",
+      "name": "Sign",
+      "display_name": "iCreate Sign",
+      "replaces": "DocuSign",
+      "description": "Electronic signatures for contracts and forms",
+      "icon": "sign.png",
+      "repo": "iCreativate/icreate-sign",
+      "status": "research",
+      "category": "Work",
+      "publisher": "iCreativate",
+      "bundle": "za.co.icreativate.icreate-sign",
+      "mac_team": "",
+      "licence": "Licence TBA",
+      "color": [
+        200,
+        100,
+        120
+      ],
+      "ink_light": [
+        110,
+        55,
+        66
+      ],
+      "ink_dark": [
+        230,
+        160,
+        175
+      ]
+    },
+    {
+      "id": "forms",
+      "name": "Forms",
+      "display_name": "iCreate Forms",
+      "replaces": "Google Forms",
+      "description": "Surveys and intake forms you host yourself",
+      "icon": "forms.png",
+      "repo": "iCreativate/icreate-forms",
+      "status": "research",
+      "category": "Work",
+      "publisher": "iCreativate",
+      "bundle": "za.co.icreativate.icreate-forms",
+      "mac_team": "",
+      "licence": "Licence TBA",
+      "color": [
+        100,
+        180,
+        200
+      ],
+      "ink_light": [
+        55,
+        99,
+        110
+      ],
+      "ink_dark": [
+        160,
+        214,
+        230
+      ]
+    },
+    {
+      "id": "projects",
+      "name": "Projects",
+      "display_name": "iCreate Projects",
+      "replaces": "Asana",
+      "description": "Tasks, milestones and light project tracking",
+      "icon": "projects.png",
+      "repo": "iCreativate/icreate-projects",
+      "status": "research",
+      "category": "Work",
+      "publisher": "iCreativate",
+      "bundle": "za.co.icreativate.icreate-projects",
+      "mac_team": "",
+      "licence": "Licence TBA",
+      "color": [
+        90,
+        140,
+        200
+      ],
+      "ink_light": [
+        50,
+        77,
+        110
+      ],
+      "ink_dark": [
+        150,
+        186,
+        230
+      ]
+    },
+    {
+      "id": "crm",
+      "name": "CRM",
+      "display_name": "iCreate CRM",
+      "replaces": "Salesforce",
+      "description": "Contacts, pipelines and customer follow-up",
+      "icon": "crm.png",
+      "repo": "iCreativate/icreate-crm",
+      "status": "research",
+      "category": "Work",
+      "publisher": "iCreativate",
+      "bundle": "za.co.icreativate.icreate-crm",
+      "mac_team": "",
+      "licence": "Licence TBA",
+      "color": [
+        200,
+        140,
+        90
+      ],
+      "ink_light": [
+        110,
+        77,
+        50
+      ],
+      "ink_dark": [
+        230,
+        186,
+        150
+      ]
+    },
+    {
+      "id": "invoice",
+      "name": "Invoice",
+      "display_name": "iCreate Invoice",
+      "replaces": "QuickBooks",
+      "description": "Estimates, invoices and payment records",
+      "icon": "invoice.png",
+      "repo": "iCreativate/icreate-invoice",
+      "status": "research",
+      "category": "Work",
+      "publisher": "iCreativate",
+      "bundle": "za.co.icreativate.icreate-invoice",
+      "mac_team": "",
+      "licence": "Licence TBA",
+      "color": [
+        90,
+        180,
+        120
+      ],
+      "ink_light": [
+        50,
+        99,
+        66
+      ],
+      "ink_dark": [
+        150,
+        214,
+        175
+      ]
+    },
+    {
+      "id": "passwords",
+      "name": "Passwords",
+      "display_name": "iCreate Passwords",
+      "replaces": "1Password",
+      "description": "Encrypted password vault on your devices",
+      "icon": "passwords.png",
+      "repo": "iCreativate/icreate-passwords",
+      "status": "research",
+      "category": "Work",
+      "publisher": "iCreativate",
+      "bundle": "za.co.icreativate.icreate-passwords",
+      "mac_team": "",
+      "licence": "Licence TBA",
+      "color": [
+        180,
+        90,
+        140
+      ],
+      "ink_light": [
+        99,
+        50,
+        77
+      ],
+      "ink_dark": [
+        214,
+        150,
+        186
+      ]
+    },
+    {
+      "id": "record",
+      "name": "Record",
+      "display_name": "iCreate Record",
+      "replaces": "Loom",
+      "description": "Screen and camera recording for async updates",
+      "icon": "record.png",
+      "repo": "iCreativate/icreate-record",
+      "status": "research",
+      "category": "Work",
+      "publisher": "iCreativate",
+      "bundle": "za.co.icreativate.icreate-record",
+      "mac_team": "",
+      "licence": "Licence TBA",
+      "color": [
+        220,
+        80,
+        90
+      ],
+      "ink_light": [
+        121,
+        44,
+        50
+      ],
+      "ink_dark": [
+        240,
+        150,
+        160
+      ]
+    },
+    {
+      "id": "3d",
+      "name": "3D",
+      "display_name": "iCreate 3D",
+      "replaces": "Blender",
+      "description": "Lightweight 3D viewing and scene work",
+      "icon": "3d.png",
+      "repo": "iCreativate/icreate-3d",
+      "status": "research",
+      "category": "Work",
+      "publisher": "iCreativate",
+      "bundle": "za.co.icreativate.icreate-3d",
+      "mac_team": "",
+      "licence": "Licence TBA",
+      "color": [
+        140,
+        120,
+        220
+      ],
+      "ink_light": [
+        77,
+        66,
+        121
+      ],
+      "ink_dark": [
+        186,
+        168,
+        240
+      ]
+    },
+    {
+      "id": "code",
+      "name": "Code",
+      "display_name": "iCreate Code",
+      "replaces": "Visual Studio Code",
+      "description": "A focused editor for scripts and projects",
+      "icon": "code.png",
+      "repo": "iCreativate/icreate-code",
+      "status": "research",
+      "category": "Work",
+      "publisher": "iCreativate",
+      "bundle": "za.co.icreativate.icreate-code",
+      "mac_team": "",
+      "licence": "Licence TBA",
+      "color": [
+        100,
+        200,
+        160
+      ],
+      "ink_light": [
+        55,
+        110,
+        88
+      ],
+      "ink_dark": [
+        160,
+        230,
+        200
+      ]
     }
   ]
 }

@@ -30,10 +30,13 @@ pub enum Category {
     Audio,
     Documents,
     Office,
+    /// Productivity / work apps (Email, Calendar, Notes, …), separate from Craft creative apps.
+    Work,
 }
 
 impl Category {
-    pub const ALL: [Self; 6] = [Self::Photo, Self::Design, Self::Video, Self::Audio, Self::Documents, Self::Office];
+    pub const ALL: [Self; 7] =
+        [Self::Photo, Self::Design, Self::Video, Self::Audio, Self::Documents, Self::Office, Self::Work];
 
     pub fn label(self) -> &'static str {
         match self {
@@ -43,6 +46,7 @@ impl Category {
             Self::Audio => "Audio",
             Self::Documents => "Documents",
             Self::Office => "Office",
+            Self::Work => "Work",
         }
     }
 }
@@ -53,6 +57,10 @@ pub enum Maturity {
     Stable,
     Beta,
     Alpha,
+    /// Announced in the catalogue; no installable build yet.
+    Planned,
+    /// Earlier than Planned; exploring foundations and scope.
+    Research,
 }
 
 impl Maturity {
@@ -61,12 +69,19 @@ impl Maturity {
             Self::Stable => "Stable",
             Self::Beta => "Beta",
             Self::Alpha => "Alpha",
+            Self::Planned => "Planned",
+            Self::Research => "Research",
         }
     }
 
     /// Alpha apps get the early-preview warning badge.
     pub fn is_early(self) -> bool {
         matches!(self, Self::Alpha)
+    }
+
+    /// Catalogue-only entries: never offer Install or Download.
+    pub fn is_catalogue_only(self) -> bool {
+        matches!(self, Self::Planned | Self::Research)
     }
 }
 
@@ -114,6 +129,8 @@ pub struct CraftApp {
     pub mac_team: Option<&'static str>,
     pub category: Category,
     pub maturity: Maturity,
+    /// SPDX-style or short licence label shown on the details page (`MPL-2.0`, `Licence TBA`).
+    pub licence: Option<&'static str>,
     /// Hidden from the catalogue unless the signed-in account has iCreate Pro. Existing installs still open.
     pub early_access: bool,
 }
@@ -156,9 +173,14 @@ impl CraftApp {
         self.site.map_or_else(|| format!("https://getartcraft.com/apps/{}", self.id), str::to_string)
     }
 
+    /// Whether this app may appear with Install / Download at all (false for Planned/Research).
+    pub fn is_installable(&self) -> bool {
+        !self.maturity.is_catalogue_only()
+    }
+
     /// Whether the launcher installs this app from a `kind` package.
     pub fn installs(&self, kind: crate::PackageKind) -> bool {
-        kind != crate::PackageKind::Dmg || self.mac_team.is_some()
+        self.is_installable() && (kind != crate::PackageKind::Dmg || self.mac_team.is_some())
     }
 
     /// Bundle ids this app may be installed under, current first.
@@ -210,6 +232,7 @@ const fn app(
         mac_team: Some(ARTCRAFT_TEAM_ID),
         category: Category::Design,
         maturity: Maturity::Stable,
+        licence: None,
         early_access: false,
     }
 }
@@ -277,6 +300,8 @@ struct CatalogRow {
     ink_dark: [u8; 3],
     #[serde(default)]
     early_access: bool,
+    #[serde(default)]
+    licence: Option<String>,
 }
 
 fn parse_category(value: &str) -> Result<Category, String> {
@@ -287,6 +312,7 @@ fn parse_category(value: &str) -> Result<Category, String> {
         "Audio" => Ok(Category::Audio),
         "Documents" => Ok(Category::Documents),
         "Office" => Ok(Category::Office),
+        "Work" => Ok(Category::Work),
         other => Err(format!("unknown category {other:?}")),
     }
 }
@@ -296,6 +322,8 @@ fn parse_maturity(value: &str) -> Result<Maturity, String> {
         "stable" => Ok(Maturity::Stable),
         "beta" => Ok(Maturity::Beta),
         "alpha" => Ok(Maturity::Alpha),
+        "planned" => Ok(Maturity::Planned),
+        "research" => Ok(Maturity::Research),
         other => Err(format!("unknown status {other:?}")),
     }
 }
@@ -359,6 +387,7 @@ fn row_to_app(row: CatalogRow) -> Result<CraftApp, String> {
         mac_team,
         category,
         maturity,
+        licence: row.licence.filter(|s| !s.is_empty()).map(intern),
         early_access: row.early_access,
     })
 }
@@ -435,6 +464,21 @@ pub fn app_icon_png(id: &str) -> Option<&'static [u8]> {
         "cadcraft" => include_bytes!("../../../assets/app-icons/cadcraft.png"),
         "soundcraft" => include_bytes!("../../../assets/app-icons/soundcraft.png"),
         "figcraft" => include_bytes!("../../../assets/app-icons/figcraft.png"),
+        "email" => include_bytes!("../../../assets/app-icons/email.png"),
+        "calendar" => include_bytes!("../../../assets/app-icons/calendar.png"),
+        "notes" => include_bytes!("../../../assets/app-icons/notes.png"),
+        "drive" => include_bytes!("../../../assets/app-icons/drive.png"),
+        "chat" => include_bytes!("../../../assets/app-icons/chat.png"),
+        "meet" => include_bytes!("../../../assets/app-icons/meet.png"),
+        "sign" => include_bytes!("../../../assets/app-icons/sign.png"),
+        "forms" => include_bytes!("../../../assets/app-icons/forms.png"),
+        "projects" => include_bytes!("../../../assets/app-icons/projects.png"),
+        "crm" => include_bytes!("../../../assets/app-icons/crm.png"),
+        "invoice" => include_bytes!("../../../assets/app-icons/invoice.png"),
+        "passwords" => include_bytes!("../../../assets/app-icons/passwords.png"),
+        "record" => include_bytes!("../../../assets/app-icons/record.png"),
+        "3d" => include_bytes!("../../../assets/app-icons/3d.png"),
+        "code" => include_bytes!("../../../assets/app-icons/code.png"),
         _ => return None,
     })
 }
@@ -457,7 +501,7 @@ mod tests {
     #[test]
     fn suite_has_unique_ids_and_icreate_names() {
         let apps = suite();
-        assert_eq!(apps.len(), 17);
+        assert_eq!(apps.len(), 32);
         let mut ids: Vec<_> = apps.iter().map(|a| a.id).collect();
         ids.sort_unstable();
         ids.dedup();
@@ -465,9 +509,18 @@ mod tests {
         for a in apps {
             assert_eq!(a.name.to_lowercase().replace(' ', "-"), a.id);
             assert!(a.display_name.starts_with("iCreate "), "{} display_name", a.id);
-            assert!(a.display_name.contains(&format!("powered by {}", a.name)), "{} credits {}", a.id, a.name);
-            assert!(!a.replaces.is_empty(), "{} replaces", a.id);
             assert!(!a.repo.is_empty() && a.repo.contains('/'), "{} repo", a.id);
+            if a.category == Category::Work {
+                assert!(a.maturity.is_catalogue_only(), "{} Work app must be Planned/Research", a.id);
+                assert!(!a.is_installable(), "{} must not be installable yet", a.id);
+                assert!(!a.installs(crate::PackageKind::Msi));
+                assert!(a.licence.is_some(), "{} needs a licence label", a.id);
+                assert!(!a.display_name.contains("powered by"), "{} is first-party Work, not a Craft fork credit", a.id);
+            } else {
+                assert!(a.display_name.contains(&format!("powered by {}", a.name)), "{} credits {}", a.id, a.name);
+                assert!(!a.replaces.is_empty(), "{} replaces", a.id);
+                assert!(a.is_installable());
+            }
             match a.kind {
                 AppKind::Official => {}
                 AppKind::Community => assert!(!a.repo.starts_with("storytold/"), "{} is community", a.id),
@@ -478,7 +531,7 @@ mod tests {
         assert_eq!(photo.replaces, "Adobe Photoshop");
         assert_eq!(photo.category, Category::Photo);
         assert_eq!(photo.maturity, Maturity::Beta);
-        assert_eq!(photo.repo, "storytold/photocraft");
+        assert_eq!(photo.repo, "iCreativate/icreate-photo");
         assert!(!apps.iter().any(|a| a.early_access), "shipping apps stay on Free; early_access is a later extras flag");
         assert!(photo.matches_query("photoshop"));
         assert!(photo.matches_query("iCreate Photo"));
@@ -487,6 +540,11 @@ mod tests {
         assert_eq!(motion.maturity, Maturity::Alpha);
         assert!(motion.maturity.is_early());
         assert_eq!(motion.category, Category::Video);
+        let email = CraftApp::by_id("email").unwrap();
+        assert_eq!(email.category, Category::Work);
+        assert_eq!(email.maturity, Maturity::Planned);
+        assert_eq!(email.title(), "iCreate Email");
+        assert!(CraftApp::by_id("calendar").unwrap().maturity == Maturity::Research);
     }
 
     #[test]
@@ -513,6 +571,51 @@ mod tests {
         assert_eq!(apps[0].name, "PhotoCraft");
         assert_eq!(apps[0].maturity, Maturity::Stable);
         assert_eq!(apps[0].stems().collect::<Vec<_>>(), ["photocraft"]);
+    }
+
+    #[test]
+    fn work_planned_and_research_are_catalogue_only() {
+        let json = r#"{
+            "apps": [{
+                "id": "email",
+                "name": "Email",
+                "display_name": "iCreate Email",
+                "replaces": "Microsoft Outlook",
+                "description": "Mail",
+                "icon": "email.png",
+                "repo": "iCreativate/icreate-email",
+                "status": "planned",
+                "category": "Work",
+                "licence": "MPL-2.0",
+                "mac_team": "",
+                "color": [1, 2, 3],
+                "ink_light": [4, 5, 6],
+                "ink_dark": [7, 8, 9]
+            }, {
+                "id": "notes",
+                "name": "Notes",
+                "display_name": "iCreate Notes",
+                "replaces": "Apple Notes",
+                "description": "Notes",
+                "icon": "notes.png",
+                "repo": "iCreativate/icreate-notes",
+                "status": "research",
+                "category": "Work",
+                "licence": "Licence TBA",
+                "mac_team": "",
+                "color": [1, 2, 3],
+                "ink_light": [4, 5, 6],
+                "ink_dark": [7, 8, 9]
+            }]
+        }"#;
+        let apps = parse_catalog(json).unwrap();
+        assert_eq!(apps[0].category, Category::Work);
+        assert_eq!(apps[0].maturity, Maturity::Planned);
+        assert_eq!(apps[0].licence, Some("MPL-2.0"));
+        assert!(!apps[0].is_installable());
+        assert!(!apps[0].installs(crate::PackageKind::Msi));
+        assert_eq!(apps[1].maturity, Maturity::Research);
+        assert!(!apps[1].is_installable());
     }
 
     #[test]

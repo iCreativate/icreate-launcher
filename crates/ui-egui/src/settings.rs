@@ -38,6 +38,7 @@ pub enum CategoryFilter {
     Audio,
     Documents,
     Office,
+    Work,
 }
 
 impl CategoryFilter {
@@ -50,6 +51,7 @@ impl CategoryFilter {
             Self::Audio => "Audio",
             Self::Documents => "Documents",
             Self::Office => "Office",
+            Self::Work => "Work",
         }
     }
 
@@ -62,6 +64,7 @@ impl CategoryFilter {
             Self::Audio => category == artcraft_launcher_core::Category::Audio,
             Self::Documents => category == artcraft_launcher_core::Category::Documents,
             Self::Office => category == artcraft_launcher_core::Category::Office,
+            Self::Work => category == artcraft_launcher_core::Category::Work,
         }
     }
 }

@@ -139,7 +139,7 @@ pub fn screenshot_within_budget(bytes: &[u8]) -> bool {
 /// Where every Craft App runs (getartcraft.com lists the same for each of them).
 const PLATFORMS: &str = "macOS, Windows, Linux, FreeBSD, web";
 
-pub const DETAILS: [AppDetails; 17] = [
+pub const DETAILS: [AppDetails; 32] = [
     AppDetails {
         id: "photocraft",
         headline: "The image editor you already know how to use.",
@@ -531,6 +531,141 @@ pub const DETAILS: [AppDetails; 17] = [
         ],
         shots: &[],
         platforms: PLATFORMS,
+    },
+    AppDetails {
+        id: "email",
+        headline: "Mail that stays on your devices until you say otherwise.",
+        about: "iCreate Email is planned as a full desktop mail client: IMAP, SMTP, Google and Microsoft accounts, \
+                multiple identities, signatures, search, attachments, junk controls, encryption and offline mail.\n\n\
+                Development status: Planned. No installer yet. Credentials will be encrypted locally; nothing is sent \
+                to an iCreate server unless you explicitly enable that later. Licence TBA until the foundation fork ships.",
+        features: &[
+            feature("Provider coverage", "IMAP/SMTP plus Google and Outlook / Microsoft 365 where the foundation supports them."),
+            feature("Local first", "Offline folders and encrypted credentials on your machine."),
+            feature("Original interface", "A new iCreate Email chrome and Slate icon — not a Thunderbird or Outlook lookalike."),
+        ],
+        shots: &[],
+        platforms: "macOS, Windows, Linux (planned)",
+    },
+    AppDetails {
+        id: "calendar",
+        headline: "A separate calendar module — not bolted onto Email.",
+        about: "iCreate Calendar is in research as its own app: local calendars, CalDAV, and later Google / Microsoft Graph. \
+                Licence TBA. It will not ship as a Thunderbird Lightning embed inside Email.",
+        features: &[
+            feature("Separate module", "Own repo, release cadence and permissions surface."),
+            feature("Local first", "SQLite/ICS on disk; credentials in the OS keychain."),
+        ],
+        shots: &[],
+        platforms: "macOS, Windows, Linux (research)",
+    },
+    AppDetails {
+        id: "notes",
+        headline: "Local-first notes as their own app.",
+        about: "iCreate Notes is in research as a greenfield MIT/Apache module: folders, tags, search and export. \
+                Sync stays off by default. Licence TBA. Not Joplin/AGPL by default.",
+        features: &[
+            feature("Separate from Email and Calendar", "Install only the Work apps you need."),
+            feature("Opt-in sync later", "Nothing leaves the device unless you enable it."),
+        ],
+        shots: &[],
+        platforms: "macOS, Windows, Linux (research)",
+    },
+    AppDetails {
+        id: "drive",
+        headline: "Files under your control.",
+        about: "iCreate Drive is in early research. Licence TBA. No installer yet.",
+        features: &[feature("Research", "Scope and foundation still being defined.")],
+        shots: &[],
+        platforms: "Planned platforms TBA",
+    },
+    AppDetails {
+        id: "chat",
+        headline: "Team messaging without surrendering the workspace.",
+        about: "iCreate Chat is in early research. Licence TBA. No installer yet.",
+        features: &[feature("Research", "Scope and foundation still being defined.")],
+        shots: &[],
+        platforms: "Planned platforms TBA",
+    },
+    AppDetails {
+        id: "meet",
+        headline: "Video meetings as a separate Work app.",
+        about: "iCreate Meet is in early research. Licence TBA. No installer yet.",
+        features: &[feature("Research", "Scope and foundation still being defined.")],
+        shots: &[],
+        platforms: "Planned platforms TBA",
+    },
+    AppDetails {
+        id: "sign",
+        headline: "Electronic signatures you can trust.",
+        about: "iCreate Sign is in early research. Licence TBA. No installer yet.",
+        features: &[feature("Research", "Scope and foundation still being defined.")],
+        shots: &[],
+        platforms: "Planned platforms TBA",
+    },
+    AppDetails {
+        id: "forms",
+        headline: "Surveys and intake without a third-party trap.",
+        about: "iCreate Forms is in early research. Licence TBA. No installer yet.",
+        features: &[feature("Research", "Scope and foundation still being defined.")],
+        shots: &[],
+        platforms: "Planned platforms TBA",
+    },
+    AppDetails {
+        id: "projects",
+        headline: "Light project tracking for small teams.",
+        about: "iCreate Projects is in early research. Licence TBA. No installer yet.",
+        features: &[feature("Research", "Scope and foundation still being defined.")],
+        shots: &[],
+        platforms: "Planned platforms TBA",
+    },
+    AppDetails {
+        id: "crm",
+        headline: "Contacts and pipelines, kept local-first.",
+        about: "iCreate CRM is in early research. Licence TBA. No installer yet.",
+        features: &[feature("Research", "Scope and foundation still being defined.")],
+        shots: &[],
+        platforms: "Planned platforms TBA",
+    },
+    AppDetails {
+        id: "invoice",
+        headline: "Estimates and invoices without a lock-in ledger.",
+        about: "iCreate Invoice is in early research. Licence TBA. No installer yet.",
+        features: &[feature("Research", "Scope and foundation still being defined.")],
+        shots: &[],
+        platforms: "Planned platforms TBA",
+    },
+    AppDetails {
+        id: "passwords",
+        headline: "An encrypted vault on your devices.",
+        about: "iCreate Passwords is in early research. Licence TBA. No installer yet.",
+        features: &[feature("Research", "Scope and foundation still being defined.")],
+        shots: &[],
+        platforms: "Planned platforms TBA",
+    },
+    AppDetails {
+        id: "record",
+        headline: "Screen and camera recording for async updates.",
+        about: "iCreate Record is in early research. Licence TBA. No installer yet.",
+        features: &[feature("Research", "Scope and foundation still being defined.")],
+        shots: &[],
+        platforms: "Planned platforms TBA",
+    },
+    AppDetails {
+        id: "3d",
+        headline: "Lightweight 3D viewing and scene work.",
+        about: "iCreate 3D is in early research. Licence TBA. No installer yet.",
+        features: &[feature("Research", "Scope and foundation still being defined.")],
+        shots: &[],
+        platforms: "Planned platforms TBA",
+    },
+    AppDetails {
+        id: "code",
+        headline: "A focused editor for scripts and projects.",
+        about: "iCreate Code is in early research. Licence TBA. No installer yet.",
+        features: &[feature("Research", "Scope and foundation still being defined.")],
+        shots: &[],
+        platforms: "Planned platforms TBA",
     },
 ];
 

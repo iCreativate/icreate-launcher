@@ -229,7 +229,7 @@ impl LauncherUi {
                 (cat, widgets::Cell { label, tip: label, count: None })
             };
             let first = [CategoryFilter::All, CategoryFilter::Photo, CategoryFilter::Design, CategoryFilter::Video].map(cell);
-            let second = [CategoryFilter::Audio, CategoryFilter::Documents, CategoryFilter::Office].map(cell);
+            let second = [CategoryFilter::Audio, CategoryFilter::Documents, CategoryFilter::Office, CategoryFilter::Work].map(cell);
             widgets::cells(ui, &mut self.settings.category, &first);
             widgets::cells(ui, &mut self.settings.category, &second);
             let installed = self.count(Filter::Installed);
@@ -887,6 +887,14 @@ impl LauncherUi {
     // ---- actions -------------------------------------------------------------------------
 
     fn primary_action(&self, entry: &AppEntry, status: &AppStatus) -> Primary {
+        // Planned/Research Work apps never show Install or Download, even if a stub repo exists.
+        if !entry.app.is_installable() && !status.is_installed() {
+            return Primary::Unavailable(match entry.app.maturity {
+                artcraft_launcher_core::Maturity::Planned => tl!("Planned"),
+                artcraft_launcher_core::Maturity::Research => tl!("In research"),
+                _ => tl!("Not available"),
+            });
+        }
         if !self.caps.manage_apps {
             let platform = self.platform;
             let url = entry.release().zip(platform).and_then(|(r, p)| {

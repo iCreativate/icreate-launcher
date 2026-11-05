@@ -444,15 +444,15 @@ mod tests {
         "release_info": {{
           "apps": {{
             "photocraft": {{
-              "name": "PhotoCraft", "repo": "storytold/photocraft",
+              "name": "PhotoCraft", "repo": "iCreativate/icreate-photo",
               "latest_release": {{
                 "tag": "v0.6.0", "version": "0.6.0", "name": "PhotoCraft v0.6.0",
                 "published_at": "2026-10-09T10:00:00Z",
-                "html_url": "https://github.com/storytold/photocraft/releases/tag/v0.6.0",
+                "html_url": "https://github.com/iCreativate/icreate-photo/releases/tag/v0.6.0",
                 "prerelease": false, "notes_markdown": "Notes",
                 "assets": [
                   {{ "name": "photocraft-0.6.0-macos-universal.dmg", "size_bytes": 123,
-                     "download_url": "https://github.com/storytold/photocraft/releases/download/v0.6.0/photocraft-0.6.0-macos-universal.dmg",
+                     "download_url": "https://github.com/iCreativate/icreate-photo/releases/download/v0.6.0/photocraft-0.6.0-macos-universal.dmg",
                      "sha256": "{HASH}", "platform": {{ "os": "macos", "arch": "universal", "package_type": "dmg" }} }},
                   {{ "name": "evil.dmg", "size_bytes": 1, "download_url": "https://evil.example/evil.dmg", "sha256": null }}
                 ]
@@ -522,24 +522,45 @@ mod tests {
 
     #[test]
     fn follows_repo_renames_but_never_trusts_a_repo_it_was_not_told_about() {
-        let moved = sample()
-            .replace(
-                "\"repo_renames\": []",
-                r#""repo_renames": [{"old_name": "Storytold/photocraft", "new_name": "storytold/photocraft-app", "renamed_at": null}]"#,
-            )
-            .replace(
-                "\"name\": \"PhotoCraft\", \"repo\": \"storytold/photocraft\"",
-                "\"name\": \"PhotoCraft\", \"repo\": \"storytold/photocraft-app\"",
-            )
-            .replace("github.com/storytold/photocraft/releases", "github.com/storytold/photocraft-app/releases");
+        // Renames are only trusted under GITHUB_OWNER (storytold); use a Craft app still there.
+        let moved = format!(
+            r#"{{
+        "success": true,
+        "release_info": {{
+          "apps": {{
+            "vectorcraft": {{
+              "name": "VectorCraft", "repo": "storytold/vectorcraft-app",
+              "latest_release": {{
+                "tag": "v0.7.0", "version": "0.7.0", "name": "VectorCraft v0.7.0",
+                "published_at": "2026-10-09T10:00:00Z",
+                "html_url": "https://github.com/storytold/vectorcraft-app/releases/tag/v0.7.0",
+                "prerelease": false, "notes_markdown": "Notes",
+                "assets": [
+                  {{ "name": "vectorcraft-0.7.0-macos-universal.dmg", "size_bytes": 123,
+                     "download_url": "https://github.com/storytold/vectorcraft-app/releases/download/v0.7.0/vectorcraft-0.7.0-macos-universal.dmg",
+                     "sha256": "{HASH}", "platform": {{ "os": "macos", "arch": "universal", "package_type": "dmg" }} }}
+                ]
+              }},
+              "app_last_fetched": "2026-10-09T13:00:00Z"
+            }}
+          }},
+          "last_fetched": "2026-10-09T13:00:00Z"
+        }},
+        "app_renames": [],
+        "repo_renames": [{{"old_name": "Storytold/vectorcraft", "new_name": "storytold/vectorcraft-app", "renamed_at": null}}],
+        "important_notices": {{ "announcements": [], "alerts": [] }}
+      }}"#
+        );
         let feed = Feed::parse(&moved).unwrap();
-        assert_eq!(feed.repo_for(app("photocraft")), "storytold/photocraft-app");
-        let FeedAnswer::Fresh(Some(r)) = feed.answer(app("photocraft"), NOW) else { panic!() };
-        assert!(r.assets[0].url.starts_with("https://github.com/storytold/photocraft-app/releases/download/"));
-        // The same entry without the rename: the repo doesn't match, so GitHub decides.
-        let unannounced = moved.replace(r#"{"old_name": "Storytold/photocraft", "new_name": "storytold/photocraft-app", "renamed_at": null}"#, "");
+        assert_eq!(feed.repo_for(app("vectorcraft")), "storytold/vectorcraft-app");
+        let FeedAnswer::Fresh(Some(r)) = feed.answer(app("vectorcraft"), NOW) else { panic!() };
+        assert!(r.assets[0].url.starts_with("https://github.com/storytold/vectorcraft-app/releases/download/"));
+        let unannounced = moved.replace(
+            r#"{"old_name": "Storytold/vectorcraft", "new_name": "storytold/vectorcraft-app", "renamed_at": null}"#,
+            "",
+        );
         let feed = Feed::parse(&unannounced).unwrap();
-        assert_eq!(feed.answer(app("photocraft"), NOW), FeedAnswer::AskGitHub);
+        assert_eq!(feed.answer(app("vectorcraft"), NOW), FeedAnswer::AskGitHub);
     }
 
     #[test]
@@ -549,16 +570,15 @@ mod tests {
         let moved = sample()
             .replace(
                 "\"repo_renames\": []",
-                r#""repo_renames": [{"old_name": "storytold/photocraft", "new_name": "art/photocraft", "renamed_at": null},
-                                  {"old_name": "art/photocraft", "new_name": "storytold/photocraft", "renamed_at": null},
-                                  {"old_name": "storytold/photocraft", "new_name": "storytold.evil.example/photocraft", "renamed_at": null}]"#,
+                r#""repo_renames": [{"old_name": "storytold/vectorcraft", "new_name": "art/vectorcraft", "renamed_at": null},
+                                  {"old_name": "art/vectorcraft", "new_name": "storytold/vectorcraft", "renamed_at": null},
+                                  {"old_name": "storytold/vectorcraft", "new_name": "storytold.evil.example/vectorcraft", "renamed_at": null}]"#,
             )
-            .replace("\"name\": \"PhotoCraft\", \"repo\": \"storytold/photocraft\"", "\"name\": \"PhotoCraft\", \"repo\": \"art/photocraft\"")
-            .replace("github.com/storytold/photocraft/releases", "github.com/art/photocraft/releases");
+            .replace("\"repo\": \"storytold/vectorcraft\"", "\"repo\": \"art/vectorcraft\"");
         let feed = Feed::parse(&moved).unwrap();
         assert!(feed.repo_renames.is_empty(), "{:?}", feed.repo_renames);
-        assert_eq!(feed.repo_for(app("photocraft")), "storytold/photocraft");
-        assert_eq!(feed.answer(app("photocraft"), NOW), FeedAnswer::AskGitHub);
+        assert_eq!(feed.repo_for(app("vectorcraft")), "storytold/vectorcraft");
+        assert_eq!(feed.answer(app("vectorcraft"), NOW), FeedAnswer::AskGitHub);
     }
 
     #[test]
@@ -573,8 +593,8 @@ mod tests {
         // The feed advertises a legitimate tag but points the asset at another repository by
         // climbing out with `../` after the approved prefix (CWE-180).
         let escaped = sample().replace(
-            "https://github.com/storytold/photocraft/releases/download/v0.6.0/photocraft-0.6.0-macos-universal.dmg",
-            "https://github.com/storytold/photocraft/releases/download/../../../../attacker/repo/releases/download/v99/photocraft-0.6.0-macos-universal.dmg",
+            "https://github.com/iCreativate/icreate-photo/releases/download/v0.6.0/photocraft-0.6.0-macos-universal.dmg",
+            "https://github.com/iCreativate/icreate-photo/releases/download/../../../../attacker/repo/releases/download/v99/photocraft-0.6.0-macos-universal.dmg",
         );
         let FeedAnswer::Fresh(Some(r)) = Feed::parse(&escaped).unwrap().answer(app("photocraft"), NOW) else { panic!() };
         assert!(r.assets.is_empty(), "the traversing download must be rejected");
@@ -583,7 +603,10 @@ mod tests {
     #[test]
     fn a_local_mirror_is_trusted_only_when_asked_for_and_never_goes_stale() {
         const MIRROR: &str = "http://127.0.0.1:8787/";
-        let local = sample().replace("https://github.com/storytold/photocraft/releases/download/v0.6.0/", "http://127.0.0.1:8787/photocraft/v0.6.0/");
+        let local = sample().replace(
+            "https://github.com/iCreativate/icreate-photo/releases/download/v0.6.0/",
+            "http://127.0.0.1:8787/photocraft/v0.6.0/",
+        );
         // Without the mirror, the local link is dropped like any other stranger's.
         let FeedAnswer::Fresh(Some(r)) = Feed::parse(&local).unwrap().answer(app("photocraft"), NOW) else { panic!() };
         assert!(r.assets.is_empty());

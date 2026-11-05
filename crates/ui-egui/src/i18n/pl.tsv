@@ -438,6 +438,14 @@ materialcraft	Preview materials in 2D and on 3D models.	Przeglądaj materiały w
 	Alpha	Alfa
 	Beta	Beta
 	Stable	Stabilna
+	Work	Praca
+	Planned	Planowane
+	Research	Badania
+	In research	W badaniach
+	Announced; no installer yet	Ogłoszone; brak instalatora
+	Exploring foundations; no installer yet	Badanie fundamentów; brak instalatora
+	Development status: {status}	Status rozwoju: {status}
+	Licence: {licence}	Licencja: {licence}
 	Early preview	Wczesny podgląd
 	Replaces {product}	Zastępuje {product}
 	Powered by {name}	Oparte na {name}

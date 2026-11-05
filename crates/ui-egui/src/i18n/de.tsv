@@ -436,6 +436,14 @@ materialcraft	Preview materials in 2D and on 3D models.	Materialien in 2D und au
 	Alpha	Alpha
 	Beta	Beta
 	Stable	Stabil
+	Work	Arbeit
+	Planned	Geplant
+	Research	Forschung
+	In research	In Forschung
+	Announced; no installer yet	Angekündigt; noch kein Installer
+	Exploring foundations; no installer yet	Grundlagen werden erkundet; noch kein Installer
+	Development status: {status}	Entwicklungsstatus: {status}
+	Licence: {licence}	Lizenz: {licence}
 	Early preview	Frühe Vorschau
 	Replaces {product}	Ersetzt {product}
 	Powered by {name}	Unterstützt von {name}

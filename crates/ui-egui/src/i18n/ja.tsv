@@ -439,6 +439,14 @@ materialcraft	Preview materials in 2D and on 3D models.	マテリアルを2Dと3
 	Alpha	アルファ
 	Beta	ベータ
 	Stable	安定
+	Work	ワーク
+	Planned	予定
+	Research	調査中
+	In research	調査中
+	Announced; no installer yet	発表済み。インストーラーは未提供
+	Exploring foundations; no installer yet	基盤を調査中。インストーラーは未提供
+	Development status: {status}	開発状況: {status}
+	Licence: {licence}	ライセンス: {licence}
 	Early preview	早期プレビュー
 	Replaces {product}	{product} の代替
 	Powered by {name}	{name} を使用

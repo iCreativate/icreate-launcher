@@ -436,6 +436,14 @@ materialcraft	Preview materials in 2D and on 3D models.	მასალები
 	Alpha	ალფა
 	Beta	ბეტა
 	Stable	სტაბილური
+	Work	სამუშაო
+	Planned	დაგეგმილი
+	Research	კვლევა
+	In research	კვლევაში
+	Announced; no installer yet	განცხადებულია; ინსტალატორი ჯერ არაა
+	Exploring foundations; no installer yet	საფუძვლების კვლევა; ინსტალატორი ჯერ არაა
+	Development status: {status}	განვითარების სტატუსი: {status}
+	Licence: {licence}	ლიცენზია: {licence}
 	Early preview	ადრეული გადახედვა
 	Replaces {product}	ანაცვლებს: {product}
 	Powered by {name}	{name}-ზე დაყრდნობით

@@ -504,6 +504,9 @@ impl LauncherUi {
     /// installed, it opens the folder dialog and sends nothing until that is confirmed; otherwise
     /// it queues `Install` immediately, including for an already installed app (update/reinstall).
     pub(crate) fn install_app(&mut self, id: &str) {
+        if self.entry(id).is_some_and(|e| !e.app.is_installable()) {
+            return;
+        }
         if !self.custom_install_folders() || self.entry(id).is_some_and(|e| e.installed.is_some()) {
             self.act_command(Command::Install { app: id.to_string() });
             return;

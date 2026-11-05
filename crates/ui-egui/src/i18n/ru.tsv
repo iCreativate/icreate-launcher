@@ -432,6 +432,14 @@ materialcraft	Preview materials in 2D and on 3D models.	Просматривай
 	Alpha	Альфа
 	Beta	Бета
 	Stable	Стабильная
+	Work	Работа
+	Planned	Запланировано
+	Research	Исследование
+	In research	В исследовании
+	Announced; no installer yet	Анонсировано; установщика пока нет
+	Exploring foundations; no installer yet	Изучаем основы; установщика пока нет
+	Development status: {status}	Статус разработки: {status}
+	Licence: {licence}	Лицензия: {licence}
 	Early preview	Ранний просмотр
 	Replaces {product}	Заменяет {product}
 	Powered by {name}	На основе {name}

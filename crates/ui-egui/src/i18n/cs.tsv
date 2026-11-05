@@ -404,6 +404,14 @@ materialcraft	Preview materials in 2D and on 3D models.	Prohlížejte materiály
 	Alpha	Alfa
 	Beta	Beta
 	Stable	Stabilní
+	Work	Práce
+	Planned	Plánováno
+	Research	Výzkum
+	In research	Ve výzkumu
+	Announced; no installer yet	Oznámeno; instalátor zatím není
+	Exploring foundations; no installer yet	Zkoumáme základy; instalátor zatím není
+	Development status: {status}	Stav vývoje: {status}
+	Licence: {licence}	Licence: {licence}
 	Early preview	Raný náhled
 	Replaces {product}	Nahrazuje {product}
 	Powered by {name}	Poháněno projektem {name}

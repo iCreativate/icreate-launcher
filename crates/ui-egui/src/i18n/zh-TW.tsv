@@ -396,6 +396,14 @@ materialcraft	Preview materials in 2D and on 3D models.	在 2D 與 3D 模型上�
 	Alpha	Alpha
 	Beta	Beta
 	Stable	穩定
+	Work	工作
+	Planned	計畫中
+	Research	調研中
+	In research	調研中
+	Announced; no installer yet	已公布；尚無安裝程式
+	Exploring foundations; no installer yet	正在調研基礎；尚無安裝程式
+	Development status: {status}	開發狀態：{status}
+	Licence: {licence}	授權：{licence}
 	Early preview	早期預覽
 	Replaces {product}	取代 {product}
 	Powered by {name}	採用 {name}

@@ -2888,13 +2888,19 @@ fn the_home_screen_has_category_tabs_and_installed_updates_filters() {
     use artcraft_launcher_ui_egui::settings::{CategoryFilter, Filter};
     let (mut h, _) = harness(ViewMode::Grid, egui::Theme::Dark, true);
     h.run_steps(6);
-    for label in ["Photo", "Design", "Video", "Audio", "Documents", "Office"] {
+    for label in ["Photo", "Design", "Video", "Audio", "Documents", "Office", "Work"] {
         h.get_by_label(label);
     }
     h.get_by_label("Installed 4");
     h.get_by_label("Updates 2");
     assert!(h.query_all_by_label("Alpha").count() >= 1, "alpha apps show an early-preview badge");
     assert!(h.query_by_label("Not installed 9").is_none() && h.query_by_value("Not installed 9").is_none());
+    h.get_by_label("Work").click();
+    h.run_steps(4);
+    assert_eq!(h.state().as_ref().unwrap().settings.category, CategoryFilter::Work);
+    assert!(h.query_all_by_label("Planned").count() >= 1, "Work Email shows Planned");
+    assert!(h.query_all_by_label("Research").count() >= 1, "Work research apps show Research");
+    assert_eq!(h.query_all_by_label("Install").count(), 0, "Planned/Research must not offer Install");
     h.get_by_label("Photo").click();
     h.run_steps(4);
     assert_eq!(h.state().as_ref().unwrap().settings.category, CategoryFilter::Photo);

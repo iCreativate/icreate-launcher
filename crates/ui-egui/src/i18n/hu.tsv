@@ -437,6 +437,14 @@ materialcraft	Preview materials in 2D and on 3D models.	Tekintsd meg az anyagoka
 	Alpha	Alfa
 	Beta	Béta
 	Stable	Stabil
+	Work	Munka
+	Planned	Tervezett
+	Research	Kutatás
+	In research	Kutatás alatt
+	Announced; no installer yet	Bejelentve; még nincs telepítő
+	Exploring foundations; no installer yet	Alapok kutatása; még nincs telepítő
+	Development status: {status}	Fejlesztési állapot: {status}
+	Licence: {licence}	Licenc: {licence}
 	Early preview	Korai előnézet
 	Replaces {product}	{product} helyett
 	Powered by {name}	{name} alapú

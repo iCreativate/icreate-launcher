@@ -765,6 +765,12 @@ pub fn maturity_badge(ui: &mut Ui, app: &artcraft_launcher_core::CraftApp) {
         artcraft_launcher_core::Maturity::Beta => {
             badge(ui, tl!("Beta"), t.muted);
         }
+        artcraft_launcher_core::Maturity::Planned => {
+            badge(ui, tl!("Planned"), t.faint).on_hover_text(tl!("Announced; no installer yet"));
+        }
+        artcraft_launcher_core::Maturity::Research => {
+            badge(ui, tl!("Research"), t.faint).on_hover_text(tl!("Exploring foundations; no installer yet"));
+        }
         artcraft_launcher_core::Maturity::Stable => {}
     }
 }

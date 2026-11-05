@@ -375,7 +375,22 @@ impl LauncherUi {
                             .wrap(),
                     );
                 }
-                ui.add(egui::Label::new(RichText::new(fmt(tl!("Powered by {name}"), &[("name", app.name)])).size(13.0).color(t.muted)).wrap());
+                if app.display_name.contains("powered by") {
+                    ui.add(egui::Label::new(RichText::new(fmt(tl!("Powered by {name}"), &[("name", app.name)])).size(13.0).color(t.muted)).wrap());
+                }
+                ui.add(
+                    egui::Label::new(
+                        RichText::new(fmt(tl!("Development status: {status}"), &[("status", app.maturity.label())]))
+                            .size(12.5)
+                            .color(t.muted),
+                    )
+                    .wrap(),
+                );
+                if let Some(licence) = app.licence {
+                    ui.add(
+                        egui::Label::new(RichText::new(fmt(tl!("Licence: {licence}"), &[("licence", licence)])).size(12.5).color(t.muted)).wrap(),
+                    );
+                }
                 ui.add(egui::Label::new(RichText::new(tr_ctx(current(), details.id, details.headline)).size(15.0).color(t.ink)).wrap());
                 // "Version 0.5.0 · Oct 8, 2026", or the installed-versus-latest line.
                 let version = crate::views::version_line(entry, status);

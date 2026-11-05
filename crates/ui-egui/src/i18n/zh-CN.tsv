@@ -404,6 +404,14 @@ materialcraft	Preview materials in 2D and on 3D models.	在二维视图和三维
 	Alpha	Alpha
 	Beta	Beta
 	Stable	稳定
+	Work	工作
+	Planned	计划中
+	Research	调研中
+	In research	调研中
+	Announced; no installer yet	已公布；尚无安装包
+	Exploring foundations; no installer yet	正在调研基础；尚无安装包
+	Development status: {status}	开发状态：{status}
+	Licence: {licence}	许可：{licence}
 	Early preview	早期预览
 	Replaces {product}	替代 {product}
 	Powered by {name}	基于 {name}
