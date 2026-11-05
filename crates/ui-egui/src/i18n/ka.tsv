@@ -1,4 +1,4 @@
-# Georgian (ka) catalog for ArtCraft Launcher.
+# Georgian (ka) catalog for iCreate.
 # Format: context<TAB>source<TAB>translation
 # Empty context = plain UI string (tl!, t).
 # @id = command-id keyed (tr_id).
@@ -6,15 +6,15 @@
 # @msg = status/error message template (message, msg).
 # Other context = disambiguation for tr_ctx.
 #
-# Clean-room: written from the meaning of ArtCraft Launcher's English labels in neutral Georgian,
+# Clean-room: written from the meaning of iCreate's English labels in neutral Georgian,
 # with the terms the other Craft apps use in Georgian. The user is addressed with the polite
 # plural (თქვენ), as in Georgian system software. Commands are verbal nouns (ინსტალაცია,
 # განახლება, გახსნა). Georgian has no letter case: no Mtavruli capitals, even where the English
 # uses capitals ("NEW").
 #
 # Coverage: the whole interface — every menu string and tl! literal (complete_menus = true).
-# Left in English on purpose: product name "ArtCraft Launcher" (and its "Launcher" tag), suite
-# name "Craft App Suite", app names (PhotoCraft, LightCraft, FilmCraft, DesignCraft, VectorCraft,
+# Left in English on purpose: product name "iCreate" (and its "Launcher" tag), suite
+# name "Creative suite", app names (PhotoCraft, LightCraft, FilmCraft, DesignCraft, VectorCraft,
 # PdfCraft, EffectCraft, WordCraft, DeckCraft, GridCraft, CADCraft, SoundCraft, FigCraft), "GitHub",
 # "Discord". Georgian case endings attach to them with a hyphen (GitHub-ზე, ArtCraft-ის).
 # Shortcut keys keep their key-cap names (Shift, Alt, Ctrl, Cmd, Esc).
@@ -24,7 +24,7 @@
 # the interface stays in English.
 
 	Launcher	Launcher
-	Craft App Suite	Craft App Suite
+	Creative suite	Creative suite
 	Open Source Tools for Creatives, Makers, and Builders	ღია კოდის ხელსაწყოები შემოქმედთათვის, ოსტატებისა და მშენებლებისთვის
 	Settings	პარამეტრები
 	Check for updates	განახლებების შემოწმება
@@ -77,7 +77,7 @@
 	Reinstall	ხელახლა ინსტალაცია
 	Uninstall…	დეინსტალაცია…
 	All releases	ყველა გამოშვება
-	ArtCraft Launcher {version} is available.	ხელმისაწვდომია ArtCraft Launcher {version}.
+	iCreate {version} is available.	ხელმისაწვდომია iCreate {version}.
 	Dismiss	უგულებელყოფა
 	Update and restart	განახლება და გადატვირთვა
 	A new version is available. Would you like to relaunch with the updated version?	ხელმისაწვდომია ახალი ვერსია. გსურთ განახლებული ვერსიით ხელახლა გაშვება?
@@ -88,7 +88,7 @@
 	Released {date}	გამოშვების თარიღი: {date}
 	Open on GitHub	GitHub-ზე გახსნა
 	Close	დახურვა
-	ArtCraft Launcher {version}	ArtCraft Launcher {version}
+	iCreate {version}	iCreate {version}
 	Only when I ask	მხოლოდ მოთხოვნისას
 	Automatically download and install updates	განახლებების ავტომატური ჩამოტვირთვა და ინსტალაცია
 	Notify me when an installed app has an update	შეტყობინება, როცა დაინსტალირებულ აპლიკაციას განახლება აქვს
@@ -100,14 +100,14 @@
 	Updates always use the format an app was installed with.	განახლება ყოველთვის იმ ფორმატს იყენებს, რომლითაც აპლიკაცია დაინსტალირდა.
 	Running in the background	ფონურ რეჟიმში მუშაობა
 	Keep running in the tray when the window is closed	ფანჯრის დახურვის შემდეგ მუშაობის გაგრძელება შეტყობინებების არეში
-	ArtCraft Launcher is still running	ArtCraft Launcher კვლავ მუშაობს
+	iCreate is still running	iCreate კვლავ მუშაობს
 	It's in the tray: open it or quit it from the tray icon, or turn this off in the settings.	ის შეტყობინებების არეშია: გახსენით ან დახურეთ მისი ხატულით, ან გამორთეთ ეს ფუნქცია პარამეტრებში.
 	Show the window on the current desktop	ფანჯრის ჩვენება მიმდინარე სამუშაო მაგიდაზე
-	Start ArtCraft Launcher when I log in	ArtCraft Launcher-ის გაშვება სისტემაში შესვლისას
+	Start iCreate when I log in	iCreate-ის გაშვება სისტემაში შესვლისას
 	Community	საზოგადოება
-	Questions, ideas and news from the ArtCraft team	კითხვები, იდეები და სიახლეები ArtCraft-ის გუნდისგან
+	Questions, ideas and news from iCreativate	კითხვები, იდეები და სიახლეები iCreativate-სგან
 	Appearance	იერსახე
-	Quit ArtCraft Launcher	ArtCraft Launcher-იდან გასვლა
+	Quit iCreate	iCreate-იდან გასვლა
 	Done	მზადაა
 	Uninstall {name}?	{name}-ის დეინსტალაცია?
 	The app will be moved to the Trash. Your documents and settings stay.	აპლიკაცია ნაგავში გადავა. თქვენი დოკუმენტები და პარამეტრები შენარჩუნდება.
@@ -150,7 +150,7 @@
 	Update	განახლება
 	{name} icon	{name}-ის ხატულა
 	by {name}	ავტორი: {name}
-	Loading ArtCraft Launcher…	ArtCraft Launcher იტვირთება…
+	Loading iCreate…	iCreate იტვირთება…
 	Cancel update	განახლების გაუქმება
 	Stop waiting; the update can be started again later	ლოდინის შეწყვეტა; განახლების დაწყება მოგვიანებითაც შეიძლება
 	Download again	ხელახლა ჩამოტვირთვა
@@ -217,8 +217,8 @@ month	Dec	დეკ
 	Installing for {platform}	ინსტალაცია პლატფორმისთვის: {platform}
 	Downloads for {platform}	ჩამოტვირთვები პლატფორმისთვის: {platform}
 	No downloads for this system	ამ სისტემისთვის ჩამოსატვირთი არაფერია
-	Join the ArtCraft community on Discord	შემოუერთდით ArtCraft-ის საზოგადოებას Discord-ზე
-	ArtCraft on {name}	ArtCraft {name}-ზე
+	Visit the iCreate website	iCreate-ის საიტის ნახვა
+	iCreate on {name}	iCreate {name}-ზე
 	Couldn't open {name}: {e}	{name} ვერ გაიხსნა: {e}
 	Download cancelled	ჩამოტვირთვა გაუქმდა
 	Available to install	ხელმისაწვდომია
@@ -238,7 +238,7 @@ month	Dec	დეკ
 	Version {version} installed	დაინსტალირებულია ვერსია {version}
 	Version {latest}	ვერსია {latest}
 	No release published yet	გამოშვება ჯერ არ გამოქვეყნებულა
-	ArtCraft Launcher	ArtCraft Launcher
+	iCreate	iCreate
 	App	აპლიკაცია
 	Latest	უახლესი
 	Released	გამოვიდა
@@ -259,7 +259,6 @@ month	Dec	დეკ
 	Downloads the new version, replaces this one and opens it again	ჩამოტვირთავს ახალ ვერსიას, ჩაანაცვლებს ამას და ხელახლა გახსნის
 	Couldn't check for updates: {f}	განახლებების შემოწმება ვერ მოხერხდა: {f}
 	GitHub repository	GitHub-ის რეპოზიტორია
-	ArtCraft	ArtCraft
 	Update 1 app	1 აპლიკაციის განახლება
 	Update all ({count})	ყველას განახლება ({count})
 	⊞  Grid	⊞  ბადე
@@ -272,11 +271,11 @@ month	Dec	დეკ
 	Full changelog	ცვლილებების სრული სია
 	link	ბმული
 	No apps match	შესაბამისი აპლიკაცია ვერ მოიძებნა
-	Open ArtCraft Launcher to update.	განახლებისთვის გახსენით ArtCraft Launcher.
+	Open iCreate to update.	განახლებისთვის გახსენით iCreate.
 	{name} {v} is available	ხელმისაწვდომია {name} {v}
 	{count} updates are available	ხელმისაწვდომია {count} განახლება
 	These notes weren't fetched (GitHub's request limit was reached). They're on the release page.	ეს შენიშვნები ვერ ჩაიტვირთა (GitHub-ის მოთხოვნების ლიმიტი ამოიწურა). ისინი გამოშვების გვერდზეა.
-	When on, opening the launcher from the menu bar brings its window to the desktop you're on. When off, macOS switches you to the desktop the window was on.	ჩართვისას მენიუს ზოლიდან გახსნილი ArtCraft Launcher-ის ფანჯარა იმ სამუშაო მაგიდაზე გამოჩნდება, რომელზეც ახლა ხართ. გამორთვისას macOS გადაგიყვანთ იმ სამუშაო მაგიდაზე, სადაც ფანჯარა იყო.
+	When on, opening the launcher from the menu bar brings its window to the desktop you're on. When off, macOS switches you to the desktop the window was on.	ჩართვისას მენიუს ზოლიდან გახსნილი iCreate-ის ფანჯარა იმ სამუშაო მაგიდაზე გამოჩნდება, რომელზეც ახლა ხართ. გამორთვისას macOS გადაგიყვანთ იმ სამუშაო მაგიდაზე, სადაც ფანჯარა იყო.
 	Couldn't change the login item: {e}	სისტემაში შესვლისას გაშვების შეცვლა ვერ მოხერხდა: {e}
 
 # Contextual: table column headers
@@ -341,7 +340,7 @@ filter	Installed	დაინსტალირებული
 @id	launcher.notes	რა არის ახალი
 @id	launcher.dismiss	უგულებელყოფა
 @id	settings.open	პარამეტრები
-@id	settings.quit	ArtCraft Launcher-იდან გასვლა
+@id	settings.quit	iCreate-იდან გასვლა
 @id	view.grid	ბადე
 @id	view.table	ცხრილი
 @id	filter.all	ყველა
@@ -365,16 +364,14 @@ filter	Installed	დაინსტალირებული
 @id	linux.preferred_kind	ახალი აპლიკაციების ინსტალაციის ფორმატი
 @id	tray.close_to_tray	ფანჯრის დახურვის შემდეგ მუშაობის გაგრძელება შეტყობინებების არეში
 @id	tray.show_on_current_desktop	ფანჯრის ჩვენება მიმდინარე სამუშაო მაგიდაზე
-@id	tray.login_item	ArtCraft Launcher-ის გაშვება სისტემაში შესვლისას
+@id	tray.login_item	iCreate-ის გაშვება სისტემაში შესვლისას
 @id	appearance.theme	იერსახე
 
 # Tray (menu bar) menu and tooltip
-	Show ArtCraft Launcher	ArtCraft Launcher-ის ჩვენება
+	Show iCreate	iCreate-ის ჩვენება
 	Check for Updates	განახლებების შემოწმება
-	Visit getartcraft.com	getartcraft.com-ის გახსნა
-	ArtCraft on GitHub	ArtCraft GitHub-ზე
-	Join the ArtCraft Discord	შემოუერთდით ArtCraft-ის Discord-ს
-@plural	ArtCraft Launcher · {n} update available|ArtCraft Launcher · {n} updates available	ArtCraft Launcher · ხელმისაწვდომია {n} განახლება|ArtCraft Launcher · ხელმისაწვდომია {n} განახლება
+	iCreate on GitHub	iCreate GitHub-ზე
+@plural	iCreate · {n} update available|iCreate · {n} updates available	iCreate · ხელმისაწვდომია {n} განახლება|iCreate · ხელმისაწვდომია {n} განახლება
 	Install folder	ინსტალაციის საქაღალდე
 	Default install folder	ნაგულისხმევი ინსტალაციის საქაღალდე
 	System default	სისტემის ნაგულისხმევი
@@ -387,7 +384,7 @@ filter	Installed	დაინსტალირებული
 @msg	couldn't use install folder {path}: {reason}	ინსტალაციის საქაღალდის ({path}) გამოყენება ვერ მოხერხდა: {reason}
 @msg	this release has no AppImage for a custom install folder	ამ გამოშვებას არჩეული ინსტალაციის საქაღალდისთვის AppImage არ აქვს
 @msg	custom install folders aren't supported on this system	ამ სისტემაზე ინსტალაციის საქაღალდის არჩევა არ არის მხარდაჭერილი
-@msg	{path} already exists and wasn't installed by ArtCraft Launcher	{path} უკვე არსებობს და ის ArtCraft Launcher-ს არ დაუინსტალირებია
+@msg	{path} already exists and wasn't installed by iCreate	{path} უკვე არსებობს და ის iCreate-ს არ დაუინსტალირებია
 @msg	couldn't move {path} to Trash ({reason}). Remove it in Finder instead.	{path} ნაგავში ვერ გადავიდა ({reason}). წაშალეთ ის Finder-ში.
 	Apps are placed inside this folder.	აპლიკაციები ამ საქაღალდეში განთავსდება.
 	Replace what's there?	ჩანაცვლდეს არსებული?
@@ -428,3 +425,44 @@ materialcraft	Node graphs	კვანძების გრაფები
 materialcraft	Combine noises, patterns and filters.	ხმაურების, პატერნებისა და ფილტრების კომბინირება.
 materialcraft	Live previews	ცოცხალი წინასწარი ნახვა
 materialcraft	Preview materials in 2D and on 3D models.	მასალების წინასწარი ნახვა 2D-ში და 3D მოდელებზე.
+	Based on ArtCraft Launcher	Based on ArtCraft Launcher
+	by iCreativate	by iCreativate
+	Photo	ფოტო
+	Design	დიზაინი
+	Video	ვიდეო
+	Audio	აუდიო
+	Documents	დოკუმენტები
+	Office	ოფისი
+	Alpha	ალფა
+	Beta	ბეტა
+	Stable	სტაბილური
+	Early preview	ადრეული გადახედვა
+	Replaces {product}	ანაცვლებს: {product}
+	Powered by {name}	{name}-ზე დაყრდნობით
+
+	Account	ანგარიში
+	An iCreate account is optional. Every app stays free to install without signing in.	iCreate ანგარიში არასავალდებულოა. ყველა აპი შესვლას გარეშე უფასოდ რჩება დასაყენებელი.
+	This build has no account server configured.	ამ აწყობას ანგარიშის სერვერი არ აქვს.
+	You're signed in as {email}	შესული ხართ როგორც {email}
+	Sign out	გასვლა
+	Email	ელფოსტა
+	Send code	კოდის გაგზავნა
+	Continue with Google	გაგრძელება Google-ით
+	We sent a sign-in code to {email}	შესვლის კოდი გავაგზავნეთ აქ: {email}
+	Verify	დადასტურება
+	Checking account…	ანგარიშის შემოწმება…
+	Free	უფასო
+	All apps	ყველა აპი
+	iCreate Pro	iCreate Pro
+	R99 a month	R99 თვეში
+	R990 a year	R990 წელიწადში
+	Cloud backup of settings	პარამეტრების ღრუბლოვანი ასლი
+	Priority support	პრიორიტეტული მხარდაჭერა
+	Early access to new apps	ახალი აპების ადრეული წვდომა
+	Pro extras: cloud backup, priority support and early access. Apps never require Pro.	Pro დამატებები: ღრუბლოვანი ასლი, პრიორიტეტული მხარდაჭერა და ადრეული წვდომა. აპებს Pro არ სჭირდებათ.
+	Your plan	თქვენი გეგმა
+	Back up settings now	პარამეტრების შენახვა ახლა
+	Restore settings from iCreate	პარამეტრების აღდგენა iCreate-დან
+	I've paid — refresh status	გადავიხადე — სტატუსის განახლება
+	Subscribe monthly — R99	ყოველთვიური გამოწერა — R99
+	Subscribe yearly — R990	ყოველწლიური გამოწერა — R990

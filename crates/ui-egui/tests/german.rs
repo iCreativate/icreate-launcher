@@ -8,7 +8,7 @@ use std::rc::Rc;
 use artcraft_launcher_core::protocol::{Backend, Capabilities, Command, Event, JobPhase, LatestRelease, Origin, PausedDownload, Source};
 use artcraft_launcher_core::release::{Asset, Release};
 use artcraft_launcher_core::status::InstallSource;
-use artcraft_launcher_core::{Arch, Installed, Os, Platform, SUITE, version};
+use artcraft_launcher_core::{Arch, Installed, Os, Platform, suite, version};
 use artcraft_launcher_ui_egui::settings::ViewMode;
 use artcraft_launcher_ui_egui::{Host, LauncherUi, Settings};
 use egui_kittest::Harness;
@@ -88,7 +88,7 @@ fn events() -> Vec<Event> {
     }
     ev.push(Event::Latest { app: "soundcraft".into(), latest: LatestRelease::None, from: Origin::ArtCraftApi });
     let installed = [("photocraft", "0.4.1"), ("lightcraft", "0.4.0"), ("wordcraft", "0.3.0"), ("effectcraft", "0.5.0")];
-    for app in &SUITE {
+    for app in suite() {
         let inst = installed.iter().find(|(id, _)| *id == app.id).map(|(_, v)| Installed {
             version: version::parse(v),
             source: InstallSource::MacApp,
@@ -172,7 +172,7 @@ fn german_switches_persists_and_keeps_install_actions() {
     h.get_by_label("Fertig").click();
     h.run_steps(3);
     h.get_by_label("Bildbearbeitung");
-    h.get_by_label_contains("Zuletzt geprüft: vor 3 Min. · über ArtCraft API");
+    h.get_by_label_contains("Zuletzt geprüft: vor 3 Min. · über Release feed");
     h.get_by_label("Auf 0.5.0 aktualisieren");
     // Product names stay in English.
     assert!(h.query_by_label("Launcher").is_none());
@@ -211,8 +211,8 @@ fn german_switches_persists_and_keeps_install_actions() {
         for label in ["Show apps as cards", "Show apps as a table", "Settings", "Check for updates"] {
             let rect = web.get_by_label(artcraft_launcher_ui_egui::i18n::t(label)).rect();
             assert!(rect.left() >= 0.0 && rect.right() <= width, "{width}: {label} {rect:?}");
-            if let Some(text) = web.query_by_label("Craft App Suite") {
-                assert!(!rect.intersects(text.rect()), "{width}: Craft App Suite overlaps {label} {rect:?}");
+            if let Some(text) = web.query_by_label("iCreate") {
+                assert!(!rect.intersects(text.rect()), "{width}: iCreate overlaps {label} {rect:?}");
             }
         }
     }

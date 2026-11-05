@@ -1,4 +1,4 @@
-# Hungarian (hu) catalog for ArtCraft Launcher.
+# Hungarian (hu) catalog for iCreate.
 # Format: context<TAB>source<TAB>translation
 # Empty context = plain UI string (tl!, t).
 # @id = command-id keyed (tr_id).
@@ -6,13 +6,13 @@
 # @msg = status/error message template (message, msg).
 # Other context = disambiguation for tr_ctx.
 #
-# Clean-room: written from the meaning of ArtCraft Launcher's English labels in neutral Hungarian,
+# Clean-room: written from the meaning of iCreate's English labels in neutral Hungarian,
 # using the terms Hungarian-speaking users of creative software know. The user is addressed with
 # the informal "te", as in most current creative and community software.
 #
 # Coverage: the whole interface — every menu string and tl! literal (complete_menus = true).
-# Left in English on purpose: product name "ArtCraft Launcher" (and its "Launcher" tag), suite
-# name "Craft App Suite",
+# Left in English on purpose: product name "iCreate" (and its "Launcher" tag), suite
+# name "Creative suite",
 # app names (PhotoCraft, LightCraft, FilmCraft, DesignCraft, VectorCraft, PdfCraft, EffectCraft,
 # WordCraft, DeckCraft, GridCraft, CADCraft, SoundCraft, FigCraft), "GitHub", "Discord".
 # Shortcut keys keep their key-cap names (Shift, Alt, Ctrl, Cmd, Esc).
@@ -20,7 +20,7 @@
 # {what}, {unit}, {real}, {e} must appear in translation.
 
 	Launcher	Launcher
-	Craft App Suite	Craft App Suite
+	Creative suite	Creative suite
 	by {name}	készítette: {name}
 	Open Source Tools for Creatives, Makers, and Builders	Nyílt forráskódú eszközök alkotóknak, barkácsolóknak és fejlesztőknek
 	Settings	Beállítások
@@ -81,7 +81,7 @@
 	{name} wasn't opened: a quote in its launch options isn't closed.	A(z) {name} nem nyílt meg: az indítási beállításaiban egy idézőjel nincs lezárva.
 	Save	Mentés
 	All releases	Minden kiadás
-	ArtCraft Launcher {version} is available.	Elérhető az ArtCraft Launcher új verziója: {version}.
+	iCreate {version} is available.	Elérhető az iCreate új verziója: {version}.
 	Dismiss	Elrejtés
 	Update and restart	Frissítés és újraindítás
 	A new version is available. Would you like to relaunch with the updated version?	Új verzió érhető el. Újraindítod az alkalmazást a frissítéshez?
@@ -92,7 +92,7 @@
 	Released {date}	Megjelent: {date}
 	Open on GitHub	Megnyitás a GitHubon
 	Close	Bezárás
-	ArtCraft Launcher {version}	ArtCraft Launcher {version}
+	iCreate {version}	iCreate {version}
 	Only when I ask	Csak kézi kereséskor
 	Automatically download and install updates	Frissítések automatikus letöltése és telepítése
 	Notify me when an installed app has an update	Értesítés a telepített alkalmazásokhoz elérhető frissítésekről
@@ -104,14 +104,14 @@
 	Updates always use the format an app was installed with.	A frissítések mindig az eredeti telepítés csomagformátumát használják.
 	Running in the background	Futtatás a háttérben
 	Keep running in the tray when the window is closed	Az ablak bezárásakor kerüljön a tálcára
-	ArtCraft Launcher is still running	Az ArtCraft Launcher továbbra is fut
+	iCreate is still running	Az iCreate továbbra is fut
 	It's in the tray: open it or quit it from the tray icon, or turn this off in the settings.	A tálcára került: az ikonjáról megnyitható vagy bezárható, vagy kapcsolja ki ezt a beállításokban.
 	Show the window on the current desktop	Ablak megjelenítése az aktuális asztalon
-	Start ArtCraft Launcher when I log in	ArtCraft Launcher indítása bejelentkezéskor
+	Start iCreate when I log in	iCreate indítása bejelentkezéskor
 	Community	Közösség
-	Questions, ideas and news from the ArtCraft team	Kérdések, ötletek és hírek az ArtCraft csapatától
+	Questions, ideas and news from iCreativate	Kérdések, ötletek és hírek az iCreativate-től
 	Appearance	Megjelenés
-	Quit ArtCraft Launcher	Kilépés az ArtCraft Launcherből
+	Quit iCreate	Kilépés az iCreateből
 	Done	Kész
 	Uninstall {name}?	{name} eltávolítása?
 	The app will be moved to the Trash. Your documents and settings stay.	Az alkalmazás a Kukába kerül. A dokumentumaid és beállításaid megmaradnak.
@@ -152,7 +152,7 @@
 	Open link	Hivatkozás megnyitása
 	Update	Frissítés
 	{name} icon	{name} ikonja
-	Loading ArtCraft Launcher…	ArtCraft Launcher betöltése…
+	Loading iCreate…	iCreate betöltése…
 	Cancel update	Frissítés megszakítása
 	Stop waiting; the update can be started again later	Megszakítja a várakozást. A frissítést később újra elindíthatod.
 	Download again	Újbóli letöltés
@@ -213,8 +213,8 @@ month	Dec	dec.
 	Installing for {platform}	Telepítés {platform} rendszerre
 	Downloads for {platform}	Letöltések {platform} rendszerre
 	No downloads for this system	Nincsenek letöltések ehhez a rendszerhez
-	Join the ArtCraft community on Discord	Csatlakozz az ArtCraft közösségéhez a Discordon
-	ArtCraft on {name}	ArtCraft – {name}
+	Visit the iCreate website	iCreate webhely megnyitása
+	iCreate on {name}	iCreate a(z) {name} oldalon
 	Couldn't open {name}: {e}	{name} nem nyitható meg: {e}
 	Download cancelled	Letöltés megszakítva
 	Available to install	Telepíthető
@@ -234,7 +234,7 @@ month	Dec	dec.
 	Version {version} installed	Telepített verzió: {version}
 	Version {latest}	Verzió: {latest}
 	No release published yet	Még nem jelent meg kiadás
-	ArtCraft Launcher	ArtCraft Launcher
+	iCreate	iCreate
 	App	Alkalmazás
 	Latest	Legújabb
 	Released	Megjelent
@@ -256,7 +256,6 @@ month	Dec	dec.
 	Couldn't check for updates: {f}	Nem sikerült frissítéseket keresni: {f}
 	Website (coming soon)	Webhely (hamarosan)
 	GitHub repository	GitHub-tároló
-	ArtCraft	ArtCraft
 	Update 1 app	1 alkalmazás frissítése
 	Update all ({count})	Összes frissítése ({count})
 	⊞  Grid	⊞  Rács
@@ -269,11 +268,11 @@ month	Dec	dec.
 	Full changelog	Teljes változásnapló
 	link	hivatkozás
 	No apps match	Nincs találat
-	Open ArtCraft Launcher to update.	Nyisd meg az ArtCraft Launchert a frissítéshez.
+	Open iCreate to update.	Nyisd meg az iCreatet a frissítéshez.
 	{name} {v} is available	Elérhető: {name} {v}
 	{count} updates are available	{count} frissítés elérhető
 	These notes weren't fetched (GitHub's request limit was reached). They're on the release page.	A kiadási információkat nem sikerült betölteni, mert elértük a GitHub lekérdezési korlátját. A kiadás oldalán megtalálod őket.
-	When on, opening the launcher from the menu bar brings its window to the desktop you're on. When off, macOS switches you to the desktop the window was on.	Ha be van kapcsolva, a menüsorból megnyitott ArtCraft Launcher ablaka az aktuális asztalon jelenik meg. Ha ki van kapcsolva, a macOS arra az asztalra vált, ahol az ablak található.
+	When on, opening the launcher from the menu bar brings its window to the desktop you're on. When off, macOS switches you to the desktop the window was on.	Ha be van kapcsolva, a menüsorból megnyitott iCreate ablaka az aktuális asztalon jelenik meg. Ha ki van kapcsolva, a macOS arra az asztalra vált, ahol az ablak található.
 	Couldn't change the login item: {e}	Az automatikus indítás beállítását nem sikerült módosítani: {e}
 
 # Contextual: table column headers
@@ -338,7 +337,7 @@ filter	Installed	Telepítve
 @id	launcher.notes	Újdonságok
 @id	launcher.dismiss	Elrejtés
 @id	settings.open	Beállítások
-@id	settings.quit	Kilépés az ArtCraft Launcherből
+@id	settings.quit	Kilépés az iCreateből
 @id	view.grid	Rács
 @id	view.table	Táblázat
 @id	filter.all	Összes
@@ -362,16 +361,14 @@ filter	Installed	Telepítve
 @id	linux.preferred_kind	Új alkalmazások csomagformátuma
 @id	tray.close_to_tray	Az ablak bezárásakor kerüljön a tálcára
 @id	tray.show_on_current_desktop	Ablak megjelenítése az aktuális asztalon
-@id	tray.login_item	ArtCraft Launcher indítása bejelentkezéskor
+@id	tray.login_item	iCreate indítása bejelentkezéskor
 @id	appearance.theme	Megjelenés
 
 # Tray (menu bar) menu and tooltip
-	Show ArtCraft Launcher	ArtCraft Launcher megjelenítése
+	Show iCreate	iCreate megjelenítése
 	Check for Updates	Frissítések keresése
-	Visit getartcraft.com	getartcraft.com megnyitása
-	ArtCraft on GitHub	ArtCraft a GitHubon
-	Join the ArtCraft Discord	Csatlakozás az ArtCraft Discord-közösségéhez
-@plural	ArtCraft Launcher · {n} update available|ArtCraft Launcher · {n} updates available	ArtCraft Launcher · {n} frissítés elérhető|ArtCraft Launcher · {n} frissítés elérhető
+	iCreate on GitHub	iCreate a GitHubon
+@plural	iCreate · {n} update available|iCreate · {n} updates available	iCreate · {n} frissítés elérhető|iCreate · {n} frissítés elérhető
 	Install folder	Telepítési mappa
 	Default install folder	Alapértelmezett telepítési mappa
 	System default	Rendszer alapértelmezése
@@ -384,7 +381,7 @@ filter	Installed	Telepítve
 @msg	couldn't use install folder {path}: {reason}	a(z) {path} telepítési mappa nem használható: {reason}
 @msg	this release has no AppImage for a custom install folder	ez a kiadás nem tartalmaz AppImage-fájlt egyéni telepítési mappához
 @msg	custom install folders aren't supported on this system	ezen a rendszeren nem támogatottak az egyéni telepítési mappák
-@msg	{path} already exists and wasn't installed by ArtCraft Launcher	a(z) {path} már létezik, és nem az ArtCraft Launcher telepítette
+@msg	{path} already exists and wasn't installed by iCreate	a(z) {path} már létezik, és nem az iCreate telepítette
 @msg	couldn't move {path} to Trash ({reason}). Remove it in Finder instead.	a(z) {path} nem helyezhető a Kukába ({reason}). Távolítsa el a Finderben.
 	Apps are placed inside this folder.	Az alkalmazások ebbe a mappába kerülnek.
 	Replace what's there?	Lecseréli, ami ott van?
@@ -429,3 +426,44 @@ materialcraft	Preview materials in 2D and on 3D models.	Tekintsd meg az anyagoka
 	Migrate Flatpak bundles to ArtCraft OCI (experimental)	Flatpak-csomagok átállítása ArtCraft OCI-ra (kísérleti)
 	On update, switch first party apps when the matching package is available. Otherwise, keep using bundles.	Frissítéskor állítsa át az ArtCraft alkalmazásait, ha elérhető a megfelelő csomag. Egyébként továbbra is önálló csomagokat használjon.
 	The OCI repository is a preview with GPG verification disabled.	Az OCI-tároló előzetes verzió, kikapcsolt GPG-ellenőrzéssel.
+	Based on ArtCraft Launcher	Based on ArtCraft Launcher
+	by iCreativate	by iCreativate
+	Photo	Fotó
+	Design	Design
+	Video	Videó
+	Audio	Hang
+	Documents	Dokumentumok
+	Office	Iroda
+	Alpha	Alfa
+	Beta	Béta
+	Stable	Stabil
+	Early preview	Korai előnézet
+	Replaces {product}	{product} helyett
+	Powered by {name}	{name} alapú
+
+	Account	Fiók
+	An iCreate account is optional. Every app stays free to install without signing in.	Az iCreate-fiók nem kötelező. Minden app bejelentkezés nélkül, ingyen telepíthető.
+	This build has no account server configured.	Ebben a buildben nincs fiókszerver.
+	You're signed in as {email}	Bejelentkezve: {email}
+	Sign out	Kijelentkezés
+	Email	E-mail
+	Send code	Kód küldése
+	Continue with Google	Folytatás Google-fiókkal
+	We sent a sign-in code to {email}	Belépési kódot küldtünk ide: {email}
+	Verify	Megerősítés
+	Checking account…	Fiók ellenőrzése…
+	Free	Ingyenes
+	All apps	Minden app
+	iCreate Pro	iCreate Pro
+	R99 a month	R99 havonta
+	R990 a year	R990 évente
+	Cloud backup of settings	Beállítások felhőmentése
+	Priority support	Elsőbbségi támogatás
+	Early access to new apps	Korai hozzáférés az új appokhoz
+	Pro extras: cloud backup, priority support and early access. Apps never require Pro.	Pro extrák: felhőmentés, elsőbbségi támogatás és korai hozzáférés. Az appok soha nem kérik a Pro-t.
+	Your plan	A csomagod
+	Back up settings now	Beállítások mentése most
+	Restore settings from iCreate	Beállítások visszaállítása az iCreate-ből
+	I've paid — refresh status	Fizettem — állapot frissítése
+	Subscribe monthly — R99	Havi előfizetés — R99
+	Subscribe yearly — R990	Éves előfizetés — R990

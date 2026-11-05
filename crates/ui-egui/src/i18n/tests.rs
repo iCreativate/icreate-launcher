@@ -193,7 +193,7 @@ fn complete_catalogs_cover_every_ui_literal() {
 #[test]
 fn complete_catalogs_translate_every_tagline() {
     for lang in Lang::all().filter(|l| l.complete_menus()) {
-        for app in &artcraft_launcher_core::SUITE {
+        for app in artcraft_launcher_core::suite() {
             assert_ne!(super::tr_ctx(lang, app.id, app.tagline), app.tagline, "{}: {}", lang.code(), app.id);
         }
     }
@@ -202,7 +202,7 @@ fn complete_catalogs_translate_every_tagline() {
 #[test]
 fn product_names_stay_in_english() {
     for lang in Lang::all() {
-        for name in ["ArtCraft Launcher", "Craft App Suite", "Launcher"] {
+        for name in ["iCreate", "Creative suite", "Launcher"] {
             assert_eq!(tr(lang, name), name, "{}", lang.code());
         }
     }

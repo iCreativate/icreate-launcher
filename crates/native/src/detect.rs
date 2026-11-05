@@ -121,7 +121,7 @@ fn suite_folders(app: &CraftApp, roots: &[PathBuf]) -> Vec<PathBuf> {
     if app.id != artcraft_launcher_core::catalog::LAUNCHER_ID {
         return Vec::new();
     }
-    roots.iter().map(|root| root.join("ArtCraft").join("Launcher")).collect()
+    roots.iter().map(|root| root.join("iCreate")).collect()
 }
 
 /// The registry keys an MSI records its install folder in (value `InstallDir`). The launcher's package
@@ -130,7 +130,7 @@ fn suite_folders(app: &CraftApp, roots: &[PathBuf]) -> Vec<PathBuf> {
 fn install_dir_keys(app: &CraftApp) -> Vec<String> {
     let mut keys = vec![format!(r"SOFTWARE\{}", app.name)];
     if app.id == artcraft_launcher_core::catalog::LAUNCHER_ID {
-        keys.push(format!(r"SOFTWARE\{PUBLISHER}\{}", app.name));
+        keys.push(r"SOFTWARE\iCreativate\iCreate".to_string());
     }
     keys
 }
@@ -457,7 +457,7 @@ pub mod linux {
     /// pacman, Flatpak). Read once per detection pass.
     pub fn packages() -> Vec<Package> {
         let ours = |name: &str| {
-            artcraft_launcher_core::SUITE.iter().any(|a| {
+            artcraft_launcher_core::suite().iter().any(|a| {
                 [InstallSource::Deb, InstallSource::Rpm, InstallSource::Pacman, InstallSource::Flatpak]
                     .iter()
                     .any(|m| crate::packages::candidate_names(a, *m).iter().any(|n| n == name))
@@ -505,7 +505,7 @@ pub mod linux {
                 // Bundles built from a release tarball often list no version: ask Flatpak directly.
                 for (id, version, _, installation) in flatpaks
                     .iter_mut()
-                    .filter(|(id, v, _, _)| v.is_empty() && artcraft_launcher_core::SUITE.iter().any(|a| a.bundle_ids().any(|b| b == *id)))
+                    .filter(|(id, v, _, _)| v.is_empty() && artcraft_launcher_core::suite().iter().any(|a| a.bundle_ids().any(|b| b == *id)))
                 {
                     let scope_arg = packages::flatpak_scope(if scope.is_empty() { installation.as_deref() } else { Some("user") });
                     let info_args = ["info", &scope_arg, &arch, id];
@@ -697,7 +697,7 @@ mod linux_tests {
     #[test]
     fn ours_filter_matches_rpm_packages() {
         let ours = |name: &str| {
-            artcraft_launcher_core::SUITE.iter().any(|a| {
+            artcraft_launcher_core::suite().iter().any(|a| {
                 [InstallSource::Deb, InstallSource::Rpm, InstallSource::Pacman, InstallSource::Flatpak]
                     .iter()
                     .any(|m| crate::packages::candidate_names(a, *m).iter().any(|n| n == name))
@@ -763,7 +763,7 @@ mod linux_tests {
 
 #[cfg(test)]
 mod tests {
-    use artcraft_launcher_core::SUITE;
+    use artcraft_launcher_core::suite;
 
     use super::*;
 
@@ -992,7 +992,7 @@ mod tests {
         let pdf = CraftApp::by_id("pdfcraft").unwrap();
         assert!(!is_installer_entry(pdf, "PrintCraft", "Some Other Publisher"));
         assert!(!is_installer_entry(pdf, "PhotoCraft", LEARNING_MACHINES));
-        for a in SUITE.iter().filter(|a| a.id != "pdfcraft") {
+        for a in suite().iter().filter(|a| a.id != "pdfcraft") {
             assert!(!is_installer_entry(a, "PrintCraft", LEARNING_MACHINES), "PrintCraft matched {}", a.name);
         }
     }
@@ -1024,7 +1024,7 @@ mod tests {
     fn apps_without_former_names_match_and_find_their_exe_as_before() {
         let roots = roots();
         let location = PathBuf::from(r"D:\Apps\Somewhere");
-        for a in SUITE.iter().filter(|a| a.former_ids.is_empty() && a.former_names.is_empty()) {
+        for a in suite().iter().filter(|a| a.former_ids.is_empty() && a.former_names.is_empty()) {
             let publisher = a.msi_publisher.unwrap_or(LEARNING_MACHINES);
             assert!(is_installer_entry(a, a.name, publisher), "{}", a.name);
             assert!(!is_installer_entry(a, a.name, "Some Other Publisher"), "{}", a.name);
@@ -1103,7 +1103,7 @@ mod tests {
     #[test]
     fn the_launcher_msi_installs_to_artcraft_launcher_and_the_apps_do_not() {
         let roots = roots();
-        let want: Vec<PathBuf> = roots.iter().map(|root| root.join("ArtCraft").join("Launcher")).collect();
+        let want: Vec<PathBuf> = roots.iter().map(|root| root.join("iCreate")).collect();
         assert_eq!(suite_folders(&artcraft_launcher_core::catalog::LAUNCHER, &roots), want);
         let photo = CraftApp::by_id("photocraft").unwrap();
         assert!(suite_folders(photo, &roots).is_empty());
@@ -1113,7 +1113,7 @@ mod tests {
     fn the_launcher_records_its_folder_under_the_publisher_key() {
         assert_eq!(
             install_dir_keys(&artcraft_launcher_core::catalog::LAUNCHER),
-            [r"SOFTWARE\ArtCraft Launcher".to_string(), format!(r"SOFTWARE\{LEARNING_MACHINES}\ArtCraft Launcher")]
+            [r"SOFTWARE\iCreate".to_string(), r"SOFTWARE\iCreativate\iCreate".to_string()]
         );
         let photo = CraftApp::by_id("photocraft").unwrap();
         assert_eq!(install_dir_keys(photo), [r"SOFTWARE\PhotoCraft".to_string()]);

@@ -8,6 +8,7 @@ use std::collections::BTreeMap;
 
 use serde::{Deserialize, Serialize};
 
+use crate::account::{AccountSnapshot, BillingInterval};
 use crate::platform::{PackageKind, Platform};
 use crate::release::Release;
 use crate::status::Installed;
@@ -66,6 +67,26 @@ pub enum Command {
     },
     /// Change how the backend behaves.
     Configure(BackendOptions),
+    /// Email a one-time sign-in code. The launcher still runs if this fails.
+    AccountSendCode {
+        email: String,
+    },
+    AccountVerifyCode {
+        email: String,
+        code: String,
+    },
+    /// Open Google in the browser and wait for the loopback redirect.
+    AccountSignInGoogle,
+    AccountSignOut,
+    /// Refresh tokens and subscription from the network when possible.
+    AccountRefresh,
+    AccountCheckout {
+        interval: BillingInterval,
+    },
+    AccountBackupSettings {
+        json: String,
+    },
+    AccountRestoreSettings,
 }
 
 /// Parent folders for new installs. Existing installations keep their recorded location.
@@ -164,7 +185,7 @@ pub enum Origin {
 impl Origin {
     pub fn label(self) -> &'static str {
         match self {
-            Self::ArtCraftApi => "ArtCraft API",
+            Self::ArtCraftApi => "Release feed",
             Self::GitHub => "GitHub",
         }
     }
@@ -186,7 +207,7 @@ pub enum Source {
 impl Source {
     pub fn label(self) -> &'static str {
         match self {
-            Self::Feed => "ArtCraft",
+            Self::Feed => "Release feed",
             Self::GitHubApi => "GitHub",
             Self::GitHubPages => "GitHub (release pages)",
             Self::Cache => "saved results",
@@ -262,6 +283,16 @@ pub enum Event {
         source: Source,
         /// GitHub refused more API calls until this time (Unix seconds).
         rate_limited_until: Option<i64>,
+    },
+    /// Optional account. Absence of this event means "no account features in this backend".
+    Account(AccountSnapshot),
+    AccountNotice {
+        text: String,
+        error: bool,
+    },
+    /// Cloud copy of launcher settings (Pro). The UI applies it; apps are untouched.
+    AccountSettingsRestored {
+        json: String,
     },
 }
 

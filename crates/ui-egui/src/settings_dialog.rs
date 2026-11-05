@@ -1,7 +1,8 @@
 //! The Settings dialog: a large card in the shape of the app page (see `sheet.rs`), with the
 //! groups of settings in boxes, two columns once the window is wide enough.
 
-use artcraft_launcher_core::{Os, PackageKind};
+use artcraft_launcher_core::protocol::Command;
+use artcraft_launcher_core::{BillingInterval, Os, PackageKind};
 use egui::{RichText, Ui, vec2};
 
 use crate::app::{Host, LauncherUi};
@@ -54,11 +55,11 @@ impl LauncherUi {
             ui,
             Some(crate::icons::artcraft_mark()),
             tl!("Settings"),
-            &format!("ArtCraft Launcher {}", env!("CARGO_PKG_VERSION")),
+            &format!("iCreate {} · {}", env!("CARGO_PKG_VERSION"), tl!("Based on ArtCraft Launcher")),
             |_| {},
         );
 
-        let quit_width = widgets::button_width(ui, tl!("Quit ArtCraft Launcher"), 0.0);
+        let quit_width = widgets::button_width(ui, tl!("Quit iCreate"), 0.0);
         let done_width = widgets::button_width(ui, tl!("Done"), 90.0);
         let stack_actions = self.caps.manage_apps && quit_width + done_width + ui.spacing().item_spacing.x + 48.0 > size.x;
         let footer_h = if stack_actions { 2.0 * theme::CONTROL_H + ui.spacing().item_spacing.y } else { theme::CONTROL_H } + 32.0;
@@ -80,7 +81,7 @@ impl LauncherUi {
         egui::Frame::new().inner_margin(egui::Margin::symmetric(theme::PAD as i8, 16)).show(ui, |ui| {
             ui.set_width(ui.available_width());
             let quit = |ui: &mut Ui, host: &mut dyn Host| {
-                if self.caps.manage_apps && widgets::button(ui, tl!("Quit ArtCraft Launcher"), Kind::Secondary, 0.0).clicked() {
+                if self.caps.manage_apps && widgets::button(ui, tl!("Quit iCreate"), Kind::Secondary, 0.0).clicked() {
                     host.quit();
                 }
             };
@@ -120,11 +121,129 @@ impl LauncherUi {
             |ui| {
                 let Ok(mut state) = state.try_borrow_mut() else { return };
                 let (this, host) = &mut *state;
+                this.settings_account(ui);
                 this.settings_install(ui, &mut **host);
                 this.settings_background(ui, &mut **host);
                 this.settings_community(ui);
             },
         );
+    }
+
+    fn settings_account(&mut self, ui: &mut Ui) {
+        let t = Tokens::get(ui.ctx());
+        let busy = self.account.busy;
+        sheet::panel(ui, tl!("Account"), |ui| {
+            ui.label(
+                RichText::new(tl!("An iCreate account is optional. Every app stays free to install without signing in.")).size(12.0).color(t.muted),
+            );
+            ui.add_space(8.0);
+            if !self.account.configured {
+                ui.label(RichText::new(tl!("This build has no account server configured.")).size(12.0).color(t.muted));
+                self.settings_plans_copy(ui);
+                return;
+            }
+            if let Some(email) = self.account.email.as_deref().filter(|s| !s.is_empty()) {
+                ui.label(crate::i18n::fmt(tl!("You're signed in as {email}"), &[("email", email)]));
+                ui.add_space(6.0);
+                if widgets::button(ui, tl!("Sign out"), Kind::Secondary, 0.0).clicked() && !busy {
+                    self.act_command(Command::AccountSignOut);
+                }
+            } else {
+                ui.label(tl!("Email"));
+                ui.add(egui::TextEdit::singleline(&mut self.account_email).desired_width(ui.available_width()).hint_text("you@example.com"));
+                ui.add_space(6.0);
+                ui.horizontal_wrapped(|ui| {
+                    if widgets::button(ui, tl!("Send code"), Kind::Primary, 0.0).clicked() && !busy {
+                        self.account_code_sent_to = Some(self.account_email.clone());
+                        self.act_command(Command::AccountSendCode { email: self.account_email.clone() });
+                    }
+                    if widgets::button(ui, tl!("Continue with Google"), Kind::Secondary, 0.0).clicked() && !busy {
+                        self.act_command(Command::AccountSignInGoogle);
+                    }
+                });
+                if let Some(sent) = &self.account_code_sent_to {
+                    ui.add_space(8.0);
+                    ui.label(crate::i18n::fmt(tl!("We sent a sign-in code to {email}"), &[("email", sent)]));
+                    ui.add(egui::TextEdit::singleline(&mut self.account_code).desired_width(ui.available_width()).hint_text("123456"));
+                    ui.add_space(6.0);
+                    if widgets::button(ui, tl!("Verify"), Kind::Primary, 0.0).clicked() && !busy {
+                        self.act_command(Command::AccountVerifyCode { email: sent.clone(), code: self.account_code.clone() });
+                    }
+                }
+            }
+            if busy {
+                ui.add_space(6.0);
+                ui.label(RichText::new(tl!("Checking account…")).size(12.0).color(t.muted));
+            }
+            if let Some(err) = &self.account.last_error {
+                ui.add_space(6.0);
+                ui.label(RichText::new(err).size(12.0).color(t.warn));
+            }
+            ui.add_space(10.0);
+            self.settings_plans(ui, busy);
+        });
+    }
+
+    fn settings_plans_copy(&self, ui: &mut Ui) {
+        let t = Tokens::get(ui.ctx());
+        ui.add_space(8.0);
+        ui.label(RichText::new(tl!("Free")).strong());
+        ui.label(RichText::new(tl!("All apps")).size(12.0).color(t.muted));
+        ui.add_space(6.0);
+        ui.label(RichText::new(tl!("iCreate Pro")).strong());
+        ui.label(RichText::new(tl!("R99 a month")).size(12.0).color(t.muted));
+        ui.label(RichText::new(tl!("R990 a year")).size(12.0).color(t.muted));
+        ui.label(RichText::new(tl!("Cloud backup of settings")).size(12.0).color(t.muted));
+        ui.label(RichText::new(tl!("Priority support")).size(12.0).color(t.muted));
+        ui.label(RichText::new(tl!("Early access to new apps")).size(12.0).color(t.muted));
+        ui.add_space(4.0);
+        ui.label(
+            RichText::new(tl!("Pro extras: cloud backup, priority support and early access. Apps never require Pro.")).size(12.0).color(t.muted),
+        );
+    }
+
+    fn settings_plans(&mut self, ui: &mut Ui, busy: bool) {
+        self.settings_plans_copy(ui);
+        if !self.account.signed_in() {
+            return;
+        }
+        let now = self.backend.now();
+        let pro = self.account.is_pro(now);
+        ui.add_space(8.0);
+        if pro {
+            ui.label(tl!("Your plan"));
+            ui.label(tl!("iCreate Pro"));
+            ui.add_space(6.0);
+            ui.horizontal_wrapped(|ui| {
+                if widgets::button(ui, tl!("Back up settings now"), Kind::Primary, 0.0).clicked()
+                    && !busy
+                    && let Ok(json) = serde_json::to_string(&self.settings)
+                {
+                    self.act_command(Command::AccountBackupSettings { json });
+                }
+                if widgets::button(ui, tl!("Restore settings from iCreate"), Kind::Secondary, 0.0).clicked() && !busy {
+                    self.act_command(Command::AccountRestoreSettings);
+                }
+            });
+            ui.add_space(6.0);
+            if widgets::button(ui, tl!("I've paid — refresh status"), Kind::Secondary, 0.0).clicked() && !busy {
+                self.act_command(Command::AccountRefresh);
+            }
+        } else {
+            ui.add_space(6.0);
+            ui.horizontal_wrapped(|ui| {
+                if widgets::button(ui, tl!("Subscribe monthly — R99"), Kind::Primary, 0.0).clicked() && !busy {
+                    self.act_command(Command::AccountCheckout { interval: BillingInterval::Month });
+                }
+                if widgets::button(ui, tl!("Subscribe yearly — R990"), Kind::Secondary, 0.0).clicked() && !busy {
+                    self.act_command(Command::AccountCheckout { interval: BillingInterval::Year });
+                }
+            });
+            ui.add_space(6.0);
+            if widgets::button(ui, tl!("I've paid — refresh status"), Kind::Secondary, 0.0).clicked() && !busy {
+                self.act_command(Command::AccountRefresh);
+            }
+        }
     }
 
     /// The language picker. It changes the preference immediately but keeps this pass on a language
@@ -320,7 +439,7 @@ impl LauncherUi {
                 ));
             }
             if let Some(mut on) = host.login_item()
-                && ui.checkbox(&mut on, tl!("Start ArtCraft Launcher when I log in")).changed()
+                && ui.checkbox(&mut on, tl!("Start iCreate when I log in")).changed()
                 && let Err(e) = host.set_login_item(on)
             {
                 self.toast_from_ui(fmt(tl!("Couldn't change the login item: {e}"), &[("e", &e)]), true);
@@ -333,7 +452,7 @@ impl LauncherUi {
     fn settings_community(&mut self, ui: &mut Ui) {
         let t = Tokens::get(ui.ctx());
         sheet::panel(ui, tl!("Community"), |ui| {
-            ui.label(RichText::new(tl!("Questions, ideas and news from the ArtCraft team")).color(t.muted));
+            ui.label(RichText::new(tl!("Questions, ideas and news from iCreativate")).color(t.muted));
             ui.add_space(6.0);
             ui.horizontal_wrapped(|ui| {
                 use artcraft_launcher_core::catalog::{GITHUB_URL, WEBSITE_URL};

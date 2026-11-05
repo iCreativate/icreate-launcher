@@ -19,12 +19,51 @@ pub enum ViewMode {
 pub enum Filter {
     #[default]
     All,
-    // These three no longer appear in the toolbar but must remain deserializable from old settings.
     Installed,
     Updates,
+    /// Kept so old settings files still load; the toolbar no longer offers this tab.
     NotInstalled,
     /// Apps the user chose to hide from the other lists.
     Hidden,
+}
+
+/// Home-screen category tab. `All` shows every category.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub enum CategoryFilter {
+    #[default]
+    All,
+    Photo,
+    Design,
+    Video,
+    Audio,
+    Documents,
+    Office,
+}
+
+impl CategoryFilter {
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::All => "All",
+            Self::Photo => "Photo",
+            Self::Design => "Design",
+            Self::Video => "Video",
+            Self::Audio => "Audio",
+            Self::Documents => "Documents",
+            Self::Office => "Office",
+        }
+    }
+
+    pub fn matches(self, category: artcraft_launcher_core::Category) -> bool {
+        match self {
+            Self::All => true,
+            Self::Photo => category == artcraft_launcher_core::Category::Photo,
+            Self::Design => category == artcraft_launcher_core::Category::Design,
+            Self::Video => category == artcraft_launcher_core::Category::Video,
+            Self::Audio => category == artcraft_launcher_core::Category::Audio,
+            Self::Documents => category == artcraft_launcher_core::Category::Documents,
+            Self::Office => category == artcraft_launcher_core::Category::Office,
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -90,6 +129,7 @@ pub struct Settings {
     pub install_locations: artcraft_launcher_core::protocol::InstallLocations,
     pub view: ViewMode,
     pub filter: Filter,
+    pub category: CategoryFilter,
     pub sort: SortKey,
     pub sort_descending: bool,
     pub theme: ThemeChoice,
@@ -138,9 +178,9 @@ impl Settings {
     /// Machine-readable code for "follow the system language".
     pub const LANGUAGE_AUTO: &str = "auto";
 
-    /// Clear saved catalog filters whose controls were removed from the toolbar.
+    /// Drop the old "Not installed" toolbar tab; Installed and Updates are back on the home screen.
     pub fn migrate(&mut self) {
-        if !matches!(self.filter, Filter::All | Filter::Hidden) {
+        if self.filter == Filter::NotInstalled {
             self.filter = Filter::All;
         }
     }
@@ -245,6 +285,7 @@ impl Default for Settings {
             install_locations: Default::default(),
             view: ViewMode::Grid,
             filter: Filter::All,
+            category: CategoryFilter::All,
             sort: SortKey::Suite,
             sort_descending: false,
             theme: ThemeChoice::System,

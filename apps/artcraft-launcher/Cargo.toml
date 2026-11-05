@@ -1,6 +1,6 @@
 [package]
 name = "artcraft-launcher"
-description = "ArtCraft Launcher: install, update and open the Craft App Suite"
+description = "iCreate: install, update and open the iCreate creative suite. Based on ArtCraft Launcher."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

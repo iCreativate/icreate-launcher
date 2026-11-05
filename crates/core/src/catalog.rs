@@ -1,16 +1,73 @@
-//! The Craft App Suite: the seventeen apps the launcher knows about.
+//! The iCreate app catalogue: the apps the launcher knows about.
 //!
-//! The list is data so a later version can fetch it from an API; [`SUITE`] is the built-in copy.
+//! The list lives in `apps.json` at the repo root so names, repos, status and categories can be
+//! edited without touching Rust. [`suite`] is the compiled-in copy. Swap an app's `repo` there to
+//! install from a fork; id, former names and macOS team stay the keys install, update and checksum
+//! matching already use.
 //!
 //! Text here is English, the source the UI translates from: each `tagline` has a catalog row
 //! keyed by the app id (`tr_ctx(app.id, app.tagline)` in `ui-egui`).
 
-/// Who makes an app. Official apps live under [`GITHUB_OWNER`]; a community app is maintained
-/// outside ArtCraft and is labelled as such wherever it is shown.
+use std::sync::OnceLock;
+
+use serde::Deserialize;
+
+/// Who makes an app. Official apps live under [`GITHUB_OWNER`] unless `apps.json` points `repo`
+/// at a fork; a community app is maintained outside ArtCraft and is labelled as such wherever it
+/// is shown.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum AppKind {
     Official,
     Community,
+}
+
+/// Home-screen grouping. Values match `apps.json` `category`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Category {
+    Photo,
+    Design,
+    Video,
+    Audio,
+    Documents,
+    Office,
+}
+
+impl Category {
+    pub const ALL: [Self; 6] = [Self::Photo, Self::Design, Self::Video, Self::Audio, Self::Documents, Self::Office];
+
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Photo => "Photo",
+            Self::Design => "Design",
+            Self::Video => "Video",
+            Self::Audio => "Audio",
+            Self::Documents => "Documents",
+            Self::Office => "Office",
+        }
+    }
+}
+
+/// How far along an app is. Values match `apps.json` `status`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Maturity {
+    Stable,
+    Beta,
+    Alpha,
+}
+
+impl Maturity {
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Stable => "Stable",
+            Self::Beta => "Beta",
+            Self::Alpha => "Alpha",
+        }
+    }
+
+    /// Alpha apps get the early-preview warning badge.
+    pub fn is_early(self) -> bool {
+        matches!(self, Self::Alpha)
+    }
 }
 
 /// One app in the suite.
@@ -18,17 +75,23 @@ pub enum AppKind {
 pub struct CraftApp {
     /// Machine name: repo, binary, package and asset stem (`photocraft`).
     pub id: &'static str,
-    /// Display name (`PhotoCraft`).
+    /// Installer and GitHub project name (`PhotoCraft`). Matching still keys off this.
     pub name: &'static str,
+    /// iCreate title as stored in `apps.json` (`iCreate Photo (powered by PhotoCraft)`).
+    pub display_name: &'static str,
+    /// Adobe, Microsoft or other product this app stands in for.
+    pub replaces: &'static str,
     /// What it's for, in a few words (English; the UI translates it by app id).
     pub tagline: &'static str,
+    /// Icon file in `assets/app-icons` (`photocraft.png`).
+    pub icon: &'static str,
     /// Brand colour (sRGB), for surfaces: getartcraft.com's `--app`.
     pub color: [u8; 3],
     /// The brand colour for text on a light background (the site's light `--app-ink`).
     pub ink_light: [u8; 3],
     /// The brand colour for text on a dark background (the site's dark `--app-ink`).
     pub ink_dark: [u8; 3],
-    /// GitHub `owner/repo`.
+    /// GitHub `owner/repo`. Edit this in `apps.json` to install from a fork.
     pub repo: &'static str,
     /// Older names its release assets may carry (PdfCraft shipped as PrintCraft until 0.2.1).
     pub former_ids: &'static [&'static str],
@@ -49,9 +112,32 @@ pub struct CraftApp {
     /// while those builds carry no signature the launcher can check: it then opens a copy that's
     /// there and links to the releases, but installs nothing.
     pub mac_team: Option<&'static str>,
+    pub category: Category,
+    pub maturity: Maturity,
+    /// Hidden from the catalogue unless the signed-in account has iCreate Pro. Existing installs still open.
+    pub early_access: bool,
 }
 
 impl CraftApp {
+    /// Card and details heading: `iCreate Photo`, stripped of the "powered by" credit.
+    pub fn title(&self) -> &'static str {
+        match self.display_name.split_once(" (powered by") {
+            Some((title, _)) if !title.is_empty() => title,
+            _ => self.display_name,
+        }
+    }
+
+    /// Whether name, title, tagline, replacement product or category contain `needle`.
+    pub fn matches_query(&self, needle: &str) -> bool {
+        let n = needle.trim().to_lowercase();
+        if n.is_empty() {
+            return true;
+        }
+        [self.name, self.display_name, self.title(), self.tagline, self.replaces, self.category.label()]
+            .into_iter()
+            .any(|s| s.to_lowercase().contains(&n))
+    }
+
     /// `ai.storyteller.<id>`: macOS bundle id, Flatpak id and Linux desktop-file id.
     pub fn bundle_id(&self) -> String {
         self.bundle.map_or_else(|| format!("ai.storyteller.{}", self.id), str::to_string)
@@ -91,7 +177,7 @@ impl CraftApp {
     }
 
     pub fn by_id(id: &str) -> Option<&'static CraftApp> {
-        SUITE.iter().find(|a| a.id == id)
+        suite().iter().find(|a| a.id == id)
     }
 }
 
@@ -105,7 +191,10 @@ const fn app(
     CraftApp {
         id,
         name,
+        display_name: name,
+        replaces: "",
         tagline,
+        icon: "",
         color,
         ink_light,
         ink_dark,
@@ -119,167 +208,211 @@ const fn app(
         former_bundles: &[],
         site: None,
         mac_team: Some(ARTCRAFT_TEAM_ID),
+        category: Category::Design,
+        maturity: Maturity::Stable,
+        early_access: false,
     }
 }
 
-/// The Craft App Suite, in display order matching getartcraft.com, then the community apps:
-pub const SUITE: [CraftApp; 17] = [
-    app("photocraft", "PhotoCraft", "Image editing", [[0x2f, 0x7b, 0xf5], [0x1a, 0x5b, 0xc4], [0x7f, 0xb0, 0xff]], "storytold/photocraft"),
-    app("vectorcraft", "VectorCraft", "Vector illustration", [[0xe8, 0x57, 0x3f], [0xb8, 0x3a, 0x24], [0xff, 0x8a, 0x70]], "storytold/vectorcraft"),
-    app(
-        "filmcraft",
-        "FilmCraft",
-        "Video editing, color and sound",
-        [[0x8b, 0x5c, 0xf6], [0x6a, 0x3f, 0xd6], [0xb6, 0x9c, 0xff]],
-        "storytold/filmcraft",
-    ),
-    app(
-        "lightcraft",
-        "LightCraft",
-        "Photo library and raw development",
-        [[0xf2, 0xa5, 0x16], [0x8a, 0x58, 0x00], [0xff, 0xc1, 0x4d]],
-        "storytold/lightcraft",
-    ),
-    CraftApp {
-        former_ids: &["printcraft"],
-        former_names: &["PrintCraft"],
-        ..app(
-            "pdfcraft",
-            "PdfCraft",
-            "Reading, organizing and protecting PDFs",
-            [[0xe8, 0x20, 0x4f], [0xb7, 0x02, 0x28], [0xf2, 0x3a, 0x62]],
-            "storytold/pdfcraft",
-        )
-    },
-    app(
-        "effectcraft",
-        "EffectCraft",
-        "Motion graphics and visual effects",
-        [[0xe0, 0x36, 0x8f], [0xb0, 0x20, 0x6c], [0xff, 0x7a, 0xb8]],
-        "storytold/effectcraft",
-    ),
-    app(
-        "designcraft",
-        "DesignCraft",
-        "Page layout and publishing",
-        [[0x7b, 0xb5, 0x1c], [0x45, 0x70, 0x08], [0xa6, 0xe0, 0x4a]],
-        "storytold/designcraft",
-    ),
-    app(
-        "figcraft",
-        "FigCraft",
-        "Interface design and prototyping",
-        [[0x02, 0xda, 0x96], [0x04, 0x7a, 0x56], [0x4f, 0xe8, 0xb6]],
-        "storytold/figcraft",
-    ),
-    app("wordcraft", "WordCraft", "Writing and document design", [[0x3f, 0x5f, 0xe0], [0x2a, 0x44, 0xb8], [0x8e, 0xa2, 0xff]], "storytold/wordcraft"),
-    app(
-        "soundcraft",
-        "SoundCraft",
-        "Recording, editing and mixing audio",
-        [[0x1f, 0xa5, 0xc9], [0x0e, 0x72, 0x90], [0x5f, 0xd0, 0xee]],
-        "storytold/soundcraft",
-    ),
-    app(
-        "deckcraft",
-        "DeckCraft",
-        "Presentations and slide shows",
-        [[0xf0, 0x7a, 0x1e], [0xa8, 0x4f, 0x0a], [0xff, 0xa0, 0x60]],
-        "storytold/deckcraft",
-    ),
-    app(
-        "cadcraft",
-        "CADCraft",
-        "Computer-aided design and drafting",
-        [[0x3e, 0xa6, 0xe8], [0x1a, 0x6f, 0xa8], [0x7c, 0xc8, 0xff]],
-        "storytold/cadcraft",
-    ),
-    app("gridcraft", "GridCraft", "Spreadsheets and data", [[0x1f, 0x9d, 0x55], [0x12, 0x70, 0x3a], [0x4f, 0xd6, 0x8a]], "storytold/gridcraft"),
-    app(
-        "texturecraft",
-        "TextureCraft",
-        "3D texture painting",
-        [[0xc2, 0x67, 0x2b], [0x9c, 0x4a, 0x15], [0xe5, 0x8a, 0x4e]],
-        "storytold/texturecraft",
-    ),
-    CraftApp {
-        // Use the project repository until its getartcraft.com page is published.
-        site: Some("https://github.com/storytold/materialcraft"),
-        ..app(
-            "materialcraft",
-            "MaterialCraft",
-            "Procedural material design",
-            [[0x17, 0x8a, 0x9c], [0x10, 0x65, 0x73], [0x63, 0xc5, 0xd3]],
-            "storytold/materialcraft",
-        )
-    },
-    // The raven's tile blue, with its README's deep (#1659c4) and light (#74aaff) accents for text.
-    app(
-        "craft-anything",
-        "Craft Anything",
-        "Find out how any software works, then craft your own",
-        [[0x4e, 0x7b, 0xfb], [0x16, 0x59, 0xc4], [0x74, 0xaa, 0xff]],
-        "storytold/craft-anything",
-    ),
-    CraftApp {
-        kind: AppKind::Community,
-        publisher: "Tangency Labs",
-        msi_publisher: Some("SolidCraft contributors"),
-        bundle: Some("io.tangencylabs.solidcraft"),
-        former_bundles: &["ai.storyteller.solidcraft", "ai.storyteller.solvecraft"],
-        site: Some("https://solidcraft.io"),
-        // Signed by its own developer's team, not ArtCraft's (since 0.27, per its README).
-        mac_team: Some("G5QA5U5X2S"),
-        ..app(
-            "solidcraft",
-            "SolidCraft",
-            "Parametric 3D CAD",
-            [[0x46, 0xa1, 0xfb], [0x16, 0x53, 0xae], [0x8c, 0xc4, 0xff]],
-            "tangency-labs/solidcraft",
-        )
-    },
-];
+const CATALOG_JSON: &str = include_str!("../../../apps.json");
+
+/// The catalogue, in `apps.json` order.
+pub fn suite() -> &'static [CraftApp] {
+    static SUITE: OnceLock<Vec<CraftApp>> = OnceLock::new();
+    SUITE.get_or_init(load_suite).as_slice()
+}
+
+#[allow(clippy::expect_used)]
+fn load_suite() -> Vec<CraftApp> {
+    parse_catalog(CATALOG_JSON).expect("apps.json must be valid catalogue JSON")
+}
+
+fn intern(s: String) -> &'static str {
+    Box::leak(s.into_boxed_str())
+}
+
+fn intern_list(items: Vec<String>) -> &'static [&'static str] {
+    if items.is_empty() {
+        return &[];
+    }
+    Box::leak(items.into_iter().map(intern).collect::<Vec<_>>().into_boxed_slice())
+}
+
+#[derive(Deserialize)]
+struct CatalogFile {
+    apps: Vec<CatalogRow>,
+}
+
+#[derive(Deserialize)]
+struct CatalogRow {
+    id: String,
+    name: String,
+    display_name: String,
+    replaces: String,
+    description: String,
+    icon: String,
+    repo: String,
+    status: String,
+    category: String,
+    #[serde(default)]
+    former_ids: Vec<String>,
+    #[serde(default)]
+    former_names: Vec<String>,
+    #[serde(default)]
+    kind: Option<String>,
+    #[serde(default)]
+    publisher: Option<String>,
+    #[serde(default)]
+    msi_publisher: Option<String>,
+    #[serde(default)]
+    bundle: Option<String>,
+    #[serde(default)]
+    former_bundles: Vec<String>,
+    #[serde(default)]
+    site: Option<String>,
+    #[serde(default)]
+    mac_team: Option<String>,
+    color: [u8; 3],
+    ink_light: [u8; 3],
+    ink_dark: [u8; 3],
+    #[serde(default)]
+    early_access: bool,
+}
+
+fn parse_category(value: &str) -> Result<Category, String> {
+    match value {
+        "Photo" => Ok(Category::Photo),
+        "Design" => Ok(Category::Design),
+        "Video" => Ok(Category::Video),
+        "Audio" => Ok(Category::Audio),
+        "Documents" => Ok(Category::Documents),
+        "Office" => Ok(Category::Office),
+        other => Err(format!("unknown category {other:?}")),
+    }
+}
+
+fn parse_maturity(value: &str) -> Result<Maturity, String> {
+    match value {
+        "stable" => Ok(Maturity::Stable),
+        "beta" => Ok(Maturity::Beta),
+        "alpha" => Ok(Maturity::Alpha),
+        other => Err(format!("unknown status {other:?}")),
+    }
+}
+
+fn parse_kind(value: Option<&str>) -> Result<AppKind, String> {
+    match value {
+        None | Some("official") => Ok(AppKind::Official),
+        Some("community") => Ok(AppKind::Community),
+        Some(other) => Err(format!("unknown kind {other:?}")),
+    }
+}
+
+fn parse_catalog(json: &str) -> Result<Vec<CraftApp>, String> {
+    let file: CatalogFile = serde_json::from_str(json).map_err(|e| e.to_string())?;
+    let mut apps = Vec::with_capacity(file.apps.len());
+    for row in file.apps {
+        apps.push(row_to_app(row)?);
+    }
+    Ok(apps)
+}
+
+fn row_to_app(row: CatalogRow) -> Result<CraftApp, String> {
+    if row.id.is_empty() || row.name.is_empty() || row.repo.is_empty() {
+        return Err("each app needs id, name and repo".into());
+    }
+    if !row.repo.contains('/') {
+        return Err(format!("{} repo must be owner/name", row.id));
+    }
+    let kind = parse_kind(row.kind.as_deref())?;
+    let category = parse_category(&row.category)?;
+    let maturity = parse_maturity(&row.status)?;
+    let publisher = intern(row.publisher.unwrap_or_else(|| match kind {
+        AppKind::Official => "ArtCraft".into(),
+        AppKind::Community => "Community".into(),
+    }));
+    let mac_team = match row.mac_team {
+        Some(team) if !team.is_empty() => Some(intern(team)),
+        Some(_) => None,
+        None if kind == AppKind::Official => Some(ARTCRAFT_TEAM_ID),
+        None => None,
+    };
+    Ok(CraftApp {
+        id: intern(row.id),
+        name: intern(row.name),
+        display_name: intern(row.display_name),
+        replaces: intern(row.replaces),
+        tagline: intern(row.description),
+        icon: intern(row.icon),
+        color: row.color,
+        ink_light: row.ink_light,
+        ink_dark: row.ink_dark,
+        repo: intern(row.repo),
+        former_ids: intern_list(row.former_ids),
+        former_names: intern_list(row.former_names),
+        kind,
+        publisher,
+        msi_publisher: row.msi_publisher.filter(|s| !s.is_empty()).map(intern),
+        bundle: row.bundle.filter(|s| !s.is_empty()).map(intern),
+        former_bundles: intern_list(row.former_bundles),
+        site: row.site.filter(|s| !s.is_empty()).map(intern),
+        mac_team,
+        category,
+        maturity,
+        early_access: row.early_access,
+    })
+}
 
 /// The Apple Developer team that signs every official Craft App and ArtCraft Launcher (Learning
 /// Machines LLC): the macOS side of the Windows publisher check.
 pub const ARTCRAFT_TEAM_ID: &str = "DJ6XS33FX8";
 
-/// ArtCraft's website.
-pub const WEBSITE_URL: &str = "https://getartcraft.com";
+/// iCreate / iCreativate website.
+pub const WEBSITE_URL: &str = "https://icreativate.co.za";
 /// The GitHub account every official Craft App's repository lives under. The release feed can
-/// only move an app within it; a community app installs from its own repo, pinned in [`SUITE`].
+/// only move an app within it; a community app installs from its own repo, pinned in [`suite`].
 pub const GITHUB_OWNER: &str = "storytold";
-/// ArtCraft on GitHub: every Craft App's source.
-pub const GITHUB_URL: &str = "https://github.com/storytold";
-/// ArtCraft's social accounts: (service, URL). Shown as small icons, less prominent than Discord.
-pub const SOCIAL: [(&str, &str); 5] = [
-    ("X", "https://x.com/get_artcraft"),
-    ("Instagram", "https://www.instagram.com/officialartcraftstudios"),
-    ("LinkedIn", "https://www.linkedin.com/company/artcraft-ai"),
-    ("YouTube", "https://www.youtube.com/@OfficialArtcraftStudios"),
-    ("TikTok", "https://www.tiktok.com/@artcraft.studios"),
-];
+/// iCreate on GitHub (the launcher's own organisation). Craft Apps still install from [`GITHUB_OWNER`].
+pub const GITHUB_URL: &str = "https://github.com/iCreativate";
+/// Extra social icons in the footer. Empty: iCreate points people to the website and GitHub buttons.
+pub const SOCIAL: [(&str, &str); 0] = [];
 
-/// The ArtCraft community on Discord.
-pub const DISCORD_URL: &str = "https://discord.gg/artcraft";
-/// Deep link into the Discord application for the ArtCraft server invite.
-pub const DISCORD_APP_URL: &str = "discord://-/invite/artcraft";
+/// Community chat; iCreate has no Discord yet, so this opens the website.
+pub const DISCORD_URL: &str = "https://icreativate.co.za";
+/// Deep link unused until a Discord invite exists; same as [`DISCORD_URL`].
+pub const DISCORD_APP_URL: &str = "https://icreativate.co.za";
 
-/// ArtCraft Launcher itself, described like a Craft App so it can update itself with the same
-/// machinery (asset names `artcraft-launcher-<ver>-…`, bundle id `ai.storyteller.artcraft-launcher`,
-/// `ArtCraft Launcher.app`). Not part of [`SUITE`].
-pub const LAUNCHER: CraftApp = app(
-    "artcraft-launcher",
-    "ArtCraft Launcher",
-    "Installs and updates the Craft App Suite",
-    [[0x0b, 0x0b, 0x0c], [0x0b, 0x0b, 0x0c], [0xf2, 0xf1, 0xee]],
-    "storytold/craft-launcher",
-);
+/// iCreate itself, described like a Craft App so it can update itself with the same machinery
+/// (asset names `artcraft-launcher-<ver>-…`, bundle id `za.co.icreativate.icreate`, `iCreate.app`).
+/// Not part of [`suite`]. The asset stem stays `artcraft-launcher` so packaging and self-update
+/// keep matching GitHub release files.
+pub const LAUNCHER: CraftApp = CraftApp {
+    publisher: "iCreativate",
+    bundle: Some("za.co.icreativate.icreate"),
+    site: Some("https://icreativate.co.za"),
+    mac_team: None,
+    display_name: "iCreate",
+    replaces: "",
+    icon: "icreate.png",
+    category: Category::Design,
+    maturity: Maturity::Stable,
+    ..app(
+        "artcraft-launcher",
+        "iCreate",
+        "Installs and updates the iCreate creative suite",
+        [[0x0e, 0xa5, 0xe9], [0x03, 0x69, 0xa1], [0x38, 0xbd, 0xf8]],
+        "iCreativate/icreate-launcher",
+    )
+};
 
 /// The launcher's own repo, checked so it can say when a newer launcher is out.
-pub const LAUNCHER_REPO: &str = "storytold/craft-launcher";
-/// The launcher's own asset stem.
+pub const LAUNCHER_REPO: &str = "iCreativate/icreate-launcher";
+/// The launcher's own asset stem (release file prefix).
 pub const LAUNCHER_ID: &str = "artcraft-launcher";
+/// Shown in the window, About, tray and installers.
+pub const APP_DISPLAY_NAME: &str = "iCreate";
+/// macOS bundle id, Linux app id and Windows AppUserModelID.
+pub const APP_BUNDLE_ID: &str = "za.co.icreativate.icreate";
 
 /// A Craft App's 128 px icon (PNG), as copied from its repo into `assets/app-icons`: the UI
 /// draws it, and the Linux install puts it in the desktop menu.
@@ -312,29 +445,74 @@ mod tests {
 
     #[test]
     fn every_app_has_its_icon() {
-        for app in &SUITE {
+        for app in suite() {
             let png = app_icon_png(app.id).unwrap_or_else(|| panic!("no icon for {}", app.id));
             assert!(png.starts_with(b"\x89PNG\r\n\x1a\n"), "{} icon isn't a PNG", app.id);
+            assert_eq!(app.icon, format!("{}.png", app.id), "{} icon field should name its PNG", app.id);
         }
         assert!(app_icon_png("notacraft").is_none());
     }
 
     /// Every catalog entry must have a distinct lookup key.
     #[test]
-    fn suite_has_seventeen_apps_with_unique_ids() {
-        assert_eq!(SUITE.len(), 17);
-        let mut ids: Vec<_> = SUITE.iter().map(|a| a.id).collect();
+    fn suite_has_unique_ids_and_icreate_names() {
+        let apps = suite();
+        assert_eq!(apps.len(), 17);
+        let mut ids: Vec<_> = apps.iter().map(|a| a.id).collect();
         ids.sort_unstable();
         ids.dedup();
-        assert_eq!(ids.len(), SUITE.len());
-        for a in &SUITE {
-            // `Craft Anything` is `craft-anything`.
+        assert_eq!(ids.len(), apps.len());
+        for a in apps {
             assert_eq!(a.name.to_lowercase().replace(' ', "-"), a.id);
+            assert!(a.display_name.starts_with("iCreate "), "{} display_name", a.id);
+            assert!(a.display_name.contains(&format!("powered by {}", a.name)), "{} credits {}", a.id, a.name);
+            assert!(!a.replaces.is_empty(), "{} replaces", a.id);
+            assert!(!a.repo.is_empty() && a.repo.contains('/'), "{} repo", a.id);
             match a.kind {
-                AppKind::Official => assert_eq!(a.repo, format!("storytold/{}", a.id)),
+                AppKind::Official => {}
                 AppKind::Community => assert!(!a.repo.starts_with("storytold/"), "{} is community", a.id),
             }
         }
+        let photo = CraftApp::by_id("photocraft").unwrap();
+        assert_eq!(photo.title(), "iCreate Photo");
+        assert_eq!(photo.replaces, "Adobe Photoshop");
+        assert_eq!(photo.category, Category::Photo);
+        assert_eq!(photo.maturity, Maturity::Beta);
+        assert_eq!(photo.repo, "storytold/photocraft");
+        assert!(!apps.iter().any(|a| a.early_access), "shipping apps stay on Free; early_access is a later extras flag");
+        assert!(photo.matches_query("photoshop"));
+        assert!(photo.matches_query("iCreate Photo"));
+        assert!(!photo.matches_query("premiere"));
+        let motion = CraftApp::by_id("effectcraft").unwrap();
+        assert_eq!(motion.maturity, Maturity::Alpha);
+        assert!(motion.maturity.is_early());
+        assert_eq!(motion.category, Category::Video);
+    }
+
+    #[test]
+    fn a_fork_repo_is_taken_from_json_with_no_rust_change() {
+        let json = r#"{
+            "apps": [{
+                "id": "photocraft",
+                "name": "PhotoCraft",
+                "display_name": "iCreate Photo (powered by PhotoCraft)",
+                "replaces": "Adobe Photoshop",
+                "description": "Image editing",
+                "icon": "photocraft.png",
+                "repo": "iCreativate/photocraft",
+                "status": "stable",
+                "category": "Photo",
+                "color": [1, 2, 3],
+                "ink_light": [4, 5, 6],
+                "ink_dark": [7, 8, 9]
+            }]
+        }"#;
+        let apps = parse_catalog(json).unwrap();
+        assert_eq!(apps[0].repo, "iCreativate/photocraft");
+        assert_eq!(apps[0].id, "photocraft");
+        assert_eq!(apps[0].name, "PhotoCraft");
+        assert_eq!(apps[0].maturity, Maturity::Stable);
+        assert_eq!(apps[0].stems().collect::<Vec<_>>(), ["photocraft"]);
     }
 
     #[test]
@@ -389,5 +567,19 @@ mod tests {
         assert_eq!(pdf.names().collect::<Vec<_>>(), ["PdfCraft", "PrintCraft"]);
         assert_eq!(pdf.website(), "https://getartcraft.com/apps/pdfcraft");
         assert_eq!(CraftApp::by_id("wordcraft").unwrap().website(), "https://getartcraft.com/apps/wordcraft");
+    }
+
+    #[test]
+    fn icreate_updates_from_its_own_github_repo() {
+        assert_eq!(LAUNCHER.name, "iCreate");
+        assert_eq!(LAUNCHER.publisher, "iCreativate");
+        assert_eq!(LAUNCHER.repo, "iCreativate/icreate-launcher");
+        assert_eq!(LAUNCHER.bundle_id(), "za.co.icreativate.icreate");
+        assert_eq!(LAUNCHER_REPO, "iCreativate/icreate-launcher");
+        assert_eq!(LAUNCHER_ID, "artcraft-launcher");
+        assert_eq!(APP_DISPLAY_NAME, "iCreate");
+        assert_eq!(APP_BUNDLE_ID, "za.co.icreativate.icreate");
+        assert_eq!(WEBSITE_URL, "https://icreativate.co.za");
+        assert_eq!(GITHUB_URL, "https://github.com/iCreativate");
     }
 }

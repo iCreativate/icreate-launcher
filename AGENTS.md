@@ -1,17 +1,18 @@
 # AGENTS.md: guide for AI agents and contributors
 
-ArtCraft Launcher installs, updates and launches the **Craft App Suite** (PhotoCraft, LightCraft,
+iCreate, by iCreativate, is a fork of ArtCraft Launcher. It installs, updates and launches the **Craft App Suite** (PhotoCraft, LightCraft,
 FilmCraft, DesignCraft, VectorCraft, PdfCraft, EffectCraft, WordCraft, DeckCraft, GridCraft,
-CADCraft, SoundCraft, FigCraft, Craft Anything, TextureCraft, MaterialCraft), plus approved **community apps** made outside ArtCraft and labelled
+CADCraft, SoundCraft, FigCraft, Craft Anything, TextureCraft, MaterialCraft), plus approved **community apps** labelled
 as such (today SolidCraft, by Tangency Labs). It is written in **Rust only** (no JavaScript or TypeScript): the desktop
 app is native egui/eframe, and the web build is the same Rust compiled to WebAssembly (trunk +
 wasm-bindgen). **No Tauri, Electron or webview shells**, ever.
 
-The product name is always **ArtCraft Launcher** in user-facing text: UI, window titles, About,
-tray menu, notifications, installers, release names, docs prose. The suite is the **Craft App
-Suite**. Machine names stay lowercase: crates and binaries (`artcraft-launcher`,
-`artcraft-launcher-*`), file names, and the app id `ai.storyteller.artcraft-launcher`. Note the
-GitHub repo is `storytold/craft-launcher`, while every file and package is `artcraft-launcher-*`.
+The product name is always **iCreate** in user-facing text: UI, window titles, About,
+tray menu, notifications, installers, release names, docs prose. The About screen must keep
+**Based on ArtCraft Launcher**. The suite is still the **Craft App Suite** (those apps keep their
+names). Machine names stay lowercase: crates and binaries (`artcraft-launcher`,
+`artcraft-launcher-*`) so GitHub release assets still match. The app id is
+`za.co.icreativate.icreate`. The GitHub repo is `iCreativate/icreate-launcher`.
 
 ## 1. Workspace map
 
@@ -29,7 +30,7 @@ xtask/                                  cargo xtask ci | wasm | version | ico
 packaging/                              macOS, Windows, Linux, FreeBSD and web packaging scripts
 assets/app-icon/                        the launcher's own icon (master SVG, renders, tray icons)
 assets/app-icons/                       the Craft apps' icons, copied from each app's repo
-assets/fonts/                           Archivo, Inter, Geist Mono (OFL-1.1): getartcraft.com's faces
+assets/fonts/                           DM Sans, Syne, Source Code Pro (OFL-1.1): iCreativate's faces
 ```
 
 Layering: `core` depends on no other workspace crate and must build for `wasm32-unknown-unknown`.
@@ -139,9 +140,11 @@ packaging/linux/AppRun` and `actionlint`.
 ## 4. Releasing
 
 The version lives only in `[workspace.package] version` in the root `Cargo.toml`
-(`cargo xtask version`, `cargo xtask version set X.Y.Z[-pre]`). Pushing to the `release` branch runs
-`.github/workflows/release.yml`, which builds every platform and creates the draft GitHub Release
-**ArtCraft Launcher v<version>** with `SHA256SUMS.txt`.
+(`cargo xtask version`, `cargo xtask version set X.Y.Z[-pre]`). Tagging `vX.Y.Z` runs
+`.github/workflows/release.yml`, which builds macOS universal, Windows x64 MSI and Linux
+AppImage/.deb, writes `SHA256SUMS.txt`, and publishes the GitHub Release **iCreate v<version>**.
+Signing secrets are optional until certificates exist (`docs/releasing.md`). The launcher
+self-updates from `iCreativate/icreate-launcher` releases.
 
 Release assets (keep these names exact; the launcher's own self-update and the README rely on them):
 
@@ -180,7 +183,7 @@ Packaging facts the code relies on:
   (SoundCraft's ALSA reaches the runtime's PulseAudio plugin through it); it also covers the
   microphone, which SoundCraft records through.
 - `build.rs` reads `ARTCRAFT_LAUNCHER_BUILD_SHA` / `ARTCRAFT_LAUNCHER_BUILD_DATE` and, on Windows,
-  embeds `assets/app-icon/artcraft-launcher.ico`, failing the build when
+  embeds `assets/app-icon/icreate.ico`, failing the build when
   `ARTCRAFT_LAUNCHER_REQUIRE_WINRES=1` and it can't.
 
 ## 5. Parallel agents

@@ -44,18 +44,18 @@ fn desaturate(pixels: &mut [u8]) {
     }
 }
 
-/// The ArtCraft wordmark, as supplied: dark ink for light backgrounds, white for dark ones.
-/// An ArtCraft trademark, not covered by the MIT/Apache license (`docs/brand/LICENSE-brand.txt`).
-pub fn artcraft_logo(dark_background: bool) -> ImageSource<'static> {
-    if dark_background {
-        egui::include_image!("../../../docs/brand/artcraft-logo-white.svg")
-    } else {
-        egui::include_image!("../../../docs/brand/artcraft-logo.svg")
-    }
+/// The iCreate mark (iCreativate cyan leaping figure).
+pub fn icreate_mark() -> ImageSource<'static> {
+    egui::include_image!("../../../docs/brand/icreate-mark.svg")
 }
 
-/// The ArtCraft wordmark's width / height (its SVG view box: 1038.05 × 108).
-pub const ARTCRAFT_LOGO_ASPECT: f32 = 1038.05 / 108.0;
+/// Kept as an alias so older call sites compile while the UI is rebranded.
+pub fn artcraft_logo(_dark_background: bool) -> ImageSource<'static> {
+    icreate_mark()
+}
+
+/// Square mark.
+pub const ARTCRAFT_LOGO_ASPECT: f32 = 1.0;
 
 /// A social service's logo (Simple Icons, white, for tinting), by its name in `catalog::SOCIAL`.
 pub fn social(service: &str) -> Option<ImageSource<'static>> {
@@ -72,9 +72,9 @@ pub fn social(service: &str) -> Option<ImageSource<'static>> {
     })
 }
 
-/// The ArtCraft "A" mark in blue, as supplied: the launcher's app icon and getartcraft.com's favicon.
+/// The iCreate mark, used in Settings and dialogs.
 pub fn artcraft_mark() -> ImageSource<'static> {
-    egui::include_image!("../../../docs/brand/artcraft-mark.svg")
+    icreate_mark()
 }
 
 #[cfg(test)]

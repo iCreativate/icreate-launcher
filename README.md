@@ -1,17 +1,14 @@
 <p align="center">
-  <a href="https://getartcraft.com/">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="docs/brand/artcraft-logo-white.svg">
-      <img alt="ArtCraft" src="docs/brand/artcraft-logo.svg" width="200">
-    </picture>
+  <a href="https://icreativate.co.za/">
+    <img alt="iCreate" src="docs/brand/icreate-mark.svg" width="96" height="96">
   </a>
 </p>
 
 <p align="center">
-  <img src="assets/app-icon/hicolor/256x256/apps/ai.storyteller.artcraft-launcher.png" width="128" height="128" alt="ArtCraft Launcher icon: a blue stylised letter A">
+  <img src="assets/app-icon/hicolor/256x256/apps/za.co.icreativate.icreate.png" width="128" height="128" alt="iCreate icon: a cyan leaping figure">
 </p>
 
-<h1 align="center">ArtCraft Launcher</h1>
+<h1 align="center">iCreate</h1>
 
 <p align="center">
   <b>One place to install, update and open every app in the Craft App Suite, rebuilt in pure Rust.</b><br>
@@ -30,19 +27,15 @@
 </p>
 
 <p align="center">
-  <a href="https://discord.gg/artcraft"><img alt="Join the ArtCraft community on Discord" src="https://img.shields.io/badge/Join%20us%20on%20Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" height="40"></a>
-</p>
-
-<p align="center">
-  <a href="https://github.com/storytold/craft-launcher/releases/latest"><b>Download ArtCraft Launcher</b></a> ·
-  <a href="https://getartcraft.com/">ArtCraft</a> ·
+  <a href="https://github.com/iCreativate/icreate-launcher/releases/latest"><b>Download iCreate</b></a> ·
+  <a href="https://icreativate.co.za/">iCreativate</a> ·
   <a href="https://getartcraft.com/apps">The Craft App Suite</a>
 </p>
 
 > [!NOTE]
-> **ArtCraft is a community of artists from all walks of life.** Painters, photographers,
-> filmmakers, illustrators, designers, animators, hobbyists, and people who picked up a pencil
-> last week. If you make things, you're one of us. **[Come say hi on Discord](https://discord.gg/artcraft).**
+> **iCreate** is a free creative suite from iCreativate, based on the open-source
+> [ArtCraft Launcher](https://github.com/storytold/craft-launcher). It installs and updates the
+> Craft App Suite. ArtCraft's name and marks stay with the ArtCraft team.
 
 <p align="center">
   <a href="#what-it-does">What it does</a> ·
@@ -50,11 +43,11 @@
   <a href="#downloads">Downloads</a> ·
   <a href="#build-from-source">Build from source</a> ·
   <a href="#the-craft-app-suite">Craft App Suite</a> ·
-  <a href="https://discord.gg/artcraft">Discord</a>
+  <a href="https://icreativate.co.za/">Website</a>
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/artcraft-launcher-grid.png" alt="ArtCraft Launcher on macOS in the grid view (dark theme): a card for each Craft App with its icon, status, version, release date and an Install or Open button" width="900">
+  <img src="docs/screenshots/artcraft-launcher-grid.png" alt="iCreate on macOS in the grid view (dark theme): a card for each Craft App with its icon, status, version, release date and an Install or Open button" width="900">
 </p>
 <p align="center">
   <img src="docs/screenshots/artcraft-launcher-table.png" alt="The same apps in the table view (light theme), with columns for each app's status, installed and latest versions, and release date" width="900"><br>
@@ -63,7 +56,7 @@
 
 ## What it does
 
-The Craft apps each ship their own builds for every platform. ArtCraft Launcher saves you from
+The Craft apps each ship their own builds for every platform. iCreate saves you from
 hunting through a dozen release pages: it lists every app in the suite, shows which ones you have
 and which version, installs the right build for your operating system and processor, and tells
 you when an update is out. It is a small native app that can sit in your menu bar or system tray.
@@ -119,7 +112,7 @@ Traditional Chinese catalog and font details.
 
 ## Where apps are installed
 
-ArtCraft Launcher installs each app where your system normally keeps applications, using the
+iCreate installs each app where your system normally keeps applications, using the
 app's official release package, so an app installed by the launcher is the same as one you
 installed by hand (and the launcher finds apps you installed yourself):
 
@@ -128,10 +121,10 @@ installed by hand (and the launcher finds apps you installed yourself):
 | macOS | `/Applications/<App>.app` | Copied from the signed, notarized release DMG |
 | Windows | `C:\Program Files\ArtCraft\<App>` (`Program Files (x86)` for a 32-bit build) | The release MSI, through Windows Installer, for everyone on the computer (with Start menu entry and Apps & features entry). Windows asks for administrator permission for each new install. An app already installed for your account only (`%LOCALAPPDATA%\Programs\ArtCraft\<App>`) keeps its folder and scope when updated; to move it, uninstall it and install it again |
 | Linux | `/usr/bin`, `/usr/share/applications` | The release `.deb` (apt) or `.rpm` (dnf, zypper), with your system's password prompt. Without those, a Flatpak, or an AppImage in `~/Applications` |
-| Linux, inside the launcher's Flatpak, with no Flatpak on the host | `~/.var/app/ai.storyteller.artcraft-launcher/data/artcraft-launcher/apps/<app>` | The release tarball, unpacked into the launcher's own folder and run inside the same sandbox, with its settings in a `home/` folder beside it. Nothing is installed on the host, and each app's configuration stays in the sandbox |
+| Linux, inside the launcher's Flatpak, with no Flatpak on the host | `~/.var/app/za.co.icreativate.icreate/data/icreate/apps/<app>` | The release tarball, unpacked into the launcher's own folder and run inside the same sandbox, with its settings in a `home/` folder beside it. Nothing is installed on the host, and each app's configuration stays in the sandbox |
 | FreeBSD | `/usr/local` | The release tree, with a password prompt (polkit); `~/.local` when polkit isn't installed |
 
-ArtCraft Launcher keeps itself current too: when a new version is out, **Update and restart**
+iCreate keeps itself current too: when a new version is out, **Update and restart**
 downloads it, verifies it, puts it where this copy is installed (the `.app`, the Windows Installer
 package or portable folder, the AppImage, or the `.deb`/`.rpm`) and reopens it.
 
@@ -139,55 +132,46 @@ Updates use the same format an app was installed with. Every download is checked
 release's published SHA-256 before it is installed, and a running app is never replaced.
 
 The launcher writes its log to `logs/artcraft-launcher.log` in its data folder
-(`~/.local/share/artcraft-launcher` on Linux, `~/Library/Application Support/ArtCraft Launcher`
-on macOS, `%LOCALAPPDATA%\ArtCraft Launcher` on Windows, `ArtCraftLauncherData` beside the
+(`~/.local/share/icreate` on Linux, `~/Library/Application Support/iCreate`
+on macOS, `%LOCALAPPDATA%\iCreate` on Windows, `iCreateData` beside the
 portable zip's executable) and keeps the previous two runs as `artcraft-launcher.1.log` and
 `artcraft-launcher.2.log`. `RUST_LOG` changes what it records (`debug`, `info,zbus=warn`, …).
 
 ## Downloads
 
-Download the build for your computer from the [latest release](https://github.com/storytold/craft-launcher/releases/latest), or browse [all releases](https://github.com/storytold/craft-launcher/releases). Every release has a `SHA256SUMS.txt` to check the files against. `<ver>` is the version number, for example `0.1.0`.
+Download the build for your computer from the [latest release](https://github.com/iCreativate/icreate-launcher/releases/latest), or browse [all releases](https://github.com/iCreativate/icreate-launcher/releases). Every release has a `SHA256SUMS.txt` to check the files against. `<ver>` is the version number, for example `1.0.0`. Tag `v<ver>` to build it ([docs/releasing.md](docs/releasing.md)).
+
+Until Apple and Windows signing certificates are configured, the installers are **unsigned**. Gatekeeper and SmartScreen will warn. That is expected — see [Opening unsigned builds](#opening-unsigned-builds).
 
 **Windows** (10 and 11)
 
 | File | What it is |
 |---|---|
 | `artcraft-launcher-<ver>-windows-x64.msi` | Installer for most PCs (Intel and AMD, 64-bit). Installs for the current user, no admin rights needed |
-| `artcraft-launcher-<ver>-windows-arm64.msi` | Installer for Windows on Arm (Snapdragon and other Arm PCs) |
-| `artcraft-launcher-<ver>-windows-x86.msi` | Installer for 32-bit Windows |
-| `artcraft-launcher-<ver>-windows-{x64,arm64,x86}-portable.zip` | No install: unzip and run `artcraft-launcher.exe`. Keeps its settings in the folder |
+| `artcraft-launcher-<ver>-windows-x64-portable.zip` | No install: unzip and run `artcraft-launcher.exe`. Keeps its settings in the folder |
 
 **macOS** (11 Big Sur or later)
 
 | File | What it is |
 |---|---|
-| `artcraft-launcher-<ver>-macos-universal.dmg` | Universal app for Apple silicon and Intel Macs, signed and notarized. Drag ArtCraft Launcher to Applications |
+| `artcraft-launcher-<ver>-macos-universal.dmg` | Universal app for Apple silicon **and** Intel Macs. Drag iCreate to Applications |
 
-**Linux** (x86_64 and aarch64; glibc 2.35 or newer, e.g. Ubuntu 22.04+, Debian 12+, Fedora 36+)
+**Linux** (x86_64 and aarch64; glibc 2.35 or newer, e.g. Ubuntu 22.04+, Debian 12+)
 
 | File | What it is |
 |---|---|
 | `artcraft-launcher-<ver>-linux-{x86_64,aarch64}.AppImage` | Runs on almost any distro without installing; `chmod +x` and run. The `.AppImage.zsync` beside it lets AppImageUpdate fetch only what changed |
 | `artcraft-launcher-<ver>-linux-{x86_64,aarch64}.deb` | Debian, Ubuntu, Mint, Pop!_OS: `sudo apt install ./artcraft-launcher-…deb` |
-| `artcraft-launcher-<ver>-linux-{x86_64,aarch64}.rpm` | Fedora, openSUSE, RHEL: `sudo dnf install ./artcraft-launcher-…rpm` |
-| `artcraft-launcher-<ver>-linux-{x86_64,aarch64}.flatpak` | Flatpak bundle: `flatpak install --user artcraft-launcher-…flatpak`. Inside the sandbox the launcher installs apps as Flatpaks on the host through `flatpak-spawn --host`; where the host has no Flatpak it falls back to each app's release tarball, unpacked and run inside the sandbox with the app's settings kept in it. Either way it can only reach the host as far as that permission allows; the AppImage, .deb and .rpm builds are the recommended way to run the launcher on Linux |
-| `artcraft-launcher-<ver>-linux-{x86_64,aarch64}.tar.gz` | Plain tree (`bin/`, `share/`) for everyone else and for scripts |
-
-RISC-V (riscv64): `artcraft-launcher-<ver>-linux-riscv64.{deb,rpm,tar.gz}`, built against Ubuntu 24.04 (needs glibc 2.39+).
 
 The tray icon uses the StatusNotifierItem standard: KDE, Xfce, Cinnamon and most other desktops show it; on GNOME install the AppIndicator extension.
 
-**FreeBSD** (14, x86_64)
+### Opening unsigned builds
 
-| File | What it is |
-|---|---|
-| `artcraft-launcher-<ver>-freebsd-x86_64.tar.gz` | A tree laid out like `/usr/local` |
+**macOS.** Open the `.dmg`, drag iCreate to Applications, then in Finder Control-click iCreate → **Open** → **Open**. Or: `xattr -cr /Applications/iCreate.app && open /Applications/iCreate.app`.
 
-```sh
-pkg install libxkbcommon wayland libX11 libXcursor libXrandr libXi libxcb mesa-libs vulkan-loader fontconfig freetype2
-tar -xzf artcraft-launcher-<ver>-freebsd-x86_64.tar.gz --strip-components 1 -C /usr/local
-artcraft-launcher
-```
+**Windows.** Run the `.msi`. If SmartScreen says Windows protected your PC, choose **More info** → **Run anyway** only if you downloaded it from the GitHub release above.
+
+**Linux.** `chmod +x` the AppImage and run it, or `sudo apt install ./artcraft-launcher-….deb`.
 
 **Web (WebAssembly)**
 
@@ -197,13 +181,14 @@ artcraft-launcher
 
 ## Build from source
 
-You need a recent stable Rust (1.90 or newer). On Linux, install the windowing headers first
+You need **Rust 1.95 or newer** (this workspace uses edition 2024). See the prerequisites below
+for each OS. On Linux, install the windowing headers first
 (Debian/Ubuntu: `sudo apt install libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev`).
 
 ```sh
-git clone https://github.com/storytold/craft-launcher
-cd craft-launcher
-cargo run --release -p artcraft-launcher   # the desktop app
+git clone https://github.com/iCreativate/icreate-launcher
+cd icreate-launcher
+cargo run --release -p artcraft-launcher   # the desktop app (cargo package name is unchanged)
 cargo xtask ci                             # fmt, clippy, tests and the wasm check
 ```
 
@@ -254,13 +239,13 @@ New contributors and AI agents: start with [`AGENTS.md`](AGENTS.md). Release pac
 [`packaging/`](packaging/) and [`.github/workflows/release.yml`](.github/workflows/release.yml).
 
 > [!IMPORTANT]
-> **Status:** ArtCraft Launcher is new and in early alpha. Expect rough edges, and please file
-> issues (include your OS, which app you were installing and the launcher's log file) or tell us on
-> [Discord](https://discord.gg/artcraft).
+> **Status:** iCreate is new and in early alpha. Expect rough edges, and please file
+> issues (include your OS, which app you were installing and the launcher's log file) at
+> [iCreativate/icreate-launcher](https://github.com/iCreativate/icreate-launcher).
 
 ## The Craft App Suite
 
-ArtCraft Launcher installs the **Craft App Suite**: free, open-source creative tools from the
+iCreate installs the **Craft App Suite**: free, open-source creative tools from the
 [ArtCraft](https://getartcraft.com/) team, each written from scratch in Rust and each able to
 stand on its own.
 
@@ -284,35 +269,20 @@ stand on its own.
 | <img src="https://raw.githubusercontent.com/storytold/craft-anything/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.craft-anything.png" alt="" width="32" height="32"> | **Craft Anything** | See how any software works, then build your own | [GitHub](https://github.com/storytold/craft-anything) | [Website](https://getartcraft.com/apps/craft-anything) |
 | <img src="https://raw.githubusercontent.com/tangency-labs/solidcraft/main/assets/icons/app/linux/exports/hicolor/64x64/apps/io.tangencylabs.solidcraft.png" alt="" width="32" height="32"> | **SolidCraft** | Parametric 3D CAD by Tangency Labs (community app) | [GitHub](https://github.com/tangency-labs/solidcraft) | |
 
-And [**ArtCraft**](https://getartcraft.com/) itself, our AI image and video studio for artists who want real control.
-
-<br>
-
-<p align="center">
-  <a href="https://discord.gg/artcraft"><img alt="Join the ArtCraft community on Discord" src="https://img.shields.io/badge/Join%20us%20on%20Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" height="40"></a>
-</p>
-
-<h3 align="center">Come make things with us</h3>
+The Craft App Suite is made by the [ArtCraft](https://getartcraft.com/) team. iCreate is made by
+[iCreativate](https://icreativate.co.za/) and is based on ArtCraft Launcher.
 
 <p align="center">
-  Our Discord is where artists of every kind hang out: people who paint, shoot, draw, cut film,
-  set type, and people still figuring out what they like to make. Share what you're working on,
-  ask for help, tell us what's broken, or tell us what you wish these tools could do.
-  Whatever your medium and however long you've been at it, you're welcome here.
-</p>
-
-<p align="center">
-  <a href="https://discord.gg/artcraft"><b>discord.gg/artcraft</b></a> ·
-  <a href="https://getartcraft.com/">getartcraft.com</a> ·
-  <a href="https://getartcraft.com/apps">The Craft App Suite</a> ·
-  <a href="https://github.com/storytold/craft-launcher">ArtCraft Launcher</a>
+  <a href="https://icreativate.co.za/"><b>icreativate.co.za</b></a> ·
+  <a href="https://github.com/iCreativate/icreate-launcher">iCreate</a> ·
+  <a href="https://getartcraft.com/apps">The Craft App Suite</a>
 </p>
 
 ---
 
 ## Thanks
 
-The community built launchers for the Craft App Suite before we did, and ArtCraft Launcher learned a
+The community built launchers for the Craft App Suite before this project did, and ArtCraft Launcher learned a
 lot from them. Thank you to their authors:
 
 | Project | Author | What we learned from it |
@@ -332,8 +302,9 @@ lot from them. Thank you to their authors:
 
 ## License and credits
 
-ArtCraft Launcher is dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE), at your option.
-Copyright (c) 2026 ArtCraft Team and the ArtCraft Launcher contributors. Required notices are in [NOTICE](NOTICE).
+iCreate is dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE), at your option.
+Copyright (c) 2026 ArtCraft Team and the ArtCraft Launcher contributors.
+Copyright (c) 2026 iCreativate. Based on ArtCraft Launcher. Required notices are in [NOTICE](NOTICE).
 
 Bundled fonts, icons, images and other assets keep their own open licenses; each one is listed
 with its author, source and license in [ATTRIBUTION.md](ATTRIBUTION.md).
@@ -341,14 +312,13 @@ with its author, source and license in [ATTRIBUTION.md](ATTRIBUTION.md).
 The app icons of the Craft apps (`assets/app-icons/`) are each app's own icon, copied unmodified
 from its repository and licensed like that app (MIT OR Apache-2.0).
 
-**The ArtCraft name, logo and "A" mark are not licensed under MIT or Apache-2.0.** They (everything
-in [`docs/brand/`](docs/brand/), plus the app icon in [`assets/app-icon/`](assets/app-icon/), the
-logo in the launcher's header and the "A" tray icon)
-are trademarks of the ArtCraft Team and are not covered by this license. They may be used only unmodified, and only as
-part of this repository and ArtCraft Launcher, under [`docs/brand/LICENSE-brand.txt`](docs/brand/LICENSE-brand.txt).
-Forks and modified versions must remove them.
+**The ArtCraft name, logo and "A" mark are not licensed under MIT or Apache-2.0.** They are
+trademarks of the ArtCraft Team and are not included in this fork. You may say, in plain text,
+that this work is based on ArtCraft Launcher. The iCreate name and leaping-figure mark in
+[`docs/brand/`](docs/brand/) and [`assets/app-icon/`](assets/app-icon/) are trademarks of
+iCreativate; see [`docs/brand/LICENSE-brand.txt`](docs/brand/LICENSE-brand.txt).
 
 <p align="center">
-  <a href="https://getartcraft.com/"><img alt="ArtCraft" src="docs/brand/artcraft-mark.svg" width="28"></a><br>
-  <sub>Made by the <a href="https://getartcraft.com/">ArtCraft</a> team and community.</sub>
+  <a href="https://icreativate.co.za/"><img alt="iCreate" src="docs/brand/icreate-mark.svg" width="28"></a><br>
+  <sub>Made by <a href="https://icreativate.co.za/">iCreativate</a>, based on ArtCraft Launcher.</sub>
 </p>

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=iCreate
+GenericName=App Launcher
+Comment=Install, update and launch the iCreate creative suite
+Exec=artcraft-launcher
+TryExec=artcraft-launcher
+Icon=za.co.icreativate.icreate
+Terminal=false
+StartupNotify=true
+StartupWMClass=za.co.icreativate.icreate
+Categories=Utility;PackageManager;
+Keywords=icreate;icreativate;craft;launcher;installer;updater;photocraft;filmcraft;apps;

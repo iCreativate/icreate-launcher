@@ -1,7 +1,6 @@
 //! The header, toolbar, footer, the grid of cards and the table, laid out like the apps page on
 //! getartcraft.com: hairline cells, mono labels and square controls.
 
-use artcraft_launcher_core::catalog::AppKind;
 use artcraft_launcher_core::details::AppDetails;
 use artcraft_launcher_core::platform::pick_asset;
 use artcraft_launcher_core::protocol::{Command, JobPhase};
@@ -12,20 +11,9 @@ use egui::{Color32, CornerRadius, FontId, Rect, RichText, Sense, Stroke, Ui, vec
 use crate::app::{Dialog, LauncherUi, TitleBar};
 use crate::i18n::{current, fmt, t, tn, tr_ctx};
 use crate::model::{self, AppEntry};
-use crate::settings::{Filter, SortKey, ViewMode};
+use crate::settings::{CategoryFilter, Filter, SortKey, ViewMode};
 use crate::theme::{self, Tokens, rgb, tint};
 use crate::widgets::{self, Kind};
-
-/// The byline that says who makes an app: "by ArtCraft" or "by <publisher>". Official apps take
-/// the accent colour, community apps the muted one.
-fn kind_badge(ui: &mut Ui, app: &artcraft_launcher_core::CraftApp, t: &Tokens) {
-    let text = fmt(tl!("by {name}"), &[("name", app.publisher)]);
-    let color = match app.kind {
-        AppKind::Official => t.accent_ink,
-        AppKind::Community => t.muted,
-    };
-    widgets::badge(ui, &text, color);
-}
 
 /// Translate a relative timestamp ("just now", "5 min ago", …) into the current language.
 fn ago_text(secs: i64, now: i64) -> String {
@@ -104,10 +92,18 @@ impl LauncherUi {
             if bar == TitleBar::MacOs {
                 ui.add_space(TRAFFIC_LIGHTS_W);
             }
-            // The ArtCraft wordmark exactly as supplied, in its own cell.
-            let logo = vec2(14.0 * crate::icons::ARTCRAFT_LOGO_ASPECT, 14.0);
-            let (cell, _) = ui.allocate_exact_size(vec2(logo.x + 40.0, h), Sense::hover());
-            egui::Image::new(crate::icons::artcraft_logo(t.dark)).alt_text(tl!("ArtCraft")).paint_at(ui, Rect::from_center_size(cell.center(), logo));
+            // iCreate mark and wordmark in the title bar.
+            let (cell, _) = ui.allocate_exact_size(vec2(148.0, h), Sense::hover());
+            let mark = vec2(22.0, 22.0);
+            let mark_pos = egui::pos2(cell.left() + 18.0, cell.center().y);
+            egui::Image::new(crate::icons::icreate_mark()).alt_text(tl!("iCreate")).paint_at(ui, Rect::from_center_size(mark_pos, mark));
+            ui.painter().text(
+                egui::pos2(mark_pos.x + 18.0, cell.center().y),
+                egui::Align2::LEFT_CENTER,
+                "iCreate",
+                egui::FontId::new(18.0, crate::theme::display()),
+                t.ink_strong,
+            );
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                 if bar == TitleBar::Custom {
                     widgets::window_buttons(ui, h);
@@ -117,10 +113,10 @@ impl LauncherUi {
                 }
                 // The controls reserve their actual widths before the secondary text gets space.
                 ui.with_layout(egui::Layout::left_to_right(egui::Align::Center), |ui| {
-                    if ui.available_width() >= 17.0 + widgets::hud_galley(ui, tl!("Craft App Suite"), t.muted).size().x {
+                    if ui.available_width() >= 17.0 + widgets::hud_galley(ui, tl!("by iCreativate"), t.muted).size().x {
                         widgets::rule(ui, h);
                         ui.add_space(16.0);
-                        widgets::hud(ui, tl!("Craft App Suite"), t.muted);
+                        widgets::hud(ui, tl!("by iCreativate"), t.muted);
                     }
                 });
             });
@@ -140,6 +136,8 @@ impl LauncherUi {
         }
         self.announcements(ui);
         let updates = self.count(Filter::Updates);
+        self.home_nav_row(ui, &t, updates);
+        ui.add_space(6.0);
         let compact = self.toolbar_row(ui, &t, updates);
         if compact {
             self.toolbar_compact_row(ui, &t, updates);
@@ -158,7 +156,7 @@ impl LauncherUi {
                     widgets::tag(ui, tl!("Update"), t.accent, Color32::WHITE);
                     ui.add_space(4.0);
                     ui.label(
-                        RichText::new(fmt(tl!("ArtCraft Launcher {version} is available."), &[("version", &r.version_label())]))
+                        RichText::new(fmt(tl!("iCreate {version} is available."), &[("version", &r.version_label())]))
                             .family(theme::medium())
                             .color(t.ink_strong),
                     );
@@ -212,6 +210,42 @@ impl LauncherUi {
             }
             ui.add_space(8.0);
             widgets::hud_link(ui, tl!("What's new"), &r.html_url);
+        });
+    }
+
+    /// Category tabs, then Installed / Updates. Search stays on the row below so the existing
+    /// toolbar layout is unchanged.
+    fn home_nav_row(&mut self, ui: &mut Ui, t: &Tokens, updates: usize) {
+        let width = ui.available_width();
+        let height = theme::CONTROL_H * 2.0 + 8.0;
+        let (rect, _) = ui.allocate_exact_size(vec2(width, height), Sense::hover());
+        let mut child = ui.new_child(egui::UiBuilder::new().max_rect(rect).layout(egui::Layout::top_down(egui::Align::Min)));
+        child.set_clip_rect(rect.intersect(ui.clip_rect()));
+        child.horizontal_wrapped(|ui| {
+            ui.spacing_mut().item_spacing.x = 8.0;
+            ui.spacing_mut().item_spacing.y = 6.0;
+            let cell = |cat: CategoryFilter| {
+                let label = crate::i18n::t(cat.label());
+                (cat, widgets::Cell { label, tip: label, count: None })
+            };
+            let first = [CategoryFilter::All, CategoryFilter::Photo, CategoryFilter::Design, CategoryFilter::Video].map(cell);
+            let second = [CategoryFilter::Audio, CategoryFilter::Documents, CategoryFilter::Office].map(cell);
+            widgets::cells(ui, &mut self.settings.category, &first);
+            widgets::cells(ui, &mut self.settings.category, &second);
+            let installed = self.count(Filter::Installed);
+            let mut status = self.settings.filter;
+            let all = self.count(Filter::All);
+            let status_cells = [
+                (Filter::All, widgets::Cell { label: tl!("All"), tip: tl!("All"), count: Some((all, None)) }),
+                (Filter::Installed, widgets::Cell { label: tl!("Installed"), tip: tl!("Installed"), count: Some((installed, None)) }),
+                (
+                    Filter::Updates,
+                    widgets::Cell { label: tl!("Updates"), tip: tl!("Installed apps with a newer version"), count: Some((updates, Some(t.accent))) },
+                ),
+            ];
+            if widgets::cells(ui, &mut status, &status_cells) {
+                self.settings.filter = status;
+            }
         });
     }
 
@@ -381,14 +415,14 @@ impl LauncherUi {
             widgets::IconLink {
                 name: "Discord",
                 label: tl!("Discord").to_string(),
-                tip: tl!("Join the ArtCraft community on Discord").to_string(),
+                tip: tl!("Visit the iCreate website").to_string(),
                 url: self.discord_url,
             },
         ];
         links.extend(SOCIAL.iter().map(|(name, url)| widgets::IconLink {
             name,
             label: (*name).to_string(),
-            tip: fmt(tl!("ArtCraft on {name}"), &[("name", name)]),
+            tip: fmt(tl!("iCreate on {name}"), &[("name", name)]),
             url,
         }));
         let icon = 13.0;
@@ -559,7 +593,7 @@ impl LauncherUi {
                 ui.spacing_mut().interact_size.y = 0.0;
                 ui.horizontal(|ui| {
                     widgets::wordmark_in(ui, app, 22.0, in_colour);
-                    kind_badge(ui, app, &t);
+                    widgets::maturity_badge(ui, app);
                 });
                 ui.add(egui::Label::new(RichText::new(tr_ctx(current(), app.id, app.tagline)).font(tagline.clone()).color(t.muted)).truncate());
             });
@@ -1364,7 +1398,7 @@ mod tests {
         Release {
             tag: "v0.4.1".into(),
             version: None,
-            name: "ArtCraft Launcher v0.4.1".into(),
+            name: "iCreate v0.4.1".into(),
             published_at: None,
             html_url: "https://github.com/storytold/craft-launcher/releases/tag/v0.4.1".into(),
             notes: String::new(),

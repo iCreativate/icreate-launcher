@@ -8,7 +8,7 @@ use std::time::Duration;
 
 use sha2::{Digest, Sha256};
 
-const USER_AGENT: &str = concat!("ArtCraftLauncher/", env!("CARGO_PKG_VERSION"));
+const USER_AGENT: &str = concat!("iCreate/", env!("CARGO_PKG_VERSION"));
 /// Largest JSON or text answer we read.
 const MAX_SMALL: u64 = 4 << 20;
 /// Largest GitHub API answer we read: 100 releases of an app with 49 assets are about 10 MB.
@@ -33,7 +33,7 @@ pub enum Fetched {
 #[derive(Clone)]
 pub struct Http {
     small: ureq::Agent,
-    /// ArtCraft's release feed: a short timeout, so a slow server never holds up a check.
+    /// The Craft apps' release feed: a short timeout, so a slow server never holds up a check.
     feed: ureq::Agent,
     no_redirect: ureq::Agent,
     download: ureq::Agent,
@@ -42,7 +42,7 @@ pub struct Http {
     token: Option<String>,
 }
 
-/// Why ArtCraft's release feed couldn't be read.
+/// Why the release feed couldn't be read.
 #[derive(Debug)]
 pub struct FeedError {
     pub why: String,
@@ -179,6 +179,34 @@ impl Http {
             200 => read_text_capped(&mut resp, MAX_SMALL).map_err(|e| failed(format!("unreadable answer ({e})"))),
             s => Err(FeedError { why: format!("{} answered HTTP {s}", host(url)), throttled: s == 429, retry_after }),
         }
+    }
+
+    /// JSON API call (Supabase Auth, REST, Edge Functions). Caps the body like other small reads.
+    pub fn request_json(&self, method: &str, url: &str, headers: &[(&str, &str)], body: Option<&str>) -> Result<(u16, String), String> {
+        let agent = if is_loopback(url) { &self.direct } else { &self.small };
+        let failed = |e| format!("couldn't reach {} ({e})", host(url));
+        let finish = |mut resp: ureq::http::Response<ureq::Body>| -> Result<(u16, String), String> {
+            let status = resp.status().as_u16();
+            let text = read_text_capped(&mut resp, MAX_SMALL).unwrap_or_default();
+            Ok((status, text))
+        };
+        if method == "GET" {
+            let mut req = agent.get(url);
+            for (name, value) in headers {
+                req = req.header(*name, *value);
+            }
+            return finish(req.call().map_err(failed)?);
+        }
+        let mut req = match method {
+            "POST" => agent.post(url),
+            "PUT" => agent.put(url),
+            "PATCH" => agent.patch(url),
+            _ => return Err("unsupported method".into()),
+        };
+        for (name, value) in headers {
+            req = req.header(*name, *value);
+        }
+        finish(req.header("Content-Type", "application/json").send(body.unwrap_or("")).map_err(failed)?)
     }
 
     /// GET a small text file (following redirects).

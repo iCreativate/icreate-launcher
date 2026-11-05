@@ -1,4 +1,4 @@
-# Czech (cs) catalog for ArtCraft Launcher.
+# Czech (cs) catalog for iCreate.
 # Format: context<TAB>source<TAB>translation
 # Empty context = plain UI string (tl!, t). @id = command-id keyed. @plural = one|few|other.
 # @msg = status/error message template. Other context = disambiguation for tr_ctx.
@@ -6,7 +6,7 @@
 # Product and app names, shortcuts, units, file formats, placeholders and trailing ellipses are kept.
 
 	Launcher	Launcher
-	Craft App Suite	Craft App Suite
+	Creative suite	Creative suite
 	by {name}	od {name}
 	Open Source Tools for Creatives, Makers, and Builders	Open-source nástroje pro kreativce, tvůrce a vývojáře
 	Settings	Nastavení
@@ -68,7 +68,7 @@
 	{name} wasn't opened: a quote in its launch options isn't closed.	Aplikace {name} nebyla otevřena: uvozovky v jejích možnostech spuštění nejsou uzavřené.
 	Save	Uložit
 	All releases	Všechna vydání
-	ArtCraft Launcher {version} is available.	Je k dispozici ArtCraft Launcher {version}.
+	iCreate {version} is available.	Je k dispozici iCreate {version}.
 	Dismiss	Skrýt
 	Update and restart	Aktualizovat a restartovat
 	A new version is available. Would you like to relaunch with the updated version?	Je k dispozici nová verze. Chcete aplikaci znovu spustit s aktualizovanou verzí?
@@ -79,7 +79,7 @@
 	Released {date}	Vydáno {date}
 	Open on GitHub	Otevřít na GitHubu
 	Close	Zavřít
-	ArtCraft Launcher {version}	ArtCraft Launcher {version}
+	iCreate {version}	iCreate {version}
 	Only when I ask	Pouze na vyžádání
 	Automatically download and install updates	Automaticky stahovat a instalovat aktualizace
 	Notify me when an installed app has an update	Upozornit, když má nainstalovaná aplikace aktualizaci
@@ -91,14 +91,14 @@
 	Updates always use the format an app was installed with.	Aktualizace vždy použijí formát, ve kterém byla aplikace nainstalována.
 	Running in the background	Běh na pozadí
 	Keep running in the tray when the window is closed	Po zavření okna ponechat spuštěné v oznamovací oblasti
-	ArtCraft Launcher is still running	ArtCraft Launcher stále běží
+	iCreate is still running	iCreate stále běží
 	It's in the tray: open it or quit it from the tray icon, or turn this off in the settings.	Je v oznamovací oblasti: otevřete ho nebo ukončete přes ikonu v ní, nebo to vypněte v nastavení.
 	Show the window on the current desktop	Zobrazit okno na aktuální ploše
-	Start ArtCraft Launcher when I log in	Spouštět ArtCraft Launcher po přihlášení
+	Start iCreate when I log in	Spouštět iCreate po přihlášení
 	Community	Komunita
-	Questions, ideas and news from the ArtCraft team	Dotazy, nápady a novinky od týmu ArtCraft
+	Questions, ideas and news from iCreativate	Otázky, nápady a novinky od iCreativate
 	Appearance	Vzhled
-	Quit ArtCraft Launcher	Ukončit ArtCraft Launcher
+	Quit iCreate	Ukončit iCreate
 	Done	Hotovo
 	Uninstall {name}?	Odinstalovat {name}?
 	The app will be moved to the Trash. Your documents and settings stay.	Aplikace bude přesunuta do Koše. Vaše dokumenty a nastavení zůstanou zachovány.
@@ -138,7 +138,7 @@
 	Open link	Otevřít odkaz
 	Update	Aktualizovat
 	{name} icon	Ikona aplikace {name}
-	Loading ArtCraft Launcher…	Načítání aplikace ArtCraft Launcher…
+	Loading iCreate…	Načítání aplikace iCreate…
 	Cancel update	Zrušit aktualizaci
 	Stop waiting; the update can be started again later	Přestat čekat; aktualizaci lze spustit znovu později
 	Download again	Stáhnout znovu
@@ -193,8 +193,8 @@ month	Dec	12.
 	Installing for {platform}	Instalace pro {platform}
 	Downloads for {platform}	Stažení pro {platform}
 	No downloads for this system	Pro tento systém nejsou k dispozici žádné soubory ke stažení
-	Join the ArtCraft community on Discord	Připojit se ke komunitě ArtCraft na Discordu
-	ArtCraft on {name}	ArtCraft na {name}
+	Visit the iCreate website	Otevřít web iCreate
+	iCreate on {name}	iCreate na {name}
 	Couldn't open {name}: {e}	{name} nelze otevřít: {e}
 	Download cancelled	Stahování zrušeno
 	Available to install	K dispozici k instalaci
@@ -214,7 +214,7 @@ month	Dec	12.
 	Version {version} installed	Nainstalována verze {version}
 	Version {latest}	Verze {latest}
 	No release published yet	Zatím nebylo zveřejněno žádné vydání
-	ArtCraft Launcher	ArtCraft Launcher
+	iCreate	iCreate
 	App	Aplikace
 	Latest	Nejnovější
 	Released	Vydáno
@@ -236,7 +236,6 @@ month	Dec	12.
 	Couldn't check for updates: {f}	Aktualizace nelze zkontrolovat: {f}
 	Website (coming soon)	Web (již brzy)
 	GitHub repository	Repozitář na GitHubu
-	ArtCraft	ArtCraft
 	Update 1 app	Aktualizovat 1 aplikaci
 	Update all ({count})	Aktualizovat vše ({count})
 	⊞  Grid	⊞  Mřížka
@@ -249,7 +248,7 @@ month	Dec	12.
 	Full changelog	Úplný přehled změn
 	link	odkaz
 	No apps match	Žádné aplikace neodpovídají hledání
-	Open ArtCraft Launcher to update.	Aktualizujte otevřením aplikace ArtCraft Launcher.
+	Open iCreate to update.	Aktualizujte otevřením aplikace iCreate.
 	{name} {v} is available	Je k dispozici {name} {v}
 	{count} updates are available	Počet dostupných aktualizací: {count}
 	These notes weren't fetched (GitHub's request limit was reached). They're on the release page.	Tyto poznámky se nepodařilo načíst (byl dosažen limit požadavků GitHubu). Najdete je na stránce vydání.
@@ -307,7 +306,7 @@ filter	Installed	Nainstalováno
 @id	launcher.notes	Co je nového
 @id	launcher.dismiss	Zavřít
 @id	settings.open	Nastavení
-@id	settings.quit	Ukončit ArtCraft Launcher
+@id	settings.quit	Ukončit iCreate
 @id	view.grid	Mřížka
 @id	view.table	Tabulka
 @id	filter.all	Vše
@@ -331,14 +330,12 @@ filter	Installed	Nainstalováno
 @id	linux.preferred_kind	Instalovat nové aplikace jako
 @id	tray.close_to_tray	Po zavření okna ponechat spuštěné v oznamovací oblasti
 @id	tray.show_on_current_desktop	Zobrazit okno na aktuální ploše
-@id	tray.login_item	Spouštět ArtCraft Launcher po přihlášení
+@id	tray.login_item	Spouštět iCreate po přihlášení
 @id	appearance.theme	Vzhled
-	Show ArtCraft Launcher	Zobrazit ArtCraft Launcher
+	Show iCreate	Zobrazit iCreate
 	Check for Updates	Zkontrolovat aktualizace
-	Visit getartcraft.com	Navštívit getartcraft.com
-	ArtCraft on GitHub	ArtCraft na GitHubu
-	Join the ArtCraft Discord	Připojit se na ArtCraft Discord
-@plural	ArtCraft Launcher · {n} update available|ArtCraft Launcher · {n} updates available	ArtCraft Launcher · {n} dostupná aktualizace|ArtCraft Launcher · {n} dostupné aktualizace|ArtCraft Launcher · {n} dostupných aktualizací
+	iCreate on GitHub	iCreate na GitHubu
+@plural	iCreate · {n} update available|iCreate · {n} updates available	iCreate · {n} dostupná aktualizace|iCreate · {n} dostupné aktualizace|iCreate · {n} dostupných aktualizací
 	Install folder	Instalační složka
 	Default install folder	Výchozí instalační složka
 	System default	Výchozí nastavení systému
@@ -351,7 +348,7 @@ filter	Installed	Nainstalováno
 @msg	couldn't use install folder {path}: {reason}	instalační složku {path} nelze použít: {reason}
 @msg	this release has no AppImage for a custom install folder	toto vydání nemá AppImage pro vlastní instalační složku
 @msg	custom install folders aren't supported on this system	vlastní instalační složky nejsou v tomto systému podporovány
-@msg	{path} already exists and wasn't installed by ArtCraft Launcher	{path} již existuje a nebylo nainstalováno aplikací ArtCraft Launcher
+@msg	{path} already exists and wasn't installed by iCreate	{path} již existuje a nebylo nainstalováno aplikací iCreate
 @msg	couldn't move {path} to Trash ({reason}). Remove it in Finder instead.	{path} nelze přesunout do koše ({reason}). Odstraňte položku ve Finderu.
 	Apps are placed inside this folder.	Aplikace se umístí do této složky.
 	Replace what's there?	Nahradit, co tam je?
@@ -396,3 +393,44 @@ materialcraft	Preview materials in 2D and on 3D models.	Prohlížejte materiály
 	Migrate Flatpak bundles to ArtCraft OCI (experimental)	Převést balíčky Flatpak na ArtCraft OCI (experimentální)
 	On update, switch first party apps when the matching package is available. Otherwise, keep using bundles.	Při aktualizaci převést aplikace ArtCraft, pokud je dostupný odpovídající balíček. Jinak nadále používat samostatné balíčky.
 	The OCI repository is a preview with GPG verification disabled.	Repozitář OCI je předběžná verze s vypnutým ověřováním GPG.
+	Based on ArtCraft Launcher	Based on ArtCraft Launcher
+	by iCreativate	by iCreativate
+	Photo	Foto
+	Design	Design
+	Video	Video
+	Audio	Audio
+	Documents	Dokumenty
+	Office	Kancelář
+	Alpha	Alfa
+	Beta	Beta
+	Stable	Stabilní
+	Early preview	Raný náhled
+	Replaces {product}	Nahrazuje {product}
+	Powered by {name}	Poháněno projektem {name}
+
+	Account	Účet
+	An iCreate account is optional. Every app stays free to install without signing in.	Účet iCreate je volitelný. Každou aplikaci lze nainstalovat zdarma bez přihlášení.
+	This build has no account server configured.	Toto sestavení nemá server účtů.
+	You're signed in as {email}	Přihlášeni jako {email}
+	Sign out	Odhlásit se
+	Email	E-mail
+	Send code	Odeslat kód
+	Continue with Google	Pokračovat přes Google
+	We sent a sign-in code to {email}	Přihlašovací kód jsme poslali na {email}
+	Verify	Ověřit
+	Checking account…	Kontrola účtu…
+	Free	Zdarma
+	All apps	Všechny aplikace
+	iCreate Pro	iCreate Pro
+	R99 a month	R99 měsíčně
+	R990 a year	R990 ročně
+	Cloud backup of settings	Cloudová záloha nastavení
+	Priority support	Přednostní podpora
+	Early access to new apps	Brzký přístup k novým aplikacím
+	Pro extras: cloud backup, priority support and early access. Apps never require Pro.	Pro navíc: cloudová záloha, přednostní podpora a brzký přístup. Aplikace Pro nikdy nevyžadují.
+	Your plan	Váš tarif
+	Back up settings now	Zálohovat nastavení teď
+	Restore settings from iCreate	Obnovit nastavení z iCreate
+	I've paid — refresh status	Zaplatil jsem — obnovit stav
+	Subscribe monthly — R99	Předplatit měsíčně — R99
+	Subscribe yearly — R990	Předplatit ročně — R990

@@ -1,13 +1,13 @@
-# Traditional Chinese (Taiwan) catalog for ArtCraft Launcher.
+# Traditional Chinese (Taiwan) catalog for iCreate.
 # Format: context<TAB>English source<TAB>translation.
-# Original translations from the English UI. Product and app names (ArtCraft Launcher and its
-# "Launcher" tag, Craft App Suite, PhotoCraft...) stay unchanged.
+# Original translations from the English UI. Product and app names (iCreate and its
+# "Launcher" tag, Creative suite, PhotoCraft...) stay unchanged.
 # Shown with the system's Traditional Chinese font (Noto Sans CJK TC, PingFang TC, Microsoft
 # JhengHei...: see cjk_font.rs). Chinese has one plural form. Placeholders and trailing ellipses
 # are preserved.
 
 	Launcher	Launcher
-	Craft App Suite	Craft App Suite
+	Creative suite	Creative suite
 	by {name}	由 {name} 製作
 	Open Source Tools for Creatives, Makers, and Builders	為創作者、自造者與打造者而生的開源工具
 	Settings	設定
@@ -57,7 +57,7 @@
 	Reinstall	重新安裝
 	Uninstall…	解除安裝…
 	All releases	所有版本
-	ArtCraft Launcher {version} is available.	ArtCraft Launcher {version} 已推出。
+	iCreate {version} is available.	iCreate {version} 已推出。
 	Dismiss	關閉
 	Update and restart	更新並重新啟動
 	A new version is available. Would you like to relaunch with the updated version?	有新版本可以使用。要使用更新後的版本重新啟動嗎？
@@ -68,7 +68,7 @@
 	Released {date}	發行於 {date}
 	Open on GitHub	在 GitHub 上開啟
 	Close	關閉
-	ArtCraft Launcher {version}	ArtCraft Launcher {version}
+	iCreate {version}	iCreate {version}
 	Only when I ask	僅在我要求時
 	Automatically download and install updates	自動下載並安裝更新
 	Notify me when an installed app has an update	已安裝的應用程式有更新時通知我
@@ -80,14 +80,14 @@
 	Updates always use the format an app was installed with.	更新一律沿用應用程式安裝時的格式。
 	Running in the background	在背景執行
 	Keep running in the tray when the window is closed	關閉視窗後仍在系統匣中執行
-	ArtCraft Launcher is still running	ArtCraft Launcher 仍在執行
+	iCreate is still running	iCreate 仍在執行
 	It's in the tray: open it or quit it from the tray icon, or turn this off in the settings.	它位於系統匣中：請從系統匣圖示開啟或結束，或在設定中關閉此功能。
 	Show the window on the current desktop	在目前的桌面顯示視窗
-	Start ArtCraft Launcher when I log in	登入時啟動 ArtCraft Launcher
+	Start iCreate when I log in	登入時啟動 iCreate
 	Community	社群
-	Questions, ideas and news from the ArtCraft team	來自 ArtCraft 團隊的提問、想法與最新消息
+	Questions, ideas and news from iCreativate	來自 iCreativate 的提問、想法與最新消息
 	Appearance	外觀
-	Quit ArtCraft Launcher	結束 ArtCraft Launcher
+	Quit iCreate	結束 iCreate
 	Done	完成
 	Uninstall {name}?	要解除安裝 {name} 嗎？
 	The app will be moved to the Trash. Your documents and settings stay.	應用程式會移到垃圾桶，你的文件與設定會保留。
@@ -125,8 +125,8 @@ month	Dec	12月
 	Installing for {platform}	正在為 {platform} 安裝
 	Downloads for {platform}	{platform} 適用的下載項目
 	No downloads for this system	此系統沒有可下載的項目
-	Join the ArtCraft community on Discord	在 Discord 加入 ArtCraft 社群
-	ArtCraft on {name}	ArtCraft 在 {name}
+	Visit the iCreate website	造訪 iCreate 網站
+	iCreate on {name}	iCreate 在 {name}
 	Available to install	可安裝
 	Available	可用
 	Installed · up to date	已安裝 · 已是最新版本
@@ -143,7 +143,7 @@ month	Dec	12月
 	Version {version} installed	已安裝版本 {version}
 	Version {latest}	版本 {latest}
 	No release published yet	尚未發行任何版本
-	ArtCraft Launcher	ArtCraft Launcher
+	iCreate	iCreate
 	App	應用程式
 	Latest	最新
 	Released	發行日期
@@ -163,7 +163,6 @@ month	Dec	12月
 	Downloads the new version, replaces this one and opens it again	下載新版本、取代目前版本並重新開啟
 	Couldn't check for updates: {f}	無法檢查更新：{f}
 	GitHub repository	GitHub 儲存庫
-	ArtCraft	ArtCraft
 	Update 1 app	更新 1 個應用程式
 	Update all ({count})	全部更新（{count}）
 	⊞  Grid	⊞  網格
@@ -176,7 +175,7 @@ month	Dec	12月
 	Full changelog	完整變更記錄
 	link	連結
 	No apps match	沒有符合的應用程式
-	Open ArtCraft Launcher to update.	開啟 ArtCraft Launcher 以進行更新。
+	Open iCreate to update.	開啟 iCreate 以進行更新。
 	{name} {v} is available	{name} {v} 已推出
 	{count} updates are available	有 {count} 項更新可用
 	These notes weren't fetched (GitHub's request limit was reached). They're on the release page.	無法擷取這些說明（已達到 GitHub 的請求上限）。請至發行頁面查看。
@@ -207,7 +206,7 @@ filter	Installed	已安裝
 @id	launcher.notes	更新說明
 @id	launcher.dismiss	關閉
 @id	settings.open	設定
-@id	settings.quit	結束 ArtCraft Launcher
+@id	settings.quit	結束 iCreate
 @id	view.grid	網格
 @id	view.table	表格
 @id	filter.all	全部
@@ -230,7 +229,7 @@ filter	Installed	已安裝
 @id	linux.preferred_kind	新應用程式安裝格式
 @id	tray.close_to_tray	關閉視窗後繼續在系統匣執行
 @id	tray.show_on_current_desktop	在目前桌面顯示視窗
-@id	tray.login_item	登入時啟動 ArtCraft Launcher
+@id	tray.login_item	登入時啟動 iCreate
 @id	appearance.theme	外觀
 	Update	更新
 	New	新
@@ -241,12 +240,10 @@ filter	Installed	已安裝
 	Restore	還原
 	Show in Finder	在 Finder 中顯示
 	Show in Explorer	在檔案總管中顯示
-	Show ArtCraft Launcher	顯示 ArtCraft Launcher
+	Show iCreate	顯示 iCreate
 	Check for Updates	檢查更新
-	Visit getartcraft.com	前往 getartcraft.com
-	ArtCraft on GitHub	GitHub 上的 ArtCraft
-	Join the ArtCraft Discord	加入 ArtCraft Discord
-@plural	ArtCraft Launcher · {n} update available|ArtCraft Launcher · {n} updates available	ArtCraft Launcher · {n} 個更新可用
+	iCreate on GitHub	GitHub 上的 iCreate
+@plural	iCreate · {n} update available|iCreate · {n} updates available	iCreate · {n} 個更新可用
 @plural	{n} app|{n} apps	{n} 個應用程式
 photocraft	Image editing	影像編輯
 vectorcraft	Vector illustration	向量插畫
@@ -264,7 +261,7 @@ cadcraft	Computer-aided design and drafting	電腦輔助設計與製圖
 soundcraft	Recording, editing and mixing audio	錄音、剪輯與混音
 figcraft	Interface design and prototyping	介面設計與原型製作
 	Show in Files	在檔案管理員中顯示
-	Loading ArtCraft Launcher…	正在載入 ArtCraft Launcher…
+	Loading iCreate…	正在載入 iCreate…
 	Download cancelled	已取消下載
 	Automatically	自動
 	Checked {ago} · using {sources}	上次檢查：{ago} · 使用 {sources}
@@ -347,7 +344,7 @@ figcraft	Interface design and prototyping	介面設計與原型製作
 @msg	couldn't use install folder {path}: {reason}	無法使用安裝資料夾 {path}：{reason}
 @msg	this release has no AppImage for a custom install folder	此版本沒有適用於自訂安裝資料夾的 AppImage
 @msg	custom install folders aren't supported on this system	此系統不支援自訂安裝資料夾
-@msg	{path} already exists and wasn't installed by ArtCraft Launcher	{path} 已存在，且不是由 ArtCraft Launcher 安裝的
+@msg	{path} already exists and wasn't installed by iCreate	{path} 已存在，且不是由 iCreate 安裝的
 @msg	couldn't move {path} to Trash ({reason}). Remove it in Finder instead.	無法將 {path} 移至垃圾桶（{reason}）。請改在 Finder 中將其移除。
 	Apps are placed inside this folder.	應用程式會放在此資料夾內。
 	Replace what's there?	要取代現有內容嗎？
@@ -388,3 +385,44 @@ materialcraft	Node graphs	節點圖
 materialcraft	Combine noises, patterns and filters.	組合雜訊、圖樣與濾鏡。
 materialcraft	Live previews	即時預覽
 materialcraft	Preview materials in 2D and on 3D models.	在 2D 與 3D 模型上預覽材質。
+	Based on ArtCraft Launcher	Based on ArtCraft Launcher
+	by iCreativate	by iCreativate
+	Photo	照片
+	Design	設計
+	Video	影片
+	Audio	音訊
+	Documents	文件
+	Office	辦公
+	Alpha	Alpha
+	Beta	Beta
+	Stable	穩定
+	Early preview	早期預覽
+	Replaces {product}	取代 {product}
+	Powered by {name}	採用 {name}
+
+	Account	帳戶
+	An iCreate account is optional. Every app stays free to install without signing in.	iCreate 帳戶是選用的。不必登入即可免費安裝所有 App。
+	This build has no account server configured.	此版本未設定帳戶伺服器。
+	You're signed in as {email}	已登入為 {email}
+	Sign out	登出
+	Email	電子郵件
+	Send code	傳送驗證碼
+	Continue with Google	使用 Google 繼續
+	We sent a sign-in code to {email}	我們已將登入驗證碼寄到 {email}
+	Verify	驗證
+	Checking account…	正在檢查帳戶…
+	Free	免費
+	All apps	所有 App
+	iCreate Pro	iCreate Pro
+	R99 a month	每月 R99
+	R990 a year	每年 R990
+	Cloud backup of settings	設定雲端備份
+	Priority support	優先支援
+	Early access to new apps	搶先使用新 App
+	Pro extras: cloud backup, priority support and early access. Apps never require Pro.	Pro 加值：設定雲端備份、優先支援與搶先使用。App 從不要求 Pro。
+	Your plan	你的方案
+	Back up settings now	立即備份設定
+	Restore settings from iCreate	從 iCreate 還原設定
+	I've paid — refresh status	我已付款 — 重新整理狀態
+	Subscribe monthly — R99	按月訂閱 — R99
+	Subscribe yearly — R990	按年訂閱 — R990

@@ -1,4 +1,4 @@
-# Brazilian Portuguese (pt-BR) catalog for ArtCraft Launcher.
+# Brazilian Portuguese (pt-BR) catalog for iCreate.
 # Format: context<TAB>source<TAB>translation
 # Empty context = plain UI string (tl!, t).
 # @id = command-id keyed (tr_id).
@@ -7,7 +7,7 @@
 # Other context = disambiguation for tr_ctx.
 
 	Launcher	Launcher
-	Craft App Suite	Craft App Suite
+	Creative suite	Creative suite
 	by {name}	por {name}
 	Open Source Tools for Creatives, Makers, and Builders	Ferramentas de código aberto para criadores, artistas e desenvolvedores
 	Settings	Configurações
@@ -69,7 +69,7 @@
 	{name} wasn't opened: a quote in its launch options isn't closed.	{name} não foi aberto: há aspas não fechadas nas opções de inicialização.
 	Save	Salvar
 	All releases	Todos os lançamentos
-	ArtCraft Launcher {version} is available.	ArtCraft Launcher {version} está disponível.
+	iCreate {version} is available.	iCreate {version} está disponível.
 	Dismiss	Dispensar
 	Update and restart	Atualizar e reiniciar
 	A new version is available. Would you like to relaunch with the updated version?	Uma nova versão está disponível. Reiniciar com a nova versão?
@@ -80,7 +80,7 @@
 	Released {date}	Lançado em {date}
 	Open on GitHub	Abrir no GitHub
 	Close	Fechar
-	ArtCraft Launcher {version}	ArtCraft Launcher {version}
+	iCreate {version}	iCreate {version}
 	Only when I ask	Apenas quando eu pedir
 	Automatically download and install updates	Baixar e instalar atualizações automaticamente
 	Notify me when an installed app has an update	Notificar quando um aplicativo instalado tiver atualização
@@ -92,14 +92,14 @@
 	Updates always use the format an app was installed with.	As atualizações sempre usam o formato com o qual o aplicativo foi instalado.
 	Running in the background	Execução em segundo plano
 	Keep running in the tray when the window is closed	Continuar na bandeja do sistema ao fechar a janela
-	ArtCraft Launcher is still running	O ArtCraft Launcher continua aberto
+	iCreate is still running	O iCreate continua aberto
 	It's in the tray: open it or quit it from the tray icon, or turn this off in the settings.	Ele está na bandeja do sistema: abra-o ou encerre-o pelo ícone, ou desative isso nas configurações.
 	Show the window on the current desktop	Mostrar a janela na área de trabalho atual
-	Start ArtCraft Launcher when I log in	Iniciar o ArtCraft Launcher ao fazer login
+	Start iCreate when I log in	Iniciar o iCreate ao fazer login
 	Community	Comunidade
-	Questions, ideas and news from the ArtCraft team	Dúvidas, ideias e novidades da equipe ArtCraft
+	Questions, ideas and news from iCreativate	Dúvidas, ideias e novidades da iCreativate
 	Appearance	Aparência
-	Quit ArtCraft Launcher	Sair do ArtCraft Launcher
+	Quit iCreate	Sair do iCreate
 	Done	Concluído
 	Uninstall {name}?	Desinstalar {name}?
 	The app will be moved to the Trash. Your documents and settings stay.	O aplicativo será movido para a Lixeira. Seus documentos e configurações serão mantidos.
@@ -140,7 +140,7 @@
 	Open link	Abrir link
 	Update	Atualizar
 	{name} icon	Ícone do {name}
-	Loading ArtCraft Launcher…	Carregando ArtCraft Launcher…
+	Loading iCreate…	Carregando iCreate…
 	Cancel update	Cancelar atualização
 	Stop waiting; the update can be started again later	Parar de aguardar; a atualização pode ser iniciada novamente depois
 	Download again	Baixar novamente
@@ -201,8 +201,8 @@ month	Dec	dez.
 	Installing for {platform}	Instalando para {platform}
 	Downloads for {platform}	Downloads para {platform}
 	No downloads for this system	Nenhum download disponível para este sistema
-	Join the ArtCraft community on Discord	Entre na comunidade ArtCraft no Discord
-	ArtCraft on {name}	ArtCraft no {name}
+	Visit the iCreate website	Visitar o site do iCreate
+	iCreate on {name}	iCreate no {name}
 	Couldn't open {name}: {e}	Não foi possível abrir {name}: {e}
 	Download cancelled	Download cancelado
 	Available to install	Disponível para instalar
@@ -222,7 +222,7 @@ month	Dec	dez.
 	Version {version} installed	Versão {version} instalada
 	Version {latest}	Versão {latest}
 	No release published yet	Nenhum lançamento publicado ainda
-	ArtCraft Launcher	ArtCraft Launcher
+	iCreate	iCreate
 	App	Aplicativo
 	Latest	Última
 	Released	Lançado
@@ -243,7 +243,6 @@ month	Dec	dez.
 	Downloads the new version, replaces this one and opens it again	Baixa a nova versão, substitui a atual e abre novamente
 	Couldn't check for updates: {f}	Não foi possível verificar atualizações: {f}
 	GitHub repository	Repositório no GitHub
-	ArtCraft	ArtCraft
 	Update 1 app	Atualizar 1 aplicativo
 	Update all ({count})	Atualizar todos ({count})
 	⊞  Grid	⊞  Grade
@@ -256,7 +255,7 @@ month	Dec	dez.
 	Full changelog	Histórico completo de alterações
 	link	link
 	No apps match	Nenhum aplicativo encontrado
-	Open ArtCraft Launcher to update.	Abra o ArtCraft Launcher para atualizar.
+	Open iCreate to update.	Abra o iCreate para atualizar.
 	{name} {v} is available	{name} {v} está disponível
 	{count} updates are available	{count} atualizações estão disponíveis
 	These notes weren't fetched (GitHub's request limit was reached). They're on the release page.	Estas notas não foram carregadas (o limite de requisições do GitHub foi atingido). Elas estão na página de lançamentos.
@@ -311,7 +310,7 @@ filter	Installed	Instalados
 @id	launcher.notes	Novidades
 @id	launcher.dismiss	Dispensar
 @id	settings.open	Configurações
-@id	settings.quit	Sair do ArtCraft Launcher
+@id	settings.quit	Sair do iCreate
 @id	view.grid	Grade
 @id	view.table	Tabela
 @id	filter.all	Todos
@@ -335,15 +334,13 @@ filter	Installed	Instalados
 @id	linux.preferred_kind	Instalar novos aplicativos como
 @id	tray.close_to_tray	Continuar na bandeja do sistema ao fechar a janela
 @id	tray.show_on_current_desktop	Mostrar a janela na área de trabalho atual
-@id	tray.login_item	Iniciar o ArtCraft Launcher ao fazer login
+@id	tray.login_item	Iniciar o iCreate ao fazer login
 @id	appearance.theme	Aparência
 
 # Tray (menu bar) menu and tooltip
-	Show ArtCraft Launcher	Mostrar ArtCraft Launcher
+	Show iCreate	Mostrar iCreate
 	Check for Updates	Verificar atualizações
-	Visit getartcraft.com	Visitar getartcraft.com
-	ArtCraft on GitHub	ArtCraft no GitHub
-	Join the ArtCraft Discord	Entrar no Discord da ArtCraft
+	iCreate on GitHub	iCreate no GitHub
 	App details	Detalhes do aplicativo
 	More actions for {name}	Mais ações para {name}
 	Close (Esc)	Fechar (Esc)
@@ -358,7 +355,7 @@ filter	Installed	Instalados
 	Next picture (→)	Próxima imagem (→)
 	Loading pictures…	Carregando imagens…
 	Pictures couldn't be loaded. Reopen this page to try again.	Não foi possível carregar as imagens. Abra a página novamente para tentar de novo.
-@plural	ArtCraft Launcher · {n} update available|ArtCraft Launcher · {n} updates available	ArtCraft Launcher · {n} atualização disponível|ArtCraft Launcher · {n} atualizações disponíveis
+@plural	iCreate · {n} update available|iCreate · {n} updates available	iCreate · {n} atualização disponível|iCreate · {n} atualizações disponíveis
 	Install folder	Pasta de instalação
 	Default install folder	Pasta de instalação padrão
 	System default	Padrão do sistema
@@ -371,7 +368,7 @@ filter	Installed	Instalados
 @msg	couldn't use install folder {path}: {reason}	não foi possível usar a pasta de instalação {path}: {reason}
 @msg	this release has no AppImage for a custom install folder	esta versão não tem um AppImage para uma pasta de instalação personalizada
 @msg	custom install folders aren't supported on this system	pastas de instalação personalizadas não são compatíveis com este sistema
-@msg	{path} already exists and wasn't installed by ArtCraft Launcher	{path} já existe e não foi instalado pelo ArtCraft Launcher
+@msg	{path} already exists and wasn't installed by iCreate	{path} já existe e não foi instalado pelo iCreate
 @msg	couldn't move {path} to Trash ({reason}). Remove it in Finder instead.	não foi possível mover {path} para o Lixo ({reason}). Remova-o pelo Finder.
 	Apps are placed inside this folder.	Os aplicativos são colocados dentro desta pasta.
 	Replace what's there?	Substituir o que já existe?
@@ -416,3 +413,44 @@ materialcraft	Preview materials in 2D and on 3D models.	Visualize materiais em 2
 	Migrate Flatpak bundles to ArtCraft OCI (experimental)	Migrar pacotes Flatpak para ArtCraft OCI (experimental)
 	On update, switch first party apps when the matching package is available. Otherwise, keep using bundles.	Ao atualizar, migrar os aplicativos da ArtCraft quando o pacote correspondente estiver disponível. Caso contrário, continuar usando pacotes independentes.
 	The OCI repository is a preview with GPG verification disabled.	O repositório OCI é uma prévia com a verificação GPG desativada.
+	Based on ArtCraft Launcher	Based on ArtCraft Launcher
+	by iCreativate	by iCreativate
+	Photo	Foto
+	Design	Design
+	Video	Vídeo
+	Audio	Áudio
+	Documents	Documentos
+	Office	Office
+	Alpha	Alfa
+	Beta	Beta
+	Stable	Estável
+	Early preview	Prévia inicial
+	Replaces {product}	Substitui {product}
+	Powered by {name}	Desenvolvido com {name}
+
+	Account	Conta
+	An iCreate account is optional. Every app stays free to install without signing in.	Uma conta iCreate é opcional. Cada app continua grátis para instalar sem entrar.
+	This build has no account server configured.	Esta versão não tem servidor de contas.
+	You're signed in as {email}	Você entrou como {email}
+	Sign out	Sair
+	Email	E-mail
+	Send code	Enviar código
+	Continue with Google	Continuar com o Google
+	We sent a sign-in code to {email}	Enviamos um código de acesso para {email}
+	Verify	Verificar
+	Checking account…	Verificando a conta…
+	Free	Grátis
+	All apps	Todos os apps
+	iCreate Pro	iCreate Pro
+	R99 a month	R99 por mês
+	R990 a year	R990 por ano
+	Cloud backup of settings	Backup na nuvem das configurações
+	Priority support	Suporte prioritário
+	Early access to new apps	Acesso antecipado a novos apps
+	Pro extras: cloud backup, priority support and early access. Apps never require Pro.	Extras Pro: backup na nuvem, suporte prioritário e acesso antecipado. Os apps nunca exigem Pro.
+	Your plan	Seu plano
+	Back up settings now	Salvar configurações agora
+	Restore settings from iCreate	Restaurar configurações do iCreate
+	I've paid — refresh status	Já paguei — atualizar status
+	Subscribe monthly — R99	Assinar mensal — R99
+	Subscribe yearly — R990	Assinar anual — R990

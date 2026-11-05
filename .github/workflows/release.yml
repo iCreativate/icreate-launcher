@@ -1,44 +1,319 @@
+# Tag v1.0.0 (or any vMAJOR.MINOR.PATCH[-prerelease]) to build installers and publish a GitHub
+# Release. The launcher's self-update reads iCreativate/icreate-launcher releases, SHA256SUMS.txt,
+# and the artcraft-launcher-<ver>-… asset names.
+#
+# Signing secrets are optional. Without them the job still publishes: macOS is ad-hoc signed (not
+# notarised), Windows is unsigned, Linux is unsigned. See docs/releasing.md.
 name: Release
 
 on:
   push:
-    branches: [release]
+    tags:
+      - "v*.*.*"
   workflow_dispatch:
     inputs:
-      version:
-        description: "Version override for a test run, e.g. 0.2.0-rc.1 (empty: Cargo.toml)"
-        type: string
-        default: ""
+      publish:
+        description: "Create a GitHub release from Cargo.toml (tag pushes always publish)"
+        type: boolean
+        default: false
 
 permissions:
-  contents: write
-  packages: write
+  contents: read
 
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
 
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+  RUST_BACKTRACE: 1
+  RUST_TOOLCHAIN: "1.95"
+
 jobs:
-  release:
-    # Intentionally tracked at @main (not SHA-pinned) so org-wide CI improvements, security fixes, and build optimizations propagate without PR churn across all craftapp repos.
-    uses: storytold/craft-common-actions/.github/workflows/release.yml@main
-    with:
-      app-name: craft-launcher
-      app-title: ArtCraft Launcher
-      version: ${{ inputs.version }}
-    secrets:
-      APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-      APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-      KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-      APPLE_ID: ${{ secrets.APPLE_ID }}
-      APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-      WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
-      WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-      AZURE_SIGNING_ENDPOINT: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
-      AZURE_SIGNING_ACCOUNT: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
-      AZURE_CERT_PROFILE: ${{ secrets.AZURE_CERT_PROFILE }}
-      LINUX_SIGNING_KEY: ${{ secrets.LINUX_SIGNING_KEY }}
+  version:
+    name: Version
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+      date: ${{ steps.version.outputs.date }}
+      publish: ${{ steps.version.outputs.publish }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - id: version
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          PUBLISH_INPUT: ${{ inputs.publish }}
+        run: |
+          set -euo pipefail
+          cargo_version="$(awk '
+            /^\[/ { in_pkg = ($0 == "[workspace.package]"); next }
+            in_pkg && $1 == "version" { gsub(/[" ]/, "", $3); print $3; exit }
+          ' Cargo.toml)"
+          if [[ -z "$cargo_version" ]]; then
+            echo "::error::could not read [workspace.package] version from Cargo.toml"
+            exit 1
+          fi
+          if [[ "$EVENT_NAME" == "push" ]]; then
+            tag="$REF_NAME"
+            version="${tag#v}"
+            if [[ "$version" != "$cargo_version" ]]; then
+              echo "::error::tag $tag does not match Cargo.toml version $cargo_version. Run: cargo xtask version set $version && git commit && git tag v$version"
+              exit 1
+            fi
+            publish=true
+          else
+            version="$cargo_version"
+            tag="v$version"
+            publish="$PUBLISH_INPUT"
+          fi
+          if [[ "$version" == *-* ]]; then prerelease=true; else prerelease=false; fi
+          date="$(date -u +%Y-%m-%d)"
+          {
+            echo "version=$version"
+            echo "tag=$tag"
+            echo "prerelease=$prerelease"
+            echo "date=$date"
+            echo "publish=$publish"
+          } >>"$GITHUB_OUTPUT"
+          echo "iCreate $version (tag $tag, publish=$publish, prerelease=$prerelease)"
+
+  macos:
+    name: macOS universal
+    needs: version
+    runs-on: macos-15
+    timeout-minutes: 90
+    env:
+      ARTCRAFT_LAUNCHER_VERSION: ${{ needs.version.outputs.version }}
+      ARTCRAFT_LAUNCHER_BUILD_DATE: ${{ needs.version.outputs.date }}
+      ARTCRAFT_LAUNCHER_BUILD_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          targets: aarch64-apple-darwin, x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          key: release-macos-universal
+      - name: Import Developer ID certificate (optional)
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: packaging/macos/import-cert.sh
+      - name: Build, sign, notarize
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: packaging/macos/package.sh --arch universal
+      - name: Verify the DMG
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: packaging/macos/verify.sh --arch universal
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: macos
+          path: dist/release/*
+          if-no-files-found: error
+      - name: Remove temporary keychain
+        if: always()
+        run: |
+          if [[ -n "${MACOS_KEYCHAIN:-}" ]]; then security delete-keychain "$MACOS_KEYCHAIN" || true; fi
+
+  windows:
+    name: Windows x64
+    needs: version
+    runs-on: windows-latest
+    timeout-minutes: 90
+    env:
+      ARTCRAFT_LAUNCHER_VERSION: ${{ needs.version.outputs.version }}
+      ARTCRAFT_LAUNCHER_BUILD_DATE: ${{ needs.version.outputs.date }}
+      ARTCRAFT_LAUNCHER_BUILD_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          targets: x86_64-pc-windows-msvc
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          key: release-windows-x64
+      - name: Install WiX 5
+        shell: pwsh
+        run: |
+          $tools = Join-Path $env:USERPROFILE '.dotnet\tools'
+          $env:PATH = "$tools;$env:PATH"
+          dotnet tool install --global wix --version 5.0.2
+          wix extension add -g WixToolset.UI.wixext/5.0.2 WixToolset.Util.wixext/5.0.2
+          Add-Content -Path $env:GITHUB_PATH -Value $tools
+      - name: Build and package
+        shell: pwsh
+        env:
+          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_SIGNING_ENDPOINT: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+          AZURE_SIGNING_ACCOUNT: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
+          AZURE_CERT_PROFILE: ${{ secrets.AZURE_CERT_PROFILE }}
+        run: ./packaging/windows/package.ps1 -Arch x64
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: windows
+          path: dist/release/*
+          if-no-files-found: error
+
+  linux:
+    name: Linux ${{ matrix.arch }}
+    needs: version
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-22.04
+            nfpm: amd64
+          - arch: aarch64
+            runner: ubuntu-22.04-arm
+            nfpm: arm64
+    env:
+      ARTCRAFT_LAUNCHER_VERSION: ${{ needs.version.outputs.version }}
+      ARTCRAFT_LAUNCHER_BUILD_DATE: ${{ needs.version.outputs.date }}
+      ARTCRAFT_LAUNCHER_BUILD_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install packaging tools
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev libxi-dev \
+            libgl1-mesa-dev desktop-file-utils zsync
+          nfpm_ver=2.47.0
+          curl -fsSL -o nfpm.tgz \
+            "https://github.com/goreleaser/nfpm/releases/download/v${nfpm_ver}/nfpm_${nfpm_ver}_linux_${{ matrix.nfpm }}.tar.gz"
+          tar -xzf nfpm.tgz nfpm
+          sudo install -m755 nfpm /usr/local/bin/nfpm
+          nfpm --version
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          key: release-linux-${{ matrix.arch }}
+      - name: Build AppImage and .deb
+        run: packaging/linux/package.sh --formats "appimage,deb"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: linux-${{ matrix.arch }}
+          path: dist/release/*
+          if-no-files-found: error
+
+  publish:
+    name: GitHub Release
+    needs: [version, macos, windows, linux]
+    if: needs.version.outputs.publish == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      TAG: ${{ needs.version.outputs.tag }}
+      PRERELEASE: ${{ needs.version.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          path: dist/release
+          merge-multiple: true
+      - name: SHA-256 checksums
+        working-directory: dist/release
+        run: |
+          set -euo pipefail
+          rm -f SHA256SUMS.txt
+          # GNU sha256sum format (hash, two spaces, file name). Self-update parses this file.
+          find . -type f ! -name SHA256SUMS.txt -printf '%P\n' | LC_ALL=C sort | while read -r f; do
+            sha256sum -- "$f"
+          done | tee SHA256SUMS.txt
+          cat SHA256SUMS.txt
+      - name: Release notes
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        run: |
+          set -euo pipefail
+          macos_signed=false
+          windows_signed=false
+          [[ -n "$APPLE_CERTIFICATE" ]] && macos_signed=true
+          if [[ -n "$WINDOWS_CERTIFICATE" || -n "$AZURE_CLIENT_ID" ]]; then windows_signed=true; fi
+          {
+            echo "iCreate ${VERSION} for macOS (Intel and Apple silicon, one universal DMG), Windows (.msi) and Linux (AppImage and .deb)."
+            echo
+            echo "The launcher checks this GitHub release for updates. Every file is listed in \`SHA256SUMS.txt\`."
+            echo
+            if [[ "$macos_signed" == true && "$windows_signed" == true ]]; then
+              echo "macOS is Developer ID signed and notarised. Windows is Authenticode signed."
+            else
+              echo "## Opening these builds (not yet signed)"
+              echo
+              echo "Signing certificates are not on this repository yet, so Gatekeeper and SmartScreen will warn. That is expected. Download only from this GitHub release, then:"
+              echo
+              echo "### macOS"
+              echo
+              echo "1. Open the \`.dmg\` and drag **iCreate** into Applications."
+              echo "2. In Finder, open Applications, **Control-click** iCreate, choose **Open**, then **Open** again."
+              echo "3. Or, in Terminal: \`xattr -cr /Applications/iCreate.app && open /Applications/iCreate.app\`"
+              echo
+              echo "Do not use the Apple-silicon-vs-Intel split: this DMG is universal (\`macos-universal\`)."
+              echo
+              echo "### Windows"
+              echo
+              echo "1. Run the \`.msi\`."
+              echo "2. If SmartScreen says Windows protected your PC, click **More info**, then **Run anyway** — only if the file came from this release."
+              echo "3. The installer is per-user; it does not need Administrator."
+              echo
+              echo "### Linux"
+              echo
+              echo "AppImage: \`chmod +x artcraft-launcher-${VERSION}-linux-<arch>.AppImage && ./artcraft-launcher-${VERSION}-linux-<arch>.AppImage\`"
+              echo
+              echo "Debian/Ubuntu: \`sudo apt install ./artcraft-launcher-${VERSION}-linux-<arch>.deb\`"
+              echo
+              echo "See [docs/releasing.md](https://github.com/${GITHUB_REPOSITORY}/blob/main/docs/releasing.md) for certificates."
+            fi
+            echo
+            echo "## Files"
+            echo
+            echo '```'
+            cat dist/release/SHA256SUMS.txt
+            echo '```'
+          } > "$RUNNER_TEMP/notes.md"
+      - name: Publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          extra=()
+          if [[ "$PRERELEASE" == true ]]; then extra+=(--prerelease); fi
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/release/* --clobber
+            gh release edit "$TAG" --title "iCreate v${VERSION}" --notes-file "$RUNNER_TEMP/notes.md" "${extra[@]}"
+          else
+            gh release create "$TAG" dist/release/* \
+              --target "${GITHUB_SHA}" \
+              --title "iCreate v${VERSION}" \
+              --notes-file "$RUNNER_TEMP/notes.md" \
+              "${extra[@]}"
+          fi

@@ -13,7 +13,7 @@ use artcraft_launcher_core::protocol::{
     Source, VersionTrack,
 };
 use artcraft_launcher_core::release::{Asset, Release};
-use artcraft_launcher_core::{CraftApp, Installed, PackageKind, SUITE, version};
+use artcraft_launcher_core::{CraftApp, Installed, PackageKind, suite, version};
 
 use crate::feed_throttle::{self, FeedThrottle, Outcome};
 use crate::http::{self, Http, Stop};
@@ -64,7 +64,7 @@ struct Shared {
     /// A detection pass is running; another request waits for the next one.
     detecting: AtomicBool,
     last_check: Mutex<Option<i64>>,
-    /// The newer ArtCraft Launcher release, once a check has found one.
+    /// The newer iCreate release, once a check has found one.
     launcher_release: Mutex<Option<Release>>,
     /// How this launcher is installed, when it can replace itself. Worked out on the check thread
     /// just before a newer launcher is announced: finding out can ask the host's Flatpak, which
@@ -84,6 +84,8 @@ struct Shared {
     feed_throttle: Mutex<FeedThrottle>,
     /// Apps whose details pictures are on their way (a second request meanwhile does nothing).
     pictures_busy: Mutex<std::collections::HashSet<&'static str>>,
+    /// An account request is in flight (sign-in, checkout, backup).
+    account_busy: AtomicBool,
 }
 
 #[derive(Clone, Copy)]
@@ -174,6 +176,7 @@ impl NativeBackend {
             feed_throttle: Mutex::new(FeedThrottle::load(&paths.feed_throttle(), crate::now())),
             pictures_busy: Mutex::new(std::collections::HashSet::new()),
             last_check: Mutex::new(None),
+            account_busy: AtomicBool::new(false),
         });
         let pins = craft_update::pins::Pins::default_path();
         if let Some(path) = &pins {
@@ -182,6 +185,7 @@ impl NativeBackend {
         let backend = Self { shared, paths, http, source, platform: native_platform(), pins };
         backend.replay_cache();
         backend.detect_all();
+        backend.boot_account();
         backend
     }
 
@@ -191,7 +195,7 @@ impl NativeBackend {
         let pre = self.options().prereleases;
         let feed = if pre { None } else { load_feed(&self.paths) };
         let now = crate::now();
-        for app in &SUITE {
+        for app in suite() {
             let answer = match feed.as_ref().map(|f| f.answer(app, now)) {
                 Some(FeedAnswer::Fresh(Some(r))) => Some((LatestRelease::Found(r), Origin::ArtCraftApi)),
                 Some(FeedAnswer::Fresh(None)) => Some((LatestRelease::None, Origin::ArtCraftApi)),
@@ -229,7 +233,7 @@ impl NativeBackend {
             http::clean_downloads(&paths.downloads(), Duration::from_secs(30 * 86_400), Duration::from_secs(7 * 86_400));
             let snapshot = crate::detect::Snapshot::take();
             let manifest = shared.manifest.lock().unwrap_or_else(PoisonError::into_inner).clone();
-            for app in &SUITE {
+            for app in suite() {
                 let found = crate::detect::detect(app, &manifest, &snapshot);
                 {
                     let mut map = shared.installed.lock().unwrap_or_else(PoisonError::into_inner);
@@ -241,7 +245,7 @@ impl NativeBackend {
                 shared.emit(Event::Detected { app: app.id.to_string(), installed: found });
             }
             // Downloads paused (or cut off by quitting) in an earlier run.
-            for app in &SUITE {
+            for app in suite() {
                 report_partial(app, &shared, &paths, platform, &options);
             }
             drop(busy);
@@ -253,7 +257,7 @@ impl NativeBackend {
     /// day old, or no answer at all), at most once an hour per app unless `force`.
     fn check(&self, force: bool) {
         let (Some(source), Some(http)) = (self.source.clone(), self.http.clone()) else {
-            for app in &SUITE {
+            for app in suite() {
                 self.shared.emit(Event::Latest {
                     app: app.id.to_string(),
                     latest: LatestRelease::Failed("secure connections aren't available".into()),
@@ -282,18 +286,18 @@ impl NativeBackend {
                 shared.emit(Event::Notices { announcements: f.announcements.clone(), alerts: f.alerts.clone() });
             }
             let now = crate::now();
-            let queue = Mutex::new(SUITE.iter().chain(std::iter::once(&LAUNCHER)).collect::<Vec<&CraftApp>>());
+            let queue = Mutex::new(suite().iter().chain(std::iter::once(&LAUNCHER)).collect::<Vec<&CraftApp>>());
             let sources = sweep(&queue, &mirror, feed.as_ref(), fallback, &source, &shared, &paths, &options, force, now);
             source.save();
             {
                 let answered = shared.answered.lock().unwrap_or_else(PoisonError::into_inner);
-                if SUITE.iter().all(|a| answered.contains(a.id)) {
+                if suite().iter().all(|a| answered.contains(a.id)) {
                     shared.loaded.store(true, Ordering::SeqCst);
                 }
             }
             // A newer release changes which file an install would use.
             let options = shared.options.lock().unwrap_or_else(PoisonError::into_inner).clone();
-            for app in &SUITE {
+            for app in suite() {
                 report_partial(app, &shared, &paths, platform, &options);
             }
             let source_used = source_used_of(&sources);
@@ -322,7 +326,7 @@ impl NativeBackend {
             restarting
         };
         if restarting {
-            let result = Err("ArtCraft Launcher is restarting to finish its update. Try again once it's back.".into());
+            let result = Err("iCreate is restarting to finish its update. Try again once it's back.".into());
             self.shared.emit(Event::JobFinished { app: app.id.to_string(), result });
             return;
         }
@@ -409,7 +413,7 @@ impl NativeBackend {
         let (Some(install), Some(platform)) = (self.shared.self_install.get().cloned().flatten(), self.platform) else {
             self.shared.emit(Event::JobFinished {
                 app: id,
-                result: Err("this copy of ArtCraft Launcher can't update itself; download the new version instead".into()),
+                result: Err("this copy of iCreate can't update itself; download the new version instead".into()),
             });
             return;
         };
@@ -733,7 +737,7 @@ fn restart_blocked(mut busy: Vec<&str>) -> String {
         _ => (busy.join(", "), "were", "them"),
     };
     format!(
-        "ArtCraft Launcher didn't restart to update: {names} {were} still installing. Answer or close any password prompt, \
+        "iCreate didn't restart to update: {names} {were} still installing. Answer or close any password prompt, \
          let {them} finish or cancel {them}, then press Update and restart again."
     )
 }
@@ -1175,7 +1179,46 @@ impl Drop for PicturesBusy {
     }
 }
 
+struct AccountBusy {
+    shared: Arc<Shared>,
+}
+
+impl Drop for AccountBusy {
+    fn drop(&mut self) {
+        self.shared.account_busy.store(false, Ordering::SeqCst);
+    }
+}
+
 impl NativeBackend {
+    fn boot_account(&self) {
+        let snap = crate::account::local_snapshot(&self.paths);
+        let refresh = snap.configured && snap.signed_in();
+        self.shared.emit(Event::Account(snap));
+        if refresh {
+            self.account_work(crate::account::Work::Refresh);
+        }
+    }
+
+    fn account_work(&self, work: crate::account::Work) {
+        let Some(http) = self.http.clone() else {
+            self.shared.emit(Event::AccountNotice { text: "Couldn't reach iCreate accounts. Apps still work without one.".into(), error: true });
+            return;
+        };
+        if self.shared.account_busy.swap(true, Ordering::SeqCst) {
+            self.shared.emit(Event::AccountNotice { text: "Already signing in.".into(), error: false });
+            return;
+        }
+        let mut snap = crate::account::local_snapshot(&self.paths);
+        snap.busy = true;
+        self.shared.emit(Event::Account(snap));
+        let shared = self.shared.clone();
+        let paths = self.paths.clone();
+        std::thread::spawn(move || {
+            let _busy = AccountBusy { shared: shared.clone() };
+            crate::account::run(&http, &paths, work, |ev| shared.emit(ev));
+        });
+    }
+
     /// Starts fetching the pictures of an app's details page, unless they are already on their way.
     /// An app without a page, or a name that isn't an app, is ignored.
     fn fetch_screenshots(&self, app: &str) {
@@ -1253,6 +1296,17 @@ impl Backend for NativeBackend {
             }
             Command::UpdateLauncher => self.update_launcher(),
             Command::FetchScreenshots { app } => self.fetch_screenshots(&app),
+            Command::AccountSendCode { email } => self.account_work(crate::account::Work::SendCode(email)),
+            Command::AccountVerifyCode { email, code } => self.account_work(crate::account::Work::VerifyCode { email, code }),
+            Command::AccountSignInGoogle => self.account_work(crate::account::Work::Google),
+            Command::AccountSignOut => {
+                let _ = std::fs::remove_file(self.paths.account_session());
+                self.shared.emit(Event::Account(crate::account::local_snapshot(&self.paths)));
+            }
+            Command::AccountRefresh => self.account_work(crate::account::Work::Refresh),
+            Command::AccountCheckout { interval } => self.account_work(crate::account::Work::Checkout(interval)),
+            Command::AccountBackupSettings { json } => self.account_work(crate::account::Work::Backup(json)),
+            Command::AccountRestoreSettings => self.account_work(crate::account::Work::Restore),
             Command::Configure(options) => {
                 let changed_pre = {
                     let mut o = self.shared.options.lock().unwrap_or_else(PoisonError::into_inner);
@@ -1272,7 +1326,7 @@ impl Backend for NativeBackend {
                 }
                 // Another package format means another file to download.
                 let options = self.options();
-                for app in &SUITE {
+                for app in suite() {
                     report_partial(app, &self.shared, &self.paths, self.platform, &options);
                 }
                 if changed_pre {
@@ -1490,6 +1544,7 @@ mod tests {
             feed_ok_at: Mutex::new(None),
             feed_throttle: Mutex::new(FeedThrottle::new()),
             pictures_busy: Mutex::new(std::collections::HashSet::new()),
+            account_busy: AtomicBool::new(false),
         }
     }
 

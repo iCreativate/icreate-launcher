@@ -43,17 +43,17 @@ use std::time::{Duration, Instant};
 
 use artcraft_launcher_core::version::{self, Version};
 
-const PORT: u16 = 47_413;
+const PORT: u16 = 48_173;
 /// What launchers before the version handshake send (and still the answer to an unknown peer).
-const SHOW: &[u8] = b"artcraft-launcher:show";
+const SHOW: &[u8] = b"icreate:show";
 /// `hello <version> <nonce>`: a second start introduces itself with its version and client nonce.
-const HELLO: &str = "artcraft-launcher:hello ";
+const HELLO: &str = "icreate:hello ";
 /// `challenge <nonce> <proof>`: running instance challenges newcomer to prove knowledge of token.
-const CHALLENGE: &str = "artcraft-launcher:challenge ";
+const CHALLENGE: &str = "icreate:challenge ";
 /// `auth <proof>`: newcomer's response proving possession of token.
-const AUTH: &str = "artcraft-launcher:auth ";
+const AUTH: &str = "icreate:auth ";
 /// `running <version>`: the first instance's answer.
-const RUNNING: &str = "artcraft-launcher:running ";
+const RUNNING: &str = "icreate:running ";
 /// How long a newer start waits for the old one to quit and free the port.
 const TAKE_OVER_WITHIN: Duration = Duration::from_secs(10);
 /// How large a greeting or challenge-response line may be.
@@ -68,8 +68,7 @@ const MAX_GREETING: usize = 256;
 /// (CWE-522, CWE-287).
 fn token() -> Option<String> {
     use std::io::Read;
-    let dir =
-        dirs::data_local_dir()?.join(if cfg!(any(target_os = "macos", target_os = "windows")) { "ArtCraft Launcher" } else { "artcraft-launcher" });
+    let dir = dirs::data_local_dir()?.join(if cfg!(any(target_os = "macos", target_os = "windows")) { "iCreate" } else { "icreate" });
     let path = dir.join(".instance-token");
     if let Ok(mut f) = std::fs::File::open(&path) {
         let mut s = String::new();
@@ -175,16 +174,16 @@ pub fn claim(wake: Wake) -> Instance {
                 // again because the proven launcher may have quit and something else taken the port.
                 Instance::Secondary
             } else {
-                log::warn!("whatever holds the launcher's port didn't prove it is ArtCraft Launcher and kept the port; starting anyway");
+                log::warn!("whatever holds the launcher's port didn't prove it is iCreate and kept the port; starting anyway");
                 Instance::Primary(channel().1)
             }
         }
         Ok(Answer::Unrelated) => {
-            log::warn!("something on the launcher's port didn't prove it is this account's ArtCraft Launcher; starting anyway");
+            log::warn!("something on the launcher's port didn't prove it is this account's iCreate; starting anyway");
             Instance::Primary(channel().1)
         }
         Ok(Answer::Legacy) => {
-            log::warn!("an older ArtCraft Launcher is running and can't be asked to quit; starting anyway");
+            log::warn!("an older iCreate is running and can't be asked to quit; starting anyway");
             Instance::Primary(channel().1)
         }
         // The port is taken by something else: run anyway rather than refuse to start.
@@ -223,7 +222,7 @@ fn server_proved(challenge_rest: &str, token: &str, client_nonce: &str) -> bool 
 fn compute_proof(role: &str, token: &str, client_nonce: &str, server_nonce: &str) -> String {
     use sha2::{Digest, Sha256};
     let mut hasher = Sha256::new();
-    hasher.update(b"artcraft-launcher:auth:v1:");
+    hasher.update(b"icreate:auth:v1:");
     hasher.update(role.as_bytes());
     hasher.update(b":");
     hasher.update(token.as_bytes());
@@ -495,7 +494,7 @@ mod tests {
             let (mut stream, _) = listener.accept().unwrap();
             let _ = read_message(&mut stream);
             // Rogue server sends fake challenge with forged proof
-            let _ = stream.write_all(b"artcraft-launcher:challenge fake-nonce forged-proof\n");
+            let _ = stream.write_all(b"icreate:challenge fake-nonce forged-proof\n");
             let mut next = [0u8; 128];
             stream.read(&mut next).unwrap_or(0)
         });
@@ -627,7 +626,7 @@ mod tests {
                     if let Some(ver) = std::str::from_utf8(&msg).ok().and_then(|m| m.strip_prefix(HELLO)).and_then(version::parse)
                         && version::is_newer(&ver, &v("0.6.1"))
                     {
-                        let _ = s.write_all(b"artcraft-launcher:running 0.6.1\n");
+                        let _ = s.write_all(b"icreate:running 0.6.1\n");
                     }
                 }
             }
@@ -647,15 +646,15 @@ mod tests {
 
     #[test]
     fn verdict_reads_defensively() {
-        assert_eq!(verdict(b"artcraft-launcher:running 0.1.0\n", &v("0.1.2"), true), Answer::TakeOver { proven: true });
-        assert_eq!(verdict(b"artcraft-launcher:running 0.1.2\n", &v("0.1.2"), true), Answer::Defer);
-        assert_eq!(verdict(b"artcraft-launcher:running unknown\n", &v("0.1.2"), true), Answer::Defer);
+        assert_eq!(verdict(b"icreate:running 0.1.0\n", &v("0.1.2"), true), Answer::TakeOver { proven: true });
+        assert_eq!(verdict(b"icreate:running 0.1.2\n", &v("0.1.2"), true), Answer::Defer);
+        assert_eq!(verdict(b"icreate:running unknown\n", &v("0.1.2"), true), Answer::Defer);
         assert_eq!(verdict(b"garbage\n", &v("0.1.2"), true), Answer::Defer);
         assert_eq!(verdict(b"", &v("0.1.2"), true), Answer::Legacy);
         // Without the proof, nothing makes us exit.
-        assert_eq!(verdict(b"artcraft-launcher:running 0.1.0\n", &v("0.1.2"), false), Answer::TakeOver { proven: false });
-        assert_eq!(verdict(b"artcraft-launcher:running 0.1.2\n", &v("0.1.2"), false), Answer::Unrelated);
-        assert_eq!(verdict(b"artcraft-launcher:running 9.9.9\n", &v("0.1.2"), false), Answer::Unrelated);
+        assert_eq!(verdict(b"icreate:running 0.1.0\n", &v("0.1.2"), false), Answer::TakeOver { proven: false });
+        assert_eq!(verdict(b"icreate:running 0.1.2\n", &v("0.1.2"), false), Answer::Unrelated);
+        assert_eq!(verdict(b"icreate:running 9.9.9\n", &v("0.1.2"), false), Answer::Unrelated);
         assert_eq!(verdict(b"garbage\n", &v("0.1.2"), false), Answer::Unrelated);
         assert_eq!(verdict(b"", &v("0.1.2"), false), Answer::Legacy);
     }
@@ -684,7 +683,7 @@ mod tests {
         let imposter = std::thread::spawn(move || {
             let (mut s, _) = listener.accept().unwrap();
             let _ = read_message(&mut s);
-            let _ = s.write_all(b"artcraft-launcher:running 9.9.9\n");
+            let _ = s.write_all(b"icreate:running 9.9.9\n");
         });
         assert!(!holder_proves_itself(addr, Some(&v("0.1.2")), Some(TOK)));
         imposter.join().unwrap();
@@ -702,14 +701,14 @@ mod tests {
             let mut parts = hello.strip_prefix(HELLO).unwrap().split_whitespace();
             let theirs = v(parts.next().unwrap());
             let Some(client_nonce) = parts.next().filter(|_| version::is_newer(&theirs, &v("0.1.0"))) else {
-                let _ = s.write_all(b"artcraft-launcher:running 0.1.0\n");
+                let _ = s.write_all(b"icreate:running 0.1.0\n");
                 return Vec::new();
             };
             let server_nonce = fresh_secret().unwrap();
             let proof = compute_proof("server", TOK, client_nonce, &server_nonce);
             s.write_all(format!("{CHALLENGE}{server_nonce} {proof}\n").as_bytes()).unwrap();
             let auth = read_message(&mut s);
-            let _ = s.write_all(b"artcraft-launcher:running 0.1.0\n");
+            let _ = s.write_all(b"icreate:running 0.1.0\n");
             auth
         });
         assert!(holder_proves_itself(addr, Some(&v("0.1.2")), Some(TOK)));
@@ -725,7 +724,7 @@ mod tests {
         let imposter = std::thread::spawn(move || {
             let (mut s, _) = listener.accept().unwrap();
             let _ = read_message(&mut s);
-            let _ = s.write_all(b"artcraft-launcher:running 9.9.9\n");
+            let _ = s.write_all(b"icreate:running 9.9.9\n");
         });
         assert_eq!(ask(addr, Some(&v("0.1.2")), Some(TOK)).ok(), Some(Answer::Unrelated));
         imposter.join().unwrap();

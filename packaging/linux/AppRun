@@ -14,7 +14,7 @@
 set -u
 
 APPDIR="$(dirname "$(readlink -f "$0")")"
-DESK_ID=ai.storyteller.artcraft-launcher
+DESK_ID=za.co.icreativate.icreate
 
 integrate() {
   case "${ARTCRAFT_LAUNCHER_NO_DESKTOP_INTEGRATION:-}" in

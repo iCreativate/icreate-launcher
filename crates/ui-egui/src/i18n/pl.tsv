@@ -1,4 +1,4 @@
-# Polish (pl) catalog for ArtCraft Launcher.
+# Polish (pl) catalog for iCreate.
 # Format: context<TAB>source<TAB>translation
 # Empty context = plain UI string (tl!, t).
 # @id = command-id keyed (tr_id).
@@ -6,13 +6,13 @@
 # @msg = status/error message template (message, msg).
 # Other context = disambiguation for tr_ctx.
 #
-# Clean-room: written from the meaning of ArtCraft Launcher's English labels in neutral Polish,
+# Clean-room: written from the meaning of iCreate's English labels in neutral Polish,
 # using the terms Polish users of creative and system software know. The user is addressed
 # informally ("twoje", "cię"), as in Polish system interfaces.
 #
 # Coverage: the whole interface — every menu string and tl! literal (complete_menus = true).
-# Left in English on purpose: product name "ArtCraft Launcher" (and its "Launcher" tag), suite
-# name "Craft App Suite", app names (PhotoCraft, LightCraft, FilmCraft, DesignCraft, VectorCraft,
+# Left in English on purpose: product name "iCreate" (and its "Launcher" tag), suite
+# name "Creative suite", app names (PhotoCraft, LightCraft, FilmCraft, DesignCraft, VectorCraft,
 # PdfCraft, EffectCraft, WordCraft, DeckCraft, GridCraft, CADCraft, SoundCraft, FigCraft), "GitHub",
 # "Discord".
 # Shortcut keys keep their key-cap names (Shift, Alt, Ctrl, Cmd, Esc).
@@ -20,7 +20,7 @@
 # {what}, {unit}, {real}, {e} must appear in translation.
 
 	Launcher	Launcher
-	Craft App Suite	Craft App Suite
+	Creative suite	Creative suite
 	by {name}	przez {name}
 	Open Source Tools for Creatives, Makers, and Builders	Narzędzia open source dla artystów, twórców i konstruktorów
 	Settings	Ustawienia
@@ -82,7 +82,7 @@
 	{name} wasn't opened: a quote in its launch options isn't closed.	Nie otwarto aplikacji {name}: cudzysłów w jej opcjach uruchamiania nie jest zamknięty.
 	Save	Zapisz
 	All releases	Wszystkie wydania
-	ArtCraft Launcher {version} is available.	Dostępna jest nowa wersja ArtCraft Launcher ({version}).
+	iCreate {version} is available.	Dostępna jest nowa wersja iCreate ({version}).
 	Dismiss	Zamknij
 	Update and restart	Zaktualizuj i zrestartuj
 	A new version is available. Would you like to relaunch with the updated version?	Nowa wersja jest dostępna. Czy chcesz uruchomić ponownie ze zaktualizowaną wersją
@@ -93,7 +93,7 @@
 	Released {date}	Wydano {date}
 	Open on GitHub	Otwórz na GitHubie
 	Close	Zamknij
-	ArtCraft Launcher {version}	ArtCraft Launcher {version}
+	iCreate {version}	iCreate {version}
 	Only when I ask	Tylko kiedy zapytam
 	Automatically download and install updates	Automatycznie pobieraj i instaluj aktualizacje
 	Notify me when an installed app has an update	Powiadom mnie o aktualizacjach dla zainstalowanych aplikacji
@@ -105,14 +105,14 @@
 	Updates always use the format an app was installed with.	Aktualizacje zawsze używają formatu, w jakim pierwotnie zainstalowano aplikację.
 	Running in the background	Działanie w tle
 	Keep running in the tray when the window is closed	Po zamknięciu okna działaj w zasobniku systemowym
-	ArtCraft Launcher is still running	ArtCraft Launcher nadal działa
+	iCreate is still running	iCreate nadal działa
 	It's in the tray: open it or quit it from the tray icon, or turn this off in the settings.	Jest w zasobniku systemowym: otwórz go lub zamknij z jego ikony, albo wyłącz to w ustawieniach.
 	Show the window on the current desktop	Pokaż okno na bieżącym pulpicie
-	Start ArtCraft Launcher when I log in	Uruchom ArtCraft Launcher po zalogowaniu
+	Start iCreate when I log in	Uruchom iCreate po zalogowaniu
 	Community	Społeczność
-	Questions, ideas and news from the ArtCraft team	Pytania, pomysły i nowości od zespołu ArtCraft
+	Questions, ideas and news from iCreativate	Pytania, pomysły i nowości od iCreativate
 	Appearance	Motyw
-	Quit ArtCraft Launcher	Wyjdź z ArtCraft Launcher
+	Quit iCreate	Wyjdź z iCreate
 	Done	Gotowe
 	Uninstall {name}?	Odinstalować {name}?
 	The app will be moved to the Trash. Your documents and settings stay.	Aplikacja zostanie przeniesiona do kosza. Twoje dokumenty i ustawienia pozostaną.
@@ -153,7 +153,7 @@
 	Open link	Otwórz link
 	Update	Aktualizacja
 	{name} icon	Ikona {name}
-	Loading ArtCraft Launcher…	Ładowanie ArtCraft Launcher…
+	Loading iCreate…	Ładowanie iCreate…
 	Cancel update	Anuluj aktualizację
 	Stop waiting; the update can be started again later	Przerwij oczekiwanie; aktualizację można uruchomić ponownie później
 	Download again	Pobierz ponownie
@@ -214,8 +214,8 @@ month	Dec	gru
 	Installing for {platform}	Instalowanie dla {platform}
 	Downloads for {platform}	Do pobrania dla {platform}
 	No downloads for this system	Brak pobrań dla tego systemu
-	Join the ArtCraft community on Discord	Dołącz do społeczności ArtCraft na Discordzie
-	ArtCraft on {name}	ArtCraft w serwisie {name}
+	Visit the iCreate website	Otwórz witrynę iCreate
+	iCreate on {name}	iCreate w serwisie {name}
 	Couldn't open {name}: {e}	Nie udało się otworzyć {name}: {e}
 	Download cancelled	Anulowano pobieranie
 	Available to install	Dostępna do instalacji
@@ -235,7 +235,7 @@ month	Dec	gru
 	Version {version} installed	Wersja {version} zainstalowana
 	Version {latest}	Wersja {latest}
 	No release published yet	Nie opublikowano jeszcze wydania
-	ArtCraft Launcher	ArtCraft Launcher
+	iCreate	iCreate
 	App	Aplikacja
 	Latest	Najnowsza
 	Released	Wydano
@@ -257,7 +257,6 @@ month	Dec	gru
 	Couldn't check for updates: {f}	Nie udało się sprawdzić aktualizacji: {f}
 	Website (coming soon)	Strona (wkrótce)
 	GitHub repository	Repozytorium na GitHubie
-	ArtCraft	ArtCraft
 	Update 1 app	Zaktualizuj 1 aplikację
 	Update all ({count})	Zaktualizuj wszystkie ({count})
 	⊞  Grid	⊞  Siatka
@@ -270,7 +269,7 @@ month	Dec	gru
 	Full changelog	Pełna lista zmian
 	link	link
 	No apps match	Brak pasujących aplikacji
-	Open ArtCraft Launcher to update.	Otwórz ArtCraft Launcher, aby zaktualizować aplikacje.
+	Open iCreate to update.	Otwórz iCreate, aby zaktualizować aplikacje.
 	{name} {v} is available	Dostępna jest nowa wersja {name} {v}
 	{count} updates are available	Dostępne aktualizacje: {count}
 	These notes weren't fetched (GitHub's request limit was reached). They're on the release page.	Nie udało się pobrać tych notatek (osiągnięto limit zapytań GitHuba). Znajdziesz je na stronie wydania.
@@ -339,7 +338,7 @@ filter	Installed	Zainstalowane
 @id	launcher.notes	Co nowego
 @id	launcher.dismiss	Zamknij
 @id	settings.open	Ustawienia
-@id	settings.quit	Wyjdź z ArtCraft Launcher
+@id	settings.quit	Wyjdź z iCreate
 @id	view.grid	Siatka
 @id	view.table	Tabela
 @id	filter.all	Wszystkie
@@ -363,16 +362,14 @@ filter	Installed	Zainstalowane
 @id	linux.preferred_kind	Instaluj nowe aplikacje jako
 @id	tray.close_to_tray	Po zamknięciu okna działaj w zasobniku systemowym
 @id	tray.show_on_current_desktop	Pokaż okno na bieżącym pulpicie
-@id	tray.login_item	Uruchom ArtCraft Launcher po zalogowaniu
+@id	tray.login_item	Uruchom iCreate po zalogowaniu
 @id	appearance.theme	Wygląd
 
 # Tray (menu bar) menu and tooltip
-	Show ArtCraft Launcher	Pokaż ArtCraft Launcher
+	Show iCreate	Pokaż iCreate
 	Check for Updates	Sprawdź dostępność aktualizacji
-	Visit getartcraft.com	Odwiedź getartcraft.com
-	ArtCraft on GitHub	ArtCraft na GitHubie
-	Join the ArtCraft Discord	Dołącz do Discorda ArtCraft
-@plural	ArtCraft Launcher · {n} update available|ArtCraft Launcher · {n} updates available	ArtCraft Launcher · {n} dostępna aktualizacja|ArtCraft Launcher · {n} dostępne aktualizacje|ArtCraft Launcher · {n} dostępnych aktualizacji
+	iCreate on GitHub	iCreate na GitHubie
+@plural	iCreate · {n} update available|iCreate · {n} updates available	iCreate · {n} dostępna aktualizacja|iCreate · {n} dostępne aktualizacje|iCreate · {n} dostępnych aktualizacji
 	Install folder	Folder instalacji
 	Default install folder	Domyślny folder instalacji
 	System default	Domyślny systemowy
@@ -385,7 +382,7 @@ filter	Installed	Zainstalowane
 @msg	couldn't use install folder {path}: {reason}	nie można użyć folderu instalacji {path}: {reason}
 @msg	this release has no AppImage for a custom install folder	to wydanie nie zawiera AppImage dla własnego folderu instalacji
 @msg	custom install folders aren't supported on this system	własne foldery instalacji nie są obsługiwane w tym systemie
-@msg	{path} already exists and wasn't installed by ArtCraft Launcher	{path} już istnieje i nie został zainstalowany przez ArtCraft Launcher
+@msg	{path} already exists and wasn't installed by iCreate	{path} już istnieje i nie został zainstalowany przez iCreate
 @msg	couldn't move {path} to Trash ({reason}). Remove it in Finder instead.	nie można przenieść {path} do Kosza ({reason}). Usuń go w Finderze.
 	Apps are placed inside this folder.	Aplikacje są umieszczane w tym folderze.
 	Replace what's there?	Zastąpić to, co tam jest?
@@ -430,3 +427,44 @@ materialcraft	Preview materials in 2D and on 3D models.	Przeglądaj materiały w
 	Migrate Flatpak bundles to ArtCraft OCI (experimental)	Przenoś pakiety Flatpak do ArtCraft OCI (eksperymentalne)
 	On update, switch first party apps when the matching package is available. Otherwise, keep using bundles.	Podczas aktualizacji przenoś aplikacje ArtCraft, gdy dostępny jest odpowiedni pakiet. W przeciwnym razie nadal używaj samodzielnych pakietów.
 	The OCI repository is a preview with GPG verification disabled.	Repozytorium OCI jest wersją testową z wyłączoną weryfikacją GPG.
+	Based on ArtCraft Launcher	Based on ArtCraft Launcher
+	by iCreativate	by iCreativate
+	Photo	Zdjęcia
+	Design	Design
+	Video	Wideo
+	Audio	Audio
+	Documents	Dokumenty
+	Office	Biuro
+	Alpha	Alfa
+	Beta	Beta
+	Stable	Stabilna
+	Early preview	Wczesny podgląd
+	Replaces {product}	Zastępuje {product}
+	Powered by {name}	Oparte na {name}
+
+	Account	Konto
+	An iCreate account is optional. Every app stays free to install without signing in.	Konto iCreate jest opcjonalne. Każdą aplikację można zainstalować za darmo bez logowania.
+	This build has no account server configured.	Ta kompilacja nie ma serwera kont.
+	You're signed in as {email}	Zalogowano jako {email}
+	Sign out	Wyloguj
+	Email	E-mail
+	Send code	Wyślij kod
+	Continue with Google	Kontynuuj z Google
+	We sent a sign-in code to {email}	Wysłaliśmy kod logowania na {email}
+	Verify	Zweryfikuj
+	Checking account…	Sprawdzanie konta…
+	Free	Darmowe
+	All apps	Wszystkie aplikacje
+	iCreate Pro	iCreate Pro
+	R99 a month	R99 miesięcznie
+	R990 a year	R990 rocznie
+	Cloud backup of settings	Kopia ustawień w chmurze
+	Priority support	Priorytetowe wsparcie
+	Early access to new apps	Wczesny dostęp do nowych aplikacji
+	Pro extras: cloud backup, priority support and early access. Apps never require Pro.	Dodatki Pro: kopia w chmurze, priorytetowe wsparcie i wczesny dostęp. Aplikacje nigdy nie wymagają Pro.
+	Your plan	Twój plan
+	Back up settings now	Zapisz ustawienia teraz
+	Restore settings from iCreate	Przywróć ustawienia z iCreate
+	I've paid — refresh status	Zapłaciłem — odśwież status
+	Subscribe monthly — R99	Subskrybuj miesięcznie — R99
+	Subscribe yearly — R990	Subskrybuj rocznie — R990

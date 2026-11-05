@@ -16,7 +16,7 @@ set -euo pipefail
 # shellcheck source=../env.sh
 . "$(dirname "${BASH_SOURCE[0]}")/../env.sh"
 LINUX="$ROOT/packaging/linux"
-APP_ID=ai.storyteller.artcraft-launcher
+APP_ID=za.co.icreativate.icreate
 PKG=artcraft-launcher
 
 SKIP_BUILD=0
@@ -53,7 +53,7 @@ if [[ "$DRY_RUN" = 0 ]] && [[ "$(uname -s)" != FreeBSD ]]; then
 fi
 BASENAME="$PKG-$VERSION-freebsd-$ARCH"
 
-echo "==> ArtCraft Launcher $VERSION for FreeBSD $ARCH"
+echo "==> iCreate $VERSION for FreeBSD $ARCH"
 
 export CARGO_BUILD_JOBS="${CARGO_BUILD_JOBS:-4}"
 if [[ "$SKIP_BUILD" = 0 ]]; then

@@ -2,12 +2,13 @@
 
 use std::time::Duration;
 
+use artcraft_launcher_core::AccountSnapshot;
 use artcraft_launcher_core::protocol::{
     Backend, BackendOptions, CANCELLED, Capabilities, Command, Event, INSTALL_CANCELLED, JobPhase, LatestRelease, PAUSED, Source,
 };
 use artcraft_launcher_core::release::Release;
 use artcraft_launcher_core::status::AppStatus;
-use artcraft_launcher_core::{Arch, PackageKind, Platform, SUITE};
+use artcraft_launcher_core::{Arch, PackageKind, Platform, suite};
 
 use crate::i18n::set_current;
 use crate::model::AppEntry;
@@ -210,6 +211,11 @@ pub struct LauncherUi {
     /// While the user drags a pin handle: dragged catalog id and the pinned order at drag start
     /// (so Escape can restore it after live mid-drag reorders).
     pub(crate) pin_dragging: Option<(String, Vec<String>)>,
+    /// Optional iCreate account. Default is signed out; apps never consult this for install/launch.
+    pub(crate) account: AccountSnapshot,
+    pub(crate) account_email: String,
+    pub(crate) account_code: String,
+    pub(crate) account_code_sent_to: Option<String>,
 }
 
 /// The language to draw in: the preference, or English where it needs a CJK font the system
@@ -260,7 +266,7 @@ impl LauncherUi {
         Self {
             backend,
             settings,
-            entries: SUITE.iter().map(AppEntry::new).collect(),
+            entries: suite().iter().map(AppEntry::new).collect(),
             caps,
             platform,
             checking: false,
@@ -300,6 +306,10 @@ impl LauncherUi {
             flushed: Vec::new(),
             pending_toasts: Vec::new(),
             pin_dragging: None,
+            account: AccountSnapshot::default(),
+            account_email: String::new(),
+            account_code: String::new(),
+            account_code_sent_to: None,
         }
     }
 
@@ -331,7 +341,7 @@ impl LauncherUi {
     /// Installed apps with an update waiting (the tray shows the count). Hidden apps are left out,
     /// so the badge matches the Updates list.
     pub fn update_count(&self) -> usize {
-        self.entries.iter().filter(|e| self.in_filter(e, Filter::Updates)).count()
+        self.entries.iter().filter(|e| self.shows_app(e) && self.in_filter(e, Filter::Updates)).count()
     }
 
     /// Something is downloading or installing, the launcher's own update included: quitting now
@@ -619,6 +629,29 @@ impl LauncherUi {
                 self.rate_limited_until = rate_limited_until;
                 true
             }
+            Event::Account(snap) => {
+                if snap.signed_in() {
+                    self.account_code.clear();
+                    self.account_code_sent_to = None;
+                }
+                self.account = snap;
+                true
+            }
+            Event::AccountNotice { text, error } => {
+                self.toast(text, error);
+                false
+            }
+            Event::AccountSettingsRestored { json } => match serde_json::from_str::<Settings>(&json) {
+                Ok(mut settings) => {
+                    settings.migrate();
+                    self.settings = settings;
+                    true
+                }
+                Err(_) => {
+                    self.toast("Couldn't restore settings.", true);
+                    false
+                }
+            },
         }
     }
 
@@ -705,7 +738,7 @@ impl LauncherUi {
         if self.settings.notify {
             let (title, body) = match fresh.as_slice() {
                 [(_, name, v)] => {
-                    let body: String = tl!("Open ArtCraft Launcher to update.").to_string();
+                    let body: String = tl!("Open iCreate to update.").to_string();
                     (crate::i18n::fmt(tl!("{name} {v} is available"), &[("name", name), ("v", v)]), body)
                 }
                 many => {
@@ -729,7 +762,7 @@ impl LauncherUi {
         }
         self.settings.tray_hint_shown = true;
         host.notify(
-            tl!("ArtCraft Launcher is still running"),
+            tl!("iCreate is still running"),
             tl!("It's in the tray: open it or quit it from the tray icon, or turn this off in the settings."),
         );
     }
@@ -917,9 +950,11 @@ impl LauncherUi {
             .iter()
             .enumerate()
             .filter(|(_, e)| {
-                self.in_filter(e, self.settings.filter)
+                self.shows_app(e)
+                    && self.in_filter(e, self.settings.filter)
                     && !(self.settings.hide_community_apps && e.app.kind == artcraft_launcher_core::catalog::AppKind::Community)
-                    && (needle.is_empty() || e.app.name.to_lowercase().contains(&needle) || e.app.tagline.to_lowercase().contains(&needle))
+                    && self.settings.category.matches(e.app.category)
+                    && e.app.matches_query(&needle)
             })
             .collect();
         let platform = self.platform;
@@ -943,7 +978,7 @@ impl LauncherUi {
         rest.sort_by(|(ia, a), (ib, b)| {
             let ord = match sort {
                 SortKey::Suite => dir(ia.cmp(ib)),
-                SortKey::Name => dir(a.app.name.cmp(b.app.name)),
+                SortKey::Name => dir(a.app.title().cmp(b.app.title()).then(a.app.name.cmp(b.app.name))),
                 SortKey::Status => {
                     dir(crate::model::status_rank(&a.status(platform, manage)).cmp(&crate::model::status_rank(&b.status(platform, manage))))
                 }
@@ -988,7 +1023,7 @@ impl LauncherUi {
         self.entry(id).is_some_and(|e| e.status(self.platform, self.caps.manage_apps).is_installed())
     }
 
-    /// "ArtCraft API", "GitHub" or "ArtCraft API and GitHub": the services behind the releases on
+    /// "Release feed", "GitHub" or "Release feed and GitHub": the services behind the releases on
     /// screen right now. `None` until something has loaded.
     pub(crate) fn sources_label(&self) -> Option<String> {
         use artcraft_launcher_core::protocol::Origin;
@@ -1012,7 +1047,12 @@ impl LauncherUi {
     }
 
     pub(crate) fn count(&self, filter: Filter) -> usize {
-        self.entries.iter().filter(|e| self.in_filter(e, filter)).count()
+        self.entries.iter().filter(|e| self.shows_app(e) && self.in_filter(e, filter)).count()
+    }
+
+    /// Early-access apps stay hidden until iCreate Pro, except an install that's already on this machine.
+    pub(crate) fn shows_app(&self, entry: &AppEntry) -> bool {
+        !entry.app.early_access || entry.installed.is_some() || self.account.is_pro(self.backend.now())
     }
 
     /// Whether `entry` belongs in `filter`. Hidden apps stay out of every list except Hidden.
@@ -1349,7 +1389,7 @@ mod tests {
         use crate::i18n::Lang;
         use egui_kittest::kittest::Queryable;
 
-        // Available: the system "has" a Chinese face. The seam's face is the real bundled Inter,
+        // Available: the system "has" a Chinese face. The seam's face is the real bundled DM Sans,
         // which has no CJK glyphs, so the gate can install a face without faking coverage.
         {
             let _fonts = crate::theme::CjkFontOverride::available(Lang::ZH_CN);
@@ -1358,8 +1398,8 @@ mod tests {
             open_language_picker(&mut h);
             select_chinese_in_its_settings_frame(&mut h);
             let marker = crate::theme::cjk_font(Lang::ZH_CN).expect("the seam answers with the bundled face");
-            let inter: &[u8] = include_bytes!("../../../assets/fonts/Inter-Variable.ttf");
-            assert_eq!(marker.bytes(), inter, "the available marker must be the real Inter face, not a CJK face");
+            let body: &[u8] = include_bytes!("../../../assets/fonts/DMSans-Variable.ttf");
+            assert_eq!(marker.bytes(), body, "the available marker must be the real DM Sans face, not a CJK face");
 
             // Exactly one gate pass: it installs the face and draws nothing. We stop here and do
             // not run the following pass, which would panic on missing Chinese glyphs in the Inter stand-in.

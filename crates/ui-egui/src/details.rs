@@ -13,7 +13,7 @@ use artcraft_launcher_core::status::AppStatus;
 use egui::{Color32, CornerRadius, Id, Margin, Order, Rect, RichText, Sense, Stroke, Ui, emath::easing, pos2, vec2};
 
 use crate::app::LauncherUi;
-use crate::i18n::{current, tr_ctx};
+use crate::i18n::{current, fmt, tr_ctx};
 use crate::model::AppEntry;
 use crate::theme::{self, Tokens, rgb, tint};
 use crate::views::date_text;
@@ -247,7 +247,7 @@ impl LauncherUi {
     fn neighbour_apps(&self, id: &str) -> (Option<String>, Option<String>) {
         let mut ids: Vec<&str> = self.visible_ids().into_iter().filter(|i| AppDetails::by_id(i).is_some()).collect();
         if !ids.contains(&id) {
-            ids = artcraft_launcher_core::SUITE.iter().map(|a| a.id).filter(|i| AppDetails::by_id(i).is_some()).collect();
+            ids = artcraft_launcher_core::suite().iter().map(|a| a.id).filter(|i| AppDetails::by_id(i).is_some()).collect();
         }
         let Some(at) = ids.iter().position(|i| *i == id) else { return (None, None) };
         if ids.len() < 2 {
@@ -364,7 +364,18 @@ impl LauncherUi {
             ui.vertical(|ui| {
                 ui.set_width(text_w);
                 ui.spacing_mut().item_spacing.y = 5.0;
-                widgets::wordmark(ui, app, theme::PAGE_TITLE);
+                ui.horizontal(|ui| {
+                    ui.spacing_mut().item_spacing.x = 8.0;
+                    widgets::wordmark(ui, app, theme::PAGE_TITLE);
+                    widgets::maturity_badge(ui, app);
+                });
+                if !app.replaces.is_empty() {
+                    ui.add(
+                        egui::Label::new(RichText::new(fmt(tl!("Replaces {product}"), &[("product", app.replaces)])).size(13.0).color(t.muted))
+                            .wrap(),
+                    );
+                }
+                ui.add(egui::Label::new(RichText::new(fmt(tl!("Powered by {name}"), &[("name", app.name)])).size(13.0).color(t.muted)).wrap());
                 ui.add(egui::Label::new(RichText::new(tr_ctx(current(), details.id, details.headline)).size(15.0).color(t.ink)).wrap());
                 // "Version 0.5.0 · Oct 8, 2026", or the installed-versus-latest line.
                 let version = crate::views::version_line(entry, status);

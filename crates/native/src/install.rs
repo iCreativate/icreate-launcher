@@ -174,7 +174,7 @@ pub fn install_at(
         // No team to check the signature against: refuse rather than install it unchecked.
         #[cfg(target_os = "macos")]
         PackageKind::Dmg if app.mac_team.is_none() => {
-            Err("ArtCraft Launcher has no macOS signing team recorded for this app, so it wasn't installed here".into())
+            Err("iCreate has no macOS signing team recorded for this app, so it wasn't installed here".into())
         }
         #[cfg(target_os = "macos")]
         PackageKind::Dmg => {
@@ -1363,7 +1363,7 @@ pub(crate) mod linux {
         let dest = dir.join(name);
         let ours = previous.is_some_and(|r| r.kind == PackageKind::AppImage && r.path == dest);
         if std::fs::symlink_metadata(&dest).is_ok_and(|m| m.is_dir() || !(replace || ours && m.is_file())) {
-            return Err(format!("{} already exists and wasn't installed by ArtCraft Launcher", dest.display()));
+            return Err(format!("{} already exists and wasn't installed by iCreate", dest.display()));
         }
         let staging = super::staging_dir(&dir)?;
         let partial = staging.path().join(name);
@@ -1709,7 +1709,7 @@ pub mod macos {
             && std::fs::symlink_metadata(&dest).is_ok()
             && (std::fs::symlink_metadata(&dest).is_ok_and(|m| m.file_type().is_symlink()) || crate::detect::macos::read_bundle(app, &dest).is_none())
         {
-            return Err(format!("{} already exists and wasn't installed by ArtCraft Launcher", dest.display()));
+            return Err(format!("{} already exists and wasn't installed by iCreate", dest.display()));
         }
         let staging = super::staging_dir(&dir)?;
         let staged = staging.path().join(&bundle);
@@ -3610,14 +3610,14 @@ mod tests {
 
     #[cfg(target_os = "macos")]
     mod macos_checks {
-        use artcraft_launcher_core::{SUITE, version};
+        use artcraft_launcher_core::{suite, version};
 
         use super::macos::{Expect, install_dmg, signed_by};
         use super::*;
         use artcraft_launcher_core::catalog::ARTCRAFT_TEAM_ID as TEAM_ID;
 
         fn photocraft() -> &'static CraftApp {
-            SUITE.iter().find(|a| a.id == "photocraft").unwrap()
+            suite().iter().find(|a| a.id == "photocraft").unwrap()
         }
 
         /// A minimal `PhotoCraft.app` at `dir`, reporting `version`.

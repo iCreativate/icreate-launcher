@@ -563,7 +563,7 @@ pub enum Glyph {
 
 /// Paints one of the launcher's symbols with the painter, centred in `rect`.
 ///
-/// These are shapes rather than font characters: the bundled Inter, Archivo and Geist Mono faces
+/// These are shapes rather than font characters: the bundled DM Sans, Syne and Source Code Pro faces
 /// have no gear or refresh symbol. The app enables egui's monochrome emoji fonts for arbitrary
 /// release-note/feed text, but these fixed controls stay painter-drawn so their geometry and
 /// accessible names do not depend on font selection.
@@ -673,12 +673,12 @@ pub fn more_menu<R>(ui: &mut Ui, app_name: &str, add_contents: impl FnOnce(&mut 
     response.accessible_name(crate::i18n::fmt(tl!("More actions for {name}"), &[("name", app_name)]));
 }
 
-/// ArtCraft's social accounts as a row of small monochrome icons (faint, brighter on hover).
+/// iCreate's social accounts as a row of small monochrome icons (faint, brighter on hover).
 /// In a right-to-left layout they still read left to right.
 pub fn social_icons(ui: &mut Ui, size: f32) {
     let links: Vec<IconLink> = artcraft_launcher_core::catalog::SOCIAL
         .iter()
-        .map(|(name, url)| IconLink { name, label: (*name).to_string(), tip: crate::i18n::fmt(tl!("ArtCraft on {name}"), &[("name", name)]), url })
+        .map(|(name, url)| IconLink { name, label: (*name).to_string(), tip: crate::i18n::fmt(tl!("iCreate on {name}"), &[("name", name)]), url })
         .collect();
     icon_links(ui, size, &links);
 }
@@ -731,15 +731,16 @@ fn icon_link(ui: &mut Ui, size: f32, link: &IconLink<'_>) {
     }
 }
 
-/// An app's name as the site sets it: Archivo, with "Craft" in the app's colour.
+/// An app's iCreate title, with the product word in the app's colour (`iCreate Photo`).
 pub fn wordmark(ui: &mut Ui, app: &artcraft_launcher_core::CraftApp, size: f32) -> Response {
     wordmark_in(ui, app, size, true)
 }
 
-/// [`wordmark`], with "Craft" in the app's colour or, when `in_colour` is false, in grey.
+/// [`wordmark`], with the product word in the app's colour or, when `in_colour` is false, in grey.
 pub fn wordmark_in(ui: &mut Ui, app: &artcraft_launcher_core::CraftApp, size: f32, in_colour: bool) -> Response {
     let t = Tokens::get(ui.ctx());
-    let (prefix, craft) = app.name.strip_suffix("Craft").map_or((app.name, ""), |p| (p, "Craft"));
+    let title = app.title();
+    let (prefix, rest) = title.strip_prefix("iCreate").map_or((title, ""), |r| ("iCreate", r));
     let mut job = egui::text::LayoutJob::default();
     let format = |color| egui::TextFormat {
         font_id: egui::FontId::new(size, theme::display()),
@@ -748,8 +749,24 @@ pub fn wordmark_in(ui: &mut Ui, app: &artcraft_launcher_core::CraftApp, size: f3
         ..Default::default()
     };
     job.append(prefix, 0.0, format(t.ink_strong));
-    job.append(craft, 0.0, format(if in_colour { t.app_ink(app) } else { t.muted }));
+    if !rest.is_empty() {
+        job.append(rest, 0.0, format(if in_colour { t.app_ink(app) } else { t.muted }));
+    }
     ui.add(egui::Label::new(job).selectable(false))
+}
+
+/// Alpha gets a warning badge; beta a quiet one. Stable apps have no maturity chip.
+pub fn maturity_badge(ui: &mut Ui, app: &artcraft_launcher_core::CraftApp) {
+    let t = Tokens::get(ui.ctx());
+    match app.maturity {
+        artcraft_launcher_core::Maturity::Alpha => {
+            badge(ui, tl!("Alpha"), t.bad).on_hover_text(tl!("Early preview"));
+        }
+        artcraft_launcher_core::Maturity::Beta => {
+            badge(ui, tl!("Beta"), t.muted);
+        }
+        artcraft_launcher_core::Maturity::Stable => {}
+    }
 }
 
 /// A heading in the display face, tracked in like the site's (`tracking-[-0.02em]`).

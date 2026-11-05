@@ -29,7 +29,7 @@ $Root = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 
 # ---- app-specific values ----------------------------------------------------------------------
 $Pkg = 'artcraft-launcher'          # cargo package and binary
-$AppName = 'ArtCraft Launcher'      # display name
+$AppName = 'iCreate'      # display name
 
 function Invoke-Native([string] $What, [scriptblock] $Block) {
   Write-Output "==> $What"
@@ -107,19 +107,19 @@ Copy-Item (Join-Path $Bin $Exe) $Stage
 # The ArtCraft mark and wordmark are drawn as supplied (docs/brand/LICENSE-brand.txt).
 function New-InstallerArt([string] $BannerOut, [string] $DialogOut) {
   Add-Type -AssemblyName System.Drawing
-  $ink = [System.Drawing.ColorTranslator]::FromHtml('#121316')
-  $accent = [System.Drawing.ColorTranslator]::FromHtml('#2d81ff')
+  $ink = [System.Drawing.ColorTranslator]::FromHtml('#0b1220')
+  $accent = [System.Drawing.ColorTranslator]::FromHtml('#00A1F1')
   $muted = [System.Drawing.Color]::FromArgb(153, 242, 241, 238)
   $line = [System.Drawing.Color]::FromArgb(38, 242, 241, 238)
   # The Craft App Suite, in the launcher's order (crates/core/src/catalog.rs).
   $apps = 'photocraft', 'vectorcraft', 'filmcraft', 'lightcraft', 'pdfcraft', 'effectcraft',
     'designcraft', 'figcraft', 'wordcraft', 'soundcraft', 'deckcraft', 'cadcraft', 'gridcraft', 'craft-anything', 'texturecraft', 'materialcraft'
-  $mark = [System.Drawing.Image]::FromFile((Join-Path $Root 'assets\app-icon\hicolor\256x256\apps\ai.storyteller.artcraft-launcher.png'))
-  $wordmark = [System.Drawing.Image]::FromFile((Join-Path $Root 'docs\brand\artcraft-logo-white.png'))
+  $mark = [System.Drawing.Image]::FromFile((Join-Path $Root 'assets\app-icon\hicolor\256x256\apps\za.co.icreativate.icreate.png'))
+  $wordmark = $null
   $icons = $apps | ForEach-Object { [System.Drawing.Image]::FromFile((Join-Path $Root "assets\app-icons\$_.png")) }
   # The site's label face; GDI+ draws a variable font at its default instance (Regular).
   $fonts = New-Object System.Drawing.Text.PrivateFontCollection
-  $fonts.AddFontFile((Join-Path $Root 'assets\fonts\GeistMono-Variable.ttf'))
+  $fonts.AddFontFile((Join-Path $Root 'assets\fonts\SourceCodePro-Variable.ttf'))
   $labelFont = New-Object System.Drawing.Font $fonts.Families[0], 9, ([System.Drawing.FontStyle]::Regular), ([System.Drawing.GraphicsUnit]::Pixel)
   try {
     foreach ($spec in @(@($BannerOut, 493, 58), @($DialogOut, 493, 312))) {
@@ -141,7 +141,9 @@ function New-InstallerArt([string] $BannerOut, [string] $DialogOut) {
           $g.FillRectangle($panel, 0, 0, 164, 312)
           $g.FillRectangle($stripe, 162, 0, 2, 312)
           $g.DrawImage($mark, 16, 18, 44, 44)
-          $g.DrawImage($wordmark, 22, 74, 120, [int](120 * $wordmark.Height / $wordmark.Width))
+          $titleBrush = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::White)
+          $g.DrawString('iCreate', $labelFont, $titleBrush, 22, 70)
+          $titleBrush.Dispose()
           # "LAUNCHER" in mono capitals, spaced like the site's labels (0.15 em).
           $brush = New-Object System.Drawing.SolidBrush $muted
           $x = 22.0
@@ -166,7 +168,7 @@ function New-InstallerArt([string] $BannerOut, [string] $DialogOut) {
       $bmp.Dispose()
     }
   } finally {
-    $labelFont.Dispose(); $fonts.Dispose(); $mark.Dispose(); $wordmark.Dispose()
+    $labelFont.Dispose(); $fonts.Dispose(); $mark.Dispose()
     $icons | ForEach-Object { $_.Dispose() }
   }
 }
@@ -180,7 +182,7 @@ Invoke-Native 'wix build' {
   wix build (Join-Path $PSScriptRoot "$Pkg.wxs") -arch $Arch `
     -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext `
     -culture en-US -loc (Join-Path $PSScriptRoot "$Pkg.en-us.wxl") `
-    -d "Version=$MsiVersion" -d "DisplayVersion=$Version" -d "BinDir=$Stage" -d "IconPath=$(Join-Path $Root "assets\app-icon\$Pkg.ico")" `
+    -d "Version=$MsiVersion" -d "DisplayVersion=$Version" -d "BinDir=$Stage" -d "IconPath=$(Join-Path $Root 'assets\app-icon\icreate.ico')" `
     -d "BannerBmp=$Banner" -d "DialogBmp=$Dialog" `
     -o $Msi
 }
@@ -202,7 +204,7 @@ foreach ($f in 'README.md', 'LICENSE-MIT', 'LICENSE-APACHE', 'NOTICE', 'ATTRIBUT
   if (Test-Path $p) { Copy-Item $p $Portable }
 }
 # portable.txt beside artcraft-launcher.exe switches on portable mode: settings and the download
-# cache go to ArtCraftLauncherData\ next to the exe instead of %APPDATA%.
+# cache go to iCreateData\ next to the exe instead of %APPDATA%.
 Copy-Item (Join-Path $PSScriptRoot 'portable.txt') $Portable
 $Zip = Join-Path $Dist "$Pkg-$Version-windows-$Arch-portable.zip"
 Remove-Item -Force $Zip -ErrorAction SilentlyContinue

@@ -22,7 +22,7 @@ set -euo pipefail
 # shellcheck source=../env.sh
 . "$(dirname "${BASH_SOURCE[0]}")/../env.sh"
 HERE="$ROOT/packaging/linux"
-APP_ID=ai.storyteller.artcraft-launcher
+APP_ID=za.co.icreativate.icreate
 PKG=artcraft-launcher
 # Verify a downloaded file's sha256 against its expected hex digest.
 check_sha256() {
@@ -57,10 +57,10 @@ case "$ARCH" in
   aarch64 | arm64) ARCH=aarch64; DEB_ARCH=arm64 ;;
   *) echo "unsupported architecture $ARCH" >&2; exit 2 ;;
 esac
-export ARTCRAFT_LAUNCHER_MAINTAINER="${ARTCRAFT_LAUNCHER_MAINTAINER:-ArtCraft Launcher maintainers <craft-launcher@storyteller.ai>}"
+export ARTCRAFT_LAUNCHER_MAINTAINER="${ARTCRAFT_LAUNCHER_MAINTAINER:-iCreativate <hello@icreativate.co.za>}"
 BASENAME="$PKG-$VERSION-linux-$ARCH"
 
-echo "==> ArtCraft Launcher $VERSION for Linux $ARCH ($FORMATS)"
+echo "==> iCreate $VERSION for Linux $ARCH ($FORMATS)"
 
 if [[ "$SKIP_BUILD" = 0 ]]; then
   if [[ -n "${CROSS_TARGET:-}" ]]; then
@@ -136,7 +136,7 @@ if has appimage; then
     echo "no pinned AppImage runtime for $ARCH; build the AppImage on x86_64 or aarch64" >&2
     exit 2
   fi
-  APPDIR="$WORK/ArtCraftLauncher.AppDir"
+  APPDIR="$WORK/iCreate.AppDir"
   cp -R "$STAGE" "$APPDIR"
   # AppRun is a script, not a symlink: it installs the .desktop entry and icons into
   # $XDG_DATA_HOME before launching, so Wayland compositors can resolve the window's
@@ -186,7 +186,7 @@ if has appimage; then
   # next to each AppImage on GitHub Releases. `latest` is the newest published release that is
   # not a pre-release. A fork's builds point at its own releases through GITHUB_REPOSITORY.
   # The repo is craft-launcher while the files are artcraft-launcher-*.
-  REPO="${GITHUB_REPOSITORY:-storytold/craft-launcher}"
+  REPO="${GITHUB_REPOSITORY:-iCreativate/icreate-launcher}"
   UPDATE_INFO="gh-releases-zsync|${REPO%%/*}|${REPO#*/}|latest|$PKG-*-linux-$ARCH.AppImage.zsync"
   # Extract-and-run: works without FUSE (containers, CI). The output embeds the static runtime,
   # so users don't need libfuse2 either. With zsyncmake on the host (CI installs the zsync

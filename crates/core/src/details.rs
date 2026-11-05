@@ -553,7 +553,7 @@ impl AppDetails {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{CraftApp, SUITE};
+    use crate::{CraftApp, suite};
 
     #[test]
     fn every_page_belongs_to_a_suite_app_once() {
@@ -568,7 +568,7 @@ mod tests {
 
     #[test]
     fn every_app_has_a_page() {
-        for a in &SUITE {
+        for a in suite() {
             assert!(AppDetails::by_id(a.id).is_some(), "{}", a.id);
         }
     }

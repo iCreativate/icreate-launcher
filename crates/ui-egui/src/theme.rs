@@ -1,5 +1,5 @@
-//! Colours, type and shapes, matching getartcraft.com: hard edges, hairline rules, Archivo
-//! display type, Inter body text and Geist Mono labels. Widgets read [`Tokens::get`]; nothing
+//! Colours, type and shapes for iCreate: iCreativate navy and cyan, Syne display type,
+//! DM Sans body text and Source Code Pro labels. Widgets read [`Tokens::get`]; nothing
 //! hard-codes a colour.
 
 use std::sync::Arc;
@@ -79,41 +79,40 @@ const fn hex(rgb: u32) -> Color32 {
 impl Tokens {
     pub const DARK: Self = Self {
         dark: true,
-        bg: hex(0x121316),
-        sunken: hex(0x060607),
-        ink: hex(0xf2f1ee),
+        bg: hex(0x0b1220),
+        sunken: hex(0x0f172a),
+        ink: hex(0xe8edf5),
         ink_strong: hex(0xffffff),
-        muted: ink_alpha(0xf2f1ee, 153),
-        faint: ink_alpha(0xf2f1ee, 97),
-        line: ink_alpha(0xf2f1ee, 38),
-        line_strong: ink_alpha(0xf2f1ee, 102),
-        accent: hex(0x2d81ff),
-        accent_ink: hex(0x74aaff),
-        invert_bg: hex(0xffffff),
-        invert_fg: hex(0x0b0b0c),
-        // A green and LightCraft's amber from the site's app inks, so status colours come from its palette.
-        good: hex(0x3fd6b8),
-        warn: hex(0xffc14d),
-        bad: hex(0xff6259),
+        muted: ink_alpha(0xe8edf5, 153),
+        faint: ink_alpha(0xe8edf5, 97),
+        line: ink_alpha(0x0ea5e9, 56),
+        line_strong: ink_alpha(0x0ea5e9, 102),
+        accent: hex(0x0ea5e9),
+        accent_ink: hex(0x38bdf8),
+        invert_bg: hex(0xe8edf5),
+        invert_fg: hex(0x0b1220),
+        good: hex(0x34d399),
+        warn: hex(0xf5b942),
+        bad: hex(0xf87171),
     };
 
     pub const LIGHT: Self = Self {
         dark: false,
-        bg: hex(0xf2f1ee),
-        sunken: hex(0xe9e8e4),
-        ink: hex(0x101014),
-        ink_strong: hex(0x000000),
-        muted: ink_alpha(0x101014, 158),
-        faint: ink_alpha(0x101014, 107),
-        line: ink_alpha(0x101014, 41),
-        line_strong: ink_alpha(0x101014, 102),
-        accent: hex(0x2d81ff),
-        accent_ink: hex(0x1659c4),
-        invert_bg: hex(0x101014),
-        invert_fg: hex(0xf2f1ee),
-        good: hex(0x0a7563),
-        warn: hex(0x8a5800),
-        bad: hex(0xb3261e),
+        bg: hex(0xf4f7fb),
+        sunken: hex(0xe8eef5),
+        ink: hex(0x0f172a),
+        ink_strong: hex(0x020617),
+        muted: ink_alpha(0x0f172a, 158),
+        faint: ink_alpha(0x0f172a, 107),
+        line: ink_alpha(0x0ea5e9, 48),
+        line_strong: ink_alpha(0x0ea5e9, 102),
+        accent: hex(0x0ea5e9),
+        accent_ink: hex(0x0369a1),
+        invert_bg: hex(0x0b1220),
+        invert_fg: hex(0xf4f7fb),
+        good: hex(0x047857),
+        warn: hex(0xb45309),
+        bad: hex(0xb91c1c),
     };
 
     pub fn get(ctx: &egui::Context) -> Self {
@@ -130,7 +129,7 @@ impl Tokens {
     }
 }
 
-/// Mixes `c` into the background at `alpha` (0â€“1): tinted washes.
+/// Mixes `c` into the background at `alpha` (0–1): tinted washes.
 pub fn tint(c: Color32, alpha: f32) -> Color32 {
     let a = (alpha.clamp(0.0, 1.0) * 255.0).round() as u8;
     Color32::from_rgba_unmultiplied(c.r(), c.g(), c.b(), a)
@@ -264,27 +263,27 @@ pub const DIALOG_TITLE: f32 = 22.0;
 pub const ICON_LINK_PAD: f32 = 6.0;
 pub const ICON_LINK_GAP: f32 = 2.0;
 
-/// Inter 500.
+/// DM Sans 500.
 pub fn medium() -> FontFamily {
     FontFamily::Name("medium".into())
 }
 
-/// Inter 600.
+/// DM Sans 600.
 pub fn semibold() -> FontFamily {
     FontFamily::Name("semibold".into())
 }
 
-/// Archivo 620 at 118 % width: the site's `.font-display` headings and app wordmarks.
+/// Syne 700: headings and the iCreate wordmark.
 pub fn display() -> FontFamily {
     FontFamily::Name("display".into())
 }
 
-/// Geist Mono 500: labels and badges.
+/// Source Code Pro 500: labels and badges.
 pub fn mono() -> FontFamily {
     FontFamily::Name("mono".into())
 }
 
-/// Geist Mono 700: buttons and app number tabs.
+/// Source Code Pro 700: buttons and app number tabs.
 pub fn mono_bold() -> FontFamily {
     FontFamily::Name("mono-bold".into())
 }
@@ -308,20 +307,20 @@ pub fn install_fonts(ctx: &egui::Context, cjk: Option<Lang>) {
 /// added only when the desktop selected a CJK language; neither a CJK face nor a system-font
 /// provider is bundled.
 fn font_definitions(cjk: Option<Lang>) -> FontDefinitions {
-    const INTER: &[u8] = include_bytes!("../../../assets/fonts/Inter-Variable.ttf");
-    const ARCHIVO: &[u8] = include_bytes!("../../../assets/fonts/Archivo-Variable.ttf");
-    const GEIST_MONO: &[u8] = include_bytes!("../../../assets/fonts/GeistMono-Variable.ttf");
+    const DM_SANS: &[u8] = include_bytes!("../../../assets/fonts/DMSans-Variable.ttf");
+    const SYNE: &[u8] = include_bytes!("../../../assets/fonts/Syne-Variable.ttf");
+    const SOURCE_CODE: &[u8] = include_bytes!("../../../assets/fonts/SourceCodePro-Variable.ttf");
     let mut fonts = FontDefinitions::default();
     // egui's own Latin faces and the small monochrome icon face stay behind ours.
     let fallback: Vec<String> = fonts.families.get(&FontFamily::Proportional).cloned().unwrap_or_default();
     let faces: [Face<'_>; 7] = [
-        ("Inter", INTER, &[(*b"wght", 400.0), (*b"opsz", 14.0)], FontFamily::Proportional),
-        ("Inter-Medium", INTER, &[(*b"wght", 500.0), (*b"opsz", 14.0)], medium()),
-        ("Inter-SemiBold", INTER, &[(*b"wght", 600.0), (*b"opsz", 14.0)], semibold()),
-        ("Archivo-Display", ARCHIVO, &[(*b"wght", 620.0), (*b"wdth", 118.0)], display()),
-        ("GeistMono", GEIST_MONO, &[(*b"wght", 400.0)], FontFamily::Monospace),
-        ("GeistMono-Medium", GEIST_MONO, &[(*b"wght", 500.0)], mono()),
-        ("GeistMono-Bold", GEIST_MONO, &[(*b"wght", 700.0)], mono_bold()),
+        ("DMSans", DM_SANS, &[(*b"wght", 400.0), (*b"opsz", 14.0)], FontFamily::Proportional),
+        ("DMSans-Medium", DM_SANS, &[(*b"wght", 500.0), (*b"opsz", 14.0)], medium()),
+        ("DMSans-SemiBold", DM_SANS, &[(*b"wght", 600.0), (*b"opsz", 14.0)], semibold()),
+        ("Syne-Display", SYNE, &[(*b"wght", 700.0)], display()),
+        ("SourceCodePro", SOURCE_CODE, &[(*b"wght", 400.0)], FontFamily::Monospace),
+        ("SourceCodePro-Medium", SOURCE_CODE, &[(*b"wght", 500.0)], mono()),
+        ("SourceCodePro-Bold", SOURCE_CODE, &[(*b"wght", 700.0)], mono_bold()),
     ];
     for (name, bytes, coords, family) in faces {
         // No subpixel binning: these fonts carry no hinting instructions, so a glyph drawn at a
@@ -401,8 +400,8 @@ impl CjkFontOverride {
     /// test can prove the font gate installed a face without faking CJK coverage or depending on
     /// the machine.
     pub(crate) fn available(lang: Lang) -> Self {
-        const INTER: &[u8] = include_bytes!("../../../assets/fonts/Inter-Variable.ttf");
-        Self::install(lang, Some(Arc::new(FontData::from_static(INTER))))
+        const DM_SANS: &[u8] = include_bytes!("../../../assets/fonts/DMSans-Variable.ttf");
+        Self::install(lang, Some(Arc::new(FontData::from_static(DM_SANS))))
     }
 
     /// The system has no face for `lang`.
@@ -453,7 +452,8 @@ mod tests {
     #[test]
     fn production_fonts_are_latin_plus_attributed_monochrome_fallbacks() {
         let fonts = font_definitions(None);
-        for expected in ["Inter", "Inter-Medium", "Inter-SemiBold", "Archivo-Display", "GeistMono", "GeistMono-Medium", "GeistMono-Bold"] {
+        for expected in ["DMSans", "DMSans-Medium", "DMSans-SemiBold", "Syne-Display", "SourceCodePro", "SourceCodePro-Medium", "SourceCodePro-Bold"]
+        {
             assert!(fonts.font_data.contains_key(expected), "missing bundled face {expected}: {:?}", fonts.font_data.keys().collect::<Vec<_>>());
         }
         for fallback in ["Ubuntu-Light", "Hack", "egui-icons", "NotoEmoji-Regular", "emoji-icon-font"] {
@@ -479,7 +479,7 @@ mod tests {
         use egui::{FontFamily, FontId};
         const DYNAMIC_TEXT: &str = concat!(
             "What's Changed: Faster exports 🚀 and fewer bugs 🐛 — New templates 🎨, ",
-            "warnings ⚠ and a celebration 🎉 — ArtCraft news: ✨ ✅ ❌ 💡 🔒"
+            "warnings ⚠ and a celebration 🎉 — iCreate news: ✨ ✅ ❌ 💡 🔒"
         );
         let fonts = font_definitions(None);
         assert_eq!(

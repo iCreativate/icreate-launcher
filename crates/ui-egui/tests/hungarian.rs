@@ -8,7 +8,7 @@ use std::rc::Rc;
 use artcraft_launcher_core::protocol::{Backend, Capabilities, Command, Event, JobPhase, LatestRelease, Origin, Source};
 use artcraft_launcher_core::release::{Asset, Release};
 use artcraft_launcher_core::status::InstallSource;
-use artcraft_launcher_core::{Arch, Installed, Os, Platform, SUITE, version};
+use artcraft_launcher_core::{Arch, Installed, Os, Platform, suite, version};
 use artcraft_launcher_ui_egui::settings::ViewMode;
 use artcraft_launcher_ui_egui::{Host, LauncherUi, Settings};
 use egui_kittest::Harness;
@@ -69,7 +69,7 @@ fn release(id: &str, v: &str, at: i64) -> Release {
 
 fn events() -> Vec<Event> {
     let mut ev = Vec::new();
-    for (i, app) in SUITE.iter().enumerate() {
+    for (i, app) in suite().iter().enumerate() {
         let latest = LatestRelease::Found(release(app.id, "0.5.0", NOW - 40 * 86_400 - i as i64 * 600));
         ev.push(Event::Latest { app: app.id.into(), latest, from: Origin::ArtCraftApi });
         let installed = matches!(app.id, "photocraft" | "lightcraft").then(|| Installed {
@@ -129,11 +129,11 @@ fn hungarian_ui_translates_labels_dates_and_messages() {
     snapshot(&mut h, "grid-hu-dark");
     // Product names stay in English.
     assert!(h.query_by_label("Launcher").is_none());
-    h.get_by_label("Craft App Suite");
+    h.get_by_label("by iCreativate");
     h.get_by_label("Képszerkesztés");
     h.get_by_label("Frissítés: 0.5.0");
     h.get_by_label_contains("Ellenőrzőösszeg ellenőrzése…");
-    h.get_by_label_contains("Ellenőrizve: 3 perce · ArtCraft API");
+    h.get_by_label_contains("Ellenőrizve: 3 perce · Release feed");
     h.get_by_label("LightCraft frissítve. Verzió: 0.5.0");
 
     let mut table = harness(ViewMode::Table);
@@ -155,7 +155,7 @@ fn check_settings_layout() {
         h.run_steps(8);
         let screen = egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(width, height));
         let done = h.get_by_label("Kész").rect();
-        let quit = h.get_by_label("Kilépés az ArtCraft Launcherből").rect();
+        let quit = h.get_by_label("Kilépés az iCreateből").rect();
         assert!(screen.contains_rect(done), "{width}x{height}: Done is clipped: {done:?}");
         assert!(screen.contains_rect(quit), "{width}x{height}: Quit is clipped: {quit:?}");
         assert!(!done.intersects(quit));
@@ -174,7 +174,7 @@ fn check_settings_layout() {
         let discord = h.get_by_label("Csatlakozás a Discordhoz").rect();
         assert!(screen.contains_rect(discord), "community links must be reachable by scrolling");
         let mut links = vec![discord];
-        for label in ["Webhely", "GitHub", "X", "Instagram", "LinkedIn", "YouTube", "TikTok"] {
+        for label in ["Webhely", "GitHub"] {
             let candidates: Vec<_> = h
                 .query_all_by_label(label)
                 .map(|n| n.rect())

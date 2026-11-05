@@ -1,12 +1,12 @@
 {
   "id": "artcraft-launcher",
-  "name": "ArtCraft Launcher",
+  "name": "iCreate",
   "mode": "perUser",
-  "upgradeCode": "1AC08DBF-D4CF-4BA4-A81E-CAA5C1004974",
+  "upgradeCode": "8F2B4A71-C3E6-4D89-B5A1-9E07D4C6A8F2",
   "sources": [
     "artcraft-launcher.wxs"
   ],
-  "icon": "assets/app-icon/artcraft-launcher.ico",
+  "icon": "assets/app-icon/icreate.ico",
   "localization": [
     "artcraft-launcher.en-us.wxl"
   ],
@@ -21,13 +21,13 @@
   "registry": [
     [
       "1",
-      "Software\\Learning Machines LLC\\ArtCraft Launcher",
+      "Software\\iCreativate\\iCreate",
       "InstallDir",
       "[INSTALLFOLDER]"
     ],
     [
       "1",
-      "Software\\Learning Machines LLC\\ArtCraft Launcher",
+      "Software\\iCreativate\\iCreate",
       "DesktopShortcutChoice",
       "[DESKTOPSHORTCUTCHOICE]"
     ],
@@ -39,13 +39,13 @@
     ],
     [
       "1",
-      "Software\\Learning Machines LLC\\ArtCraft Launcher",
+      "Software\\iCreativate\\iCreate",
       "StartMenuShortcut",
       "#1"
     ],
     [
       "1",
-      "Software\\Learning Machines LLC\\ArtCraft Launcher",
+      "Software\\iCreativate\\iCreate",
       "DesktopShortcut",
       "#1"
     ]

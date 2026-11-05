@@ -11,12 +11,12 @@
 # `appstreamcli compose`; the freedesktop runtime and SDK named in the manifest are
 # installed per-user from Flathub. Unless --no-test, the bundle is then installed per-user and its
 # files are listed inside the sandbox as a smoke test (the launcher is GUI-only, so it isn't run).
-# Manifest: packaging/linux/flatpak/ai.storyteller.artcraft-launcher.bundle.yml.
+# Manifest: packaging/linux/flatpak/za.co.icreativate.icreate.bundle.yml.
 set -euo pipefail
 # shellcheck source=../env.sh
 . "$(dirname "${BASH_SOURCE[0]}")/../env.sh"
 HERE="$ROOT/packaging/linux"
-APP_ID=ai.storyteller.artcraft-launcher
+APP_ID=za.co.icreativate.icreate
 PKG=artcraft-launcher
 FLATHUB=https://dl.flathub.org/repo/flathub.flatpakrepo
 
@@ -46,7 +46,7 @@ for tool in flatpak flatpak-builder; do
   command -v "$tool" >/dev/null || { echo "error: $tool not found (apt install flatpak flatpak-builder librsvg2-common)" >&2; exit 1; }
 done
 
-echo "==> ArtCraft Launcher $VERSION Flatpak bundle for $ARCH from $(basename "$TARBALL")"
+echo "==> iCreate $VERSION Flatpak bundle for $ARCH from $(basename "$TARBALL")"
 
 WORK="$CARGO_TARGET_DIR/flatpak-bundle"
 rm -rf "$WORK"

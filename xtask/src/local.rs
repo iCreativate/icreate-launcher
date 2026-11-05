@@ -17,7 +17,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-/// Every Craft App: (id = folder name, display name). Keep in step with `catalog::SUITE`.
+/// Every Craft App: (id = folder name, display name). Keep in step with `catalog::suite`.
 const APPS: &[(&str, &str)] = &[
     ("photocraft", "PhotoCraft"),
     ("vectorcraft", "VectorCraft"),

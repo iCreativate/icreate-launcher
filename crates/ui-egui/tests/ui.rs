@@ -13,7 +13,7 @@ use artcraft_launcher_core::protocol::{
 };
 use artcraft_launcher_core::release::{Asset, Release};
 use artcraft_launcher_core::status::InstallSource;
-use artcraft_launcher_core::{Arch, Installed, Os, Platform, SUITE, version};
+use artcraft_launcher_core::{Arch, Installed, Os, Platform, suite, version};
 use artcraft_launcher_ui_egui::settings::ViewMode;
 use artcraft_launcher_ui_egui::{Host, LauncherUi, Settings};
 use egui_kittest::Harness;
@@ -183,7 +183,7 @@ fn events() -> Vec<Event> {
     }
     ev.push(Event::Latest { app: "soundcraft".into(), latest: LatestRelease::None, from: Origin::ArtCraftApi });
     let installed = [("photocraft", "0.4.1"), ("lightcraft", "0.4.0"), ("wordcraft", "0.3.0"), ("effectcraft", "0.5.0")];
-    for app in &SUITE {
+    for app in suite() {
         let inst = installed.iter().find(|(id, _)| *id == app.id).map(|(_, v)| Installed {
             version: version::parse(v),
             source: InstallSource::MacApp,
@@ -878,6 +878,7 @@ fn a_narrow_settings_row_keeps_its_control_clear_of_its_label() {
     // label, whichever column the dialog's size puts it in.
     let combo = h
         .query_all_by_role(egui::accesskit::Role::ComboBox)
+        .filter(|node| (node.rect().center().y - label.center().y).abs() < 80.0)
         .min_by_key(|node| {
             let r = node.rect();
             ((r.center().x - label.center().x).abs() + (r.center().y - label.center().y).abs()) as i32
@@ -1304,7 +1305,7 @@ fn a_kept_update_installs_on_retry_and_an_up_to_date_app_is_not_downloaded_again
     h.run_steps(2);
     assert_eq!(*sent.borrow(), [Command::Install { app: "effectcraft".into() }]);
     // WordCraft is up to date: its menu offers Reinstall, which uses the kept file.
-    let row = h.get_by_role_and_label(egui::accesskit::Role::Label, "WordCraft").rect().center().y;
+    let row = h.get_by_role_and_label(egui::accesskit::Role::Label, "iCreate Write").rect().center().y;
     h.get_all_by_label_contains("More actions").find(|n| (n.rect().center().y - row).abs() < 25.0).unwrap().click();
     h.run_steps(3);
     h.get_by_label("Reinstall");
@@ -1619,23 +1620,23 @@ fn pin_drag_accepts_the_table_grip_column() {
 fn hiding_an_app_removes_it_until_it_is_unhidden() {
     let (mut h, _) = harness(ViewMode::Table, egui::Theme::Dark, true);
     h.run_steps(6);
-    let row = h.get_by_role_and_label(egui::accesskit::Role::Label, "PhotoCraft").rect().center().y;
+    let row = h.get_by_role_and_label(egui::accesskit::Role::Label, "iCreate Photo").rect().center().y;
     h.get_all_by_label_contains("More actions").find(|n| (n.rect().center().y - row).abs() < 25.0).unwrap().click();
     h.run_steps(3);
     h.get_by_label("Hide App").click();
     h.run_steps(4);
-    assert!(h.query_by_role_and_label(egui::accesskit::Role::Label, "PhotoCraft").is_none());
+    assert!(h.query_by_role_and_label(egui::accesskit::Role::Label, "iCreate Photo").is_none());
     assert!(h.state().as_ref().unwrap().settings.hidden.contains("photocraft"));
     h.get_by_label("Hidden Apps 1").click();
     h.run_steps(4);
-    h.get_by_role_and_label(egui::accesskit::Role::Label, "PhotoCraft");
-    assert!(h.query_by_role_and_label(egui::accesskit::Role::Label, "WordCraft").is_none());
-    let row = h.get_by_role_and_label(egui::accesskit::Role::Label, "PhotoCraft").rect().center().y;
+    h.get_by_role_and_label(egui::accesskit::Role::Label, "iCreate Photo");
+    assert!(h.query_by_role_and_label(egui::accesskit::Role::Label, "iCreate Write").is_none());
+    let row = h.get_by_role_and_label(egui::accesskit::Role::Label, "iCreate Photo").rect().center().y;
     h.get_all_by_label_contains("More actions").find(|n| (n.rect().center().y - row).abs() < 25.0).unwrap().click();
     h.run_steps(3);
     h.get_by_label("Unhide App").click();
     h.run_steps(4);
-    h.get_by_role_and_label(egui::accesskit::Role::Label, "PhotoCraft");
+    h.get_by_role_and_label(egui::accesskit::Role::Label, "iCreate Photo");
     assert!(h.query_by_label("Hidden Apps 1").is_none());
     assert!(h.state().as_ref().unwrap().settings.hidden.is_empty());
     assert_eq!(h.state().as_ref().unwrap().settings.filter, artcraft_launcher_ui_egui::settings::Filter::All);
@@ -1709,14 +1710,14 @@ fn switching_views() {
     h.get_by_label("Show apps as a table").click();
     h.run_steps(4);
     assert_eq!(h.state().as_ref().unwrap().settings.view, ViewMode::Table);
-    h.get_by_role_and_label(egui::accesskit::Role::Label, "PhotoCraft");
-    h.get_by_role_and_label(egui::accesskit::Role::Label, "WordCraft");
+    h.get_by_role_and_label(egui::accesskit::Role::Label, "iCreate Photo");
+    h.get_by_role_and_label(egui::accesskit::Role::Label, "iCreate Write");
     // The row icon is decorative; the wordmark carries the name exactly once.
     assert_eq!(h.query_all_by_role_and_label(egui::accesskit::Role::Image, "PhotoCraft").count(), 0, "the table icon must not repeat the wordmark");
     assert_eq!(
-        h.query_all_by_role_and_label(egui::accesskit::Role::Label, "PhotoCraft").count(),
+        h.query_all_by_role_and_label(egui::accesskit::Role::Label, "iCreate Photo").count(),
         1,
-        "the table wordmark names PhotoCraft exactly once"
+        "the table wordmark names iCreate Photo exactly once"
     );
 }
 
@@ -1739,19 +1740,19 @@ fn name_and_tagline_are_centred_on_the_icon() {
         let (mut h, _) = harness_at(ViewMode::Grid, egui::Theme::Dark, true, scale);
         h.run_steps(8);
         snapshot(&mut h, &format!("grid-dark{suffix}"));
-        let off = below_icon_centre(&h, &["PhotoCraft", "Image editing"]);
+        let off = below_icon_centre(&h, &["iCreate Photo", "Image editing"]);
         assert!(off.abs() < 0.25, "grid at {scale}x: {off}");
         let (mut h, _) = harness_at(ViewMode::Table, egui::Theme::Light, true, scale);
         h.run_steps(8);
         snapshot(&mut h, &format!("table-light{suffix}"));
-        let off = below_icon_centre(&h, &["PhotoCraft", "Image editing"]);
+        let off = below_icon_centre(&h, &["iCreate Photo", "Image editing"]);
         assert!(off.abs() < 0.25, "table at {scale}x: {off}");
     }
 }
 
 /// The app names in the order the table shows them.
 fn order(h: &Harness<'_, Option<LauncherUi>>) -> Vec<String> {
-    let names: Vec<&str> = SUITE.iter().map(|a| a.name).collect();
+    let names: Vec<&str> = suite().iter().map(|a| a.title()).collect();
     let mut found: Vec<(f32, String)> = h
         .query_all(egui_kittest::kittest::by())
         .filter_map(|n| {
@@ -1775,13 +1776,13 @@ fn every_table_column_sorts_both_ways() {
     h.get_by_label("Status").click();
     h.run_steps(3);
     let o = order(&h);
-    assert_eq!(&o[..4], ["PhotoCraft", "EffectCraft", "LightCraft", "WordCraft"], "{o:?}");
+    assert_eq!(&o[..4], ["iCreate Photo", "iCreate Motion", "iCreate Light", "iCreate Write"], "{o:?}");
     // Reversed: the apps not installed first, then up to date, then the updates last. The table
     // keeps its column's order; only the grid puts installed apps above the rest.
     h.get_by_label("Status").click();
     h.run_steps(3);
     let o = order(&h);
-    assert_eq!(&o[o.len().saturating_sub(4)..], ["LightCraft", "WordCraft", "PhotoCraft", "EffectCraft"], "{o:?}");
+    assert_eq!(&o[o.len().saturating_sub(4)..], ["iCreate Light", "iCreate Write", "iCreate Photo", "iCreate Motion"], "{o:?}");
     // The old Installed and Latest columns are gone; Version shows the number, and from and to for an update.
     assert!(h.query_by_label("Latest").is_none());
     h.get_by_label("Version");
@@ -1795,7 +1796,7 @@ fn every_table_column_sorts_both_ways() {
     h.get_by_label("App").click();
     h.run_steps(3);
     let o = order(&h);
-    assert_eq!(o.first().map(String::as_str), Some("WordCraft"), "{o:?}");
+    assert_eq!(o.first().map(String::as_str), Some("iCreate Write"), "{o:?}");
 }
 
 /// The first close to the tray is explained once, by a system notification (#45, #215).
@@ -1816,7 +1817,7 @@ fn the_first_close_to_the_tray_is_explained_once() {
     l.hidden_to_tray(&mut host);
     assert!(l.settings.tray_hint_shown);
     assert_eq!(host.0.len(), 1, "{:?}", host.0);
-    assert_eq!(host.0[0].0, "ArtCraft Launcher is still running");
+    assert_eq!(host.0[0].0, "iCreate is still running");
     assert!(host.0[0].1.contains("tray icon"), "{}", host.0[0].1);
 }
 
@@ -1870,9 +1871,18 @@ fn settings_link_to_discord() {
         "the Settings hero icon must not repeat its heading"
     );
     snapshot(&mut h, "settings-dark");
-    h.get_by_label("Questions, ideas and news from the ArtCraft team");
+    h.get_by_label("Questions, ideas and news from iCreativate");
     // The footer icon and the button in Settings.
     assert!(h.query_all_by_label_contains("Discord").count() >= 2);
+    h.get_by_label("Account");
+    h.get_by_label("An iCreate account is optional. Every app stays free to install without signing in.");
+}
+
+#[test]
+fn apps_stay_listed_without_an_account() {
+    let (mut h, _) = harness(ViewMode::Grid, egui::Theme::Dark, true);
+    h.run_steps(6);
+    h.get_by_label("iCreate Photo");
 }
 
 #[test]
@@ -1962,20 +1972,14 @@ fn all_opened(h: &mut Harness<'_, Option<LauncherUi>>, label: &str) -> Vec<Strin
 fn links_open_the_right_pages() {
     let (mut h, _) = harness(ViewMode::Grid, egui::Theme::Dark, true);
     h.run_steps(6);
-    assert_eq!(click_opens(&mut h, "Discord").as_deref(), Some("https://discord.gg/artcraft"));
-    // The footer's ArtCraft links and each card's own pages.
+    assert_eq!(click_opens(&mut h, "Discord").as_deref(), Some("https://icreativate.co.za"));
+    // The footer's iCreate links and each card's own pages.
     let github = all_opened(&mut h, "GitHub");
-    assert!(github.contains(&"https://github.com/storytold".to_string()), "{github:?}");
+    assert!(github.contains(&"https://github.com/iCreativate".to_string()), "{github:?}");
     assert!(github.contains(&"https://github.com/storytold/photocraft".to_string()), "{github:?}");
     let sites = all_opened(&mut h, "Website");
-    assert!(sites.contains(&"https://getartcraft.com".to_string()), "{sites:?}");
-    assert_eq!(sites, vec!["https://getartcraft.com".to_string()], "{sites:?}");
-    // Social icons in the footer.
-    assert_eq!(click_opens(&mut h, "X").as_deref(), Some("https://x.com/get_artcraft"));
-    assert_eq!(click_opens(&mut h, "YouTube").as_deref(), Some("https://www.youtube.com/@OfficialArtcraftStudios"));
-    assert_eq!(click_opens(&mut h, "TikTok").as_deref(), Some("https://www.tiktok.com/@artcraft.studios"));
-    assert_eq!(click_opens(&mut h, "Instagram").as_deref(), Some("https://www.instagram.com/officialartcraftstudios"));
-    assert_eq!(click_opens(&mut h, "LinkedIn").as_deref(), Some("https://www.linkedin.com/company/artcraft-ai"));
+    assert!(sites.contains(&"https://icreativate.co.za".to_string()), "{sites:?}");
+    assert_eq!(sites, vec!["https://icreativate.co.za".to_string()], "{sites:?}");
     // The … menu.
     h.get_all_by_label_contains("More actions").next().unwrap().click();
     h.run_steps(3);
@@ -2020,7 +2024,7 @@ fn hostile_release_asset_urls_never_reach_the_opener() {
 fn discord_link_opens_app_when_discord_is_installed() {
     let (mut h, _) = harness_with_discord(Some(artcraft_launcher_core::catalog::DISCORD_APP_URL));
     h.run_steps(6);
-    assert_eq!(click_opens(&mut h, "Discord").as_deref(), Some("discord://-/invite/artcraft"));
+    assert_eq!(click_opens(&mut h, "Discord").as_deref(), Some("https://icreativate.co.za"));
 }
 
 #[test]
@@ -2113,9 +2117,9 @@ fn the_launcher_updates_itself_and_quits_to_restart() {
         None,
     );
     h.run_steps(6);
-    h.get_by_role_and_label(egui::accesskit::Role::Label, "ArtCraft Launcher 0.2.0 is available.");
+    h.get_by_role_and_label(egui::accesskit::Role::Label, "iCreate 0.2.0 is available.");
     assert_eq!(
-        h.query_all_by_label_contains("ArtCraft Launcher 0.2.0 is available").count(),
+        h.query_all_by_label_contains("iCreate 0.2.0 is available").count(),
         1,
         "the update title is announced once, not once by the icon and once by the heading"
     );
@@ -2144,9 +2148,9 @@ fn launcher_update_prompts_to_relaunch_with_updated_version() {
     let (mut h, _) = harness_with(ev, ViewMode::Grid, egui::Theme::Dark, true, 1.0);
     h.run_steps(6);
     // Dialog pops up on launch with the update prompt
-    h.get_by_role_and_label(egui::accesskit::Role::Label, "ArtCraft Launcher 0.2.0 is available.");
+    h.get_by_role_and_label(egui::accesskit::Role::Label, "iCreate 0.2.0 is available.");
     assert_eq!(
-        h.query_all_by_label_contains("ArtCraft Launcher 0.2.0 is available").count(),
+        h.query_all_by_label_contains("iCreate 0.2.0 is available").count(),
         1,
         "the update title is announced once, not once by the icon and once by the heading"
     );
@@ -2319,10 +2323,10 @@ fn the_footer_names_the_services_behind_what_is_on_screen() {
             h.get_by_label_contains("Checked ").accesskit_node().label().or_else(|| h.get_by_label_contains("Checked ").accesskit_node().value());
         label.unwrap_or_default()
     };
-    assert_eq!(footer(Vec::new()), "Checked 3 min ago · using ArtCraft API");
+    assert_eq!(footer(Vec::new()), "Checked 3 min ago · using Release feed");
     let from_github =
         vec![Event::Latest { app: "wordcraft".into(), latest: LatestRelease::Found(release("wordcraft", "0.3.1", NOW)), from: Origin::GitHub }];
-    assert_eq!(footer(from_github), "Checked 3 min ago · using ArtCraft API and GitHub");
+    assert_eq!(footer(from_github), "Checked 3 min ago · using Release feed and GitHub");
 }
 
 #[test]
@@ -2539,10 +2543,12 @@ fn clicking_a_card_opens_its_details_drawer() {
         "the hero icon is decorative; the wordmark carries the app name"
     );
     assert_eq!(
-        h.query_all_by_role_and_label(egui::accesskit::Role::Label, "PhotoCraft").count(),
+        h.query_all_by_role_and_label(egui::accesskit::Role::Label, "iCreate Photo").count(),
         2,
         "exactly the grid card's wordmark and the details drawer's wordmark carry the app name"
     );
+    h.get_by_label("Replaces Adobe Photoshop");
+    h.get_by_label("Powered by PhotoCraft");
     snapshot(&mut h, "details-dark");
     h.get_all_by_label_contains("The image editor you already know how to use").last().unwrap();
     h.get_by_label_contains("Curves and type layers · 1/4");
@@ -2733,7 +2739,7 @@ fn every_page_opens_and_pages_through_its_pictures() {
     h.set_size(egui::vec2(1180.0, 3000.0));
     h.run_steps(8);
     for d in &artcraft_launcher_core::details::DETAILS {
-        let name = SUITE.iter().find(|a| a.id == d.id).map(|a| a.name).unwrap_or(d.id);
+        let name = suite().iter().find(|a| a.id == d.id).map(|a| a.name).unwrap_or(d.id);
         h.get_by_label(&format!("{name} details")).scroll_to_me();
         h.run_steps(3);
         h.get_by_label(&format!("{name} details")).click();
@@ -2839,10 +2845,10 @@ fn the_rate_limit_notice_never_runs_under_the_footer_links() {
         assert!(notice.width() >= 120.0 && notice.right() <= width, "{width}: notice {notice:?}");
         // Everything on the footer's right: the website, GitHub and Discord icons and the social icons.
         let mut right = Vec::new();
-        for label in ["Website", "GitHub", "Discord", "X", "YouTube", "TikTok", "Instagram", "LinkedIn"] {
+        for label in ["Website", "GitHub", "Discord"] {
             right.extend(h.query_all_by_label(label).map(|n| n.rect()).filter(|r| (r.center().y - notice.center().y).abs() < 12.0));
         }
-        assert_eq!(right.len(), 8, "{width}: {right:?}");
+        assert_eq!(right.len(), 3, "{width}: {right:?}");
         assert!(h.query_by_label_contains("Installing for").is_none(), "{width}: the footer no longer names the platform");
         for r in right {
             assert!(!r.intersects(notice), "{width}: notice {notice:?} overlaps {r:?}");
@@ -2878,16 +2884,30 @@ fn toolbar_keeps_navigation_refresh_search_and_view_on_one_unclipped_row() {
 }
 
 #[test]
-fn the_toolbar_has_no_filter_dropdown() {
-    use artcraft_launcher_ui_egui::settings::Filter;
+fn the_home_screen_has_category_tabs_and_installed_updates_filters() {
+    use artcraft_launcher_ui_egui::settings::{CategoryFilter, Filter};
     let (mut h, _) = harness(ViewMode::Grid, egui::Theme::Dark, true);
     h.run_steps(6);
-    for label in ["All 13", "Installed 4", "Updates 2", "Not installed 9"] {
-        assert!(h.query_by_value(label).is_none() && h.query_by_label(label).is_none(), "{label}");
+    for label in ["Photo", "Design", "Video", "Audio", "Documents", "Office"] {
+        h.get_by_label(label);
     }
-    // Only the sort dropdown is left.
+    h.get_by_label("Installed 4");
+    h.get_by_label("Updates 2");
+    assert!(h.query_all_by_label("Alpha").count() >= 1, "alpha apps show an early-preview badge");
+    assert!(h.query_by_label("Not installed 9").is_none() && h.query_by_value("Not installed 9").is_none());
+    h.get_by_label("Photo").click();
+    h.run_steps(4);
+    assert_eq!(h.state().as_ref().unwrap().settings.category, CategoryFilter::Photo);
+    let ids = h.state().as_ref().unwrap().visible_ids_for_test();
+    assert_eq!(ids, ["lightcraft", "photocraft"], "{ids:?}");
+    h.state_mut().as_mut().unwrap().set_search_for_test("photoshop");
+    h.run_steps(2);
+    assert_eq!(h.state().as_ref().unwrap().visible_ids_for_test(), ["photocraft"]);
+    h.state_mut().as_mut().unwrap().set_search_for_test("");
+    h.get_by_label("Installed 4").click();
+    h.run_steps(4);
+    assert_eq!(h.state().as_ref().unwrap().settings.filter, Filter::Installed);
     assert_eq!(h.query_all_by_role(egui::accesskit::Role::ComboBox).count(), 1);
-    assert_eq!(h.state().as_ref().unwrap().settings.filter, Filter::All);
 }
 
 #[test]
@@ -2896,8 +2916,8 @@ fn saved_filters_are_migrated_on_ui_construction() {
 
     for (saved, expected) in [
         (r#"{"filter":"All"}"#, Filter::All),
-        (r#"{"filter":"Installed"}"#, Filter::All),
-        (r#"{"filter":"Updates"}"#, Filter::All),
+        (r#"{"filter":"Installed"}"#, Filter::Installed),
+        (r#"{"filter":"Updates"}"#, Filter::Updates),
         (r#"{"filter":"NotInstalled"}"#, Filter::All),
         (r#"{"filter":"Hidden"}"#, Filter::Hidden),
     ] {
@@ -2925,8 +2945,8 @@ fn assert_header_at_width(h: &mut Harness<'_, Option<LauncherUi>>, bar: artcraft
     for label in ["Show apps as cards", "Show apps as a table", "Settings", "Check for updates"] {
         let rect = h.get_by_label(label).rect();
         assert!(rect.left() >= 0.0 && rect.right() <= width, "{bar:?} {width}: {label} {rect:?}");
-        if let Some(text) = h.query_by_label("Craft App Suite") {
-            assert!(!rect.intersects(text.rect()), "{bar:?} {width}: Craft App Suite overlaps {label} {rect:?}");
+        if let Some(text) = h.query_by_label("iCreate") {
+            assert!(!rect.intersects(text.rect()), "{bar:?} {width}: iCreate overlaps {label} {rect:?}");
         }
     }
     if bar == artcraft_launcher_ui_egui::TitleBar::Custom {
@@ -2937,7 +2957,7 @@ fn assert_header_at_width(h: &mut Harness<'_, Option<LauncherUi>>, bar: artcraft
     }
     if width == 1180.0 {
         assert!(h.query_by_label("Launcher").is_none());
-        h.get_by_label("Craft App Suite");
+        h.get_by_label("by iCreativate");
     }
     if [720.0, 800.0, 1180.0].contains(&width) {
         snapshot(h, &format!("header-{theme:?}-{bar:?}-{width}"));
@@ -3281,15 +3301,18 @@ fn an_occupied_folder_asks_before_replacing_it() {
 #[test]
 fn a_not_installed_card_is_grey_until_the_pointer_is_over_it() {
     let (mut h, _) = harness(ViewMode::Grid, egui::Theme::Dark, true);
-    h.set_size(egui::vec2(1180.0, 1100.0));
+    h.set_size(egui::vec2(1180.0, 1600.0));
     h.run_steps(8);
+    h.hover_at(egui::pos2(5.0, 5.0));
+    h.run_steps(20);
     let icon = h.get_by_label("CADCraft icon").rect();
     // The most colourful pixel in the icon: how far apart its red, green and blue are.
     let colour = |h: &mut Harness<'_, Option<LauncherUi>>| {
         let image = h.render().unwrap();
         let mut most = 0_i32;
-        for y in icon.top() as u32..icon.bottom() as u32 {
-            for x in icon.left() as u32..icon.right() as u32 {
+        let (cx, cy) = (icon.center().x as u32, icon.center().y as u32);
+        for y in (cy.saturating_sub(10))..(cy + 10) {
+            for x in (cx.saturating_sub(10))..(cx + 10) {
                 let p = image.get_pixel(x, y).0;
                 let (hi, lo) = (p[0].max(p[1]).max(p[2]), p[0].min(p[1]).min(p[2]));
                 most = most.max(i32::from(hi) - i32::from(lo));
@@ -3297,7 +3320,8 @@ fn a_not_installed_card_is_grey_until_the_pointer_is_over_it() {
         }
         most
     };
-    assert!(colour(&mut h) <= 8, "a not installed app's icon is grey");
+    let grey = colour(&mut h);
+    assert!(grey <= 8, "a not installed app's icon is grey (chroma {grey}, icon {icon:?})");
     h.hover_at(egui::pos2(icon.center().x + 120.0, icon.center().y + 60.0));
     // The colour picture decodes on a background thread: give it real time, as a slow machine
     // (CI's Windows runner) needs more than a few frames.
@@ -3311,7 +3335,7 @@ fn a_not_installed_card_is_grey_until_the_pointer_is_over_it() {
         std::thread::sleep(std::time::Duration::from_millis(20));
     }
     assert!(shown > 40, "the icon shows its colour under the pointer");
-    h.hover_at(egui::pos2(5.0, 400.0));
+    h.hover_at(egui::pos2(5.0, 5.0));
     h.run_steps(8);
     assert!(colour(&mut h) <= 8, "the colour goes again when the pointer leaves");
 }

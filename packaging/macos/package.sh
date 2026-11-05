@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Build, sign and (optionally) notarize the macOS release artifact:
 #
-#   $DIST/artcraft-launcher-<version>-macos-<arch>.dmg   ArtCraft Launcher.app on a drag-to-Applications DMG
+#   $DIST/artcraft-launcher-<version>-macos-<arch>.dmg   iCreate.app on a drag-to-Applications DMG
 #
 # Usage: packaging/macos/package.sh [--arch universal|aarch64|x86_64] [--skip-build]
 #
@@ -18,7 +18,7 @@ HERE="$ROOT/packaging/macos"
 
 # ---- app-specific values ----------------------------------------------------------------------
 PKG=artcraft-launcher          # cargo package and binary
-APP_NAME="ArtCraft Launcher"   # display name: bundle, executable, icon, DMG volume
+APP_NAME="iCreate"   # display name: bundle, executable, icon, DMG volume
 
 ARCH=universal
 SKIP_BUILD=0
@@ -112,12 +112,12 @@ stapler_retry() {
   exit 1
 }
 
-# ---- ArtCraft Launcher.app ---------------------------------------------------------------------
+# ---- iCreate.app ---------------------------------------------------------------------
 echo "==> assembling $APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 # Executable and icon carry the display name (CFBundleExecutable / CFBundleIconFile).
 cp "$WORK/bin/$PKG" "$APP/Contents/MacOS/$APP_NAME"
-cp "$ROOT/assets/app-icon/$PKG.icns" "$APP/Contents/Resources/$APP_NAME.icns"
+cp "$ROOT/assets/app-icon/icreate.icns" "$APP/Contents/Resources/$APP_NAME.icns"
 cp "$ROOT/NOTICE" "$APP/Contents/Resources/"
 sed -e "s/@VERSION@/$VERSION/g" -e "s/@SHORT_VERSION@/$SHORT_VERSION/g" \
   -e "s/@BUILD_SHA@/${ARTCRAFT_LAUNCHER_BUILD_SHA:-unknown}/g" \

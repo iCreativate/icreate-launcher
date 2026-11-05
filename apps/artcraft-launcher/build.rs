@@ -6,17 +6,20 @@
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
-    println!("cargo:rerun-if-changed=../../assets/app-icon/artcraft-launcher.ico");
+    println!("cargo:rerun-if-changed=../../assets/app-icon/icreate.ico");
     println!("cargo:rerun-if-env-changed=ARTCRAFT_LAUNCHER_REQUIRE_WINRES");
     if std::env::var("CARGO_CFG_TARGET_OS").as_deref() != Ok("windows") {
         return;
     }
     let mut res = winresource::WindowsResource::new();
-    res.set_icon("../../assets/app-icon/artcraft-launcher.ico")
-        .set("ProductName", "ArtCraft Launcher")
-        .set("FileDescription", "ArtCraft Launcher")
-        .set("CompanyName", "Learning Machines LLC")
-        .set("LegalCopyright", "Copyright (c) the ArtCraft Launcher authors. MIT OR Apache-2.0.")
+    res.set_icon("../../assets/app-icon/icreate.ico")
+        .set("ProductName", "iCreate")
+        .set("FileDescription", "iCreate")
+        .set("CompanyName", "iCreativate")
+        .set(
+            "LegalCopyright",
+            "Copyright (c) 2026 ArtCraft Team and the ArtCraft Launcher contributors; Copyright (c) 2026 iCreativate. MIT OR Apache-2.0.",
+        )
         .set("OriginalFilename", "artcraft-launcher.exe")
         .set("InternalName", "artcraft-launcher");
     if let Err(e) = res.compile() {
