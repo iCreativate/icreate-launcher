@@ -17,8 +17,10 @@ on:
         type: boolean
         default: false
 
+# Publish needs contents: write. Repo Settings → Actions → General → Workflow permissions
+# must allow "Read and write" (or the GitHub Release job gets HTTP 403).
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: release-${{ github.ref }}
