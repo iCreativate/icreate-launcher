@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Build, sign and (optionally) notarize the macOS release artifact:
 #
-#   $DIST/artcraft-launcher-<version>-macos-<arch>.dmg   iCreate.app on a drag-to-Applications DMG
+#   $DIST/icreate-launcher-<version>-macos-<arch>.dmg   iCreate.app on a drag-to-Applications DMG
 #
 # Usage: packaging/macos/package.sh [--arch universal|aarch64|x86_64] [--skip-build]
 #
@@ -17,7 +17,8 @@ set -euo pipefail
 HERE="$ROOT/packaging/macos"
 
 # ---- app-specific values ----------------------------------------------------------------------
-PKG=artcraft-launcher          # cargo package and binary
+PKG=artcraft-launcher          # cargo package and binary (crate name)
+ASSET=icreate-launcher         # GitHub release / download file prefix
 APP_NAME="iCreate"   # display name: bundle, executable, icon, DMG volume
 
 ARCH=universal
@@ -43,7 +44,7 @@ IDENTITY="${MACOS_SIGN_IDENTITY:--}"
 SHORT_VERSION="${VERSION%%-*}"
 WORK="$CARGO_TARGET_DIR/macos-package"
 APP="$WORK/$APP_NAME.app"
-DMG="$DIST/$PKG-$VERSION-macos-$ARCH.dmg"
+DMG="$DIST/$ASSET-$VERSION-macos-$ARCH.dmg"
 
 NOTARIZE=0
 if [[ "$IDENTITY" = "-" ]]; then

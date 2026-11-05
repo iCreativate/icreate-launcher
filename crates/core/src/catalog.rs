@@ -412,9 +412,9 @@ pub const DISCORD_URL: &str = "https://icreativate.co.za";
 pub const DISCORD_APP_URL: &str = "https://icreativate.co.za";
 
 /// iCreate itself, described like a Craft App so it can update itself with the same machinery
-/// (asset names `artcraft-launcher-<ver>-…`, bundle id `za.co.icreativate.icreate`, `iCreate.app`).
-/// Not part of [`suite`]. The asset stem stays `artcraft-launcher` so packaging and self-update
-/// keep matching GitHub release files.
+/// (asset names `icreate-launcher-<ver>-…`, bundle id `za.co.icreativate.icreate`, `iCreate.app`).
+/// Not part of [`suite`]. Older releases used the `artcraft-launcher-` stem; that former id keeps
+/// detecting and updating those installs.
 pub const LAUNCHER: CraftApp = CraftApp {
     publisher: "iCreativate",
     bundle: Some("za.co.icreativate.icreate"),
@@ -425,8 +425,9 @@ pub const LAUNCHER: CraftApp = CraftApp {
     icon: "icreate.png",
     category: Category::Design,
     maturity: Maturity::Stable,
+    former_ids: &["artcraft-launcher"],
     ..app(
-        "artcraft-launcher",
+        "icreate-launcher",
         "iCreate",
         "Installs and updates the iCreate creative suite",
         [[0x0e, 0xa5, 0xe9], [0x03, 0x69, 0xa1], [0x38, 0xbd, 0xf8]],
@@ -437,7 +438,7 @@ pub const LAUNCHER: CraftApp = CraftApp {
 /// The launcher's own repo, checked so it can say when a newer launcher is out.
 pub const LAUNCHER_REPO: &str = "iCreativate/icreate-launcher";
 /// The launcher's own asset stem (release file prefix).
-pub const LAUNCHER_ID: &str = "artcraft-launcher";
+pub const LAUNCHER_ID: &str = "icreate-launcher";
 /// Shown in the window, About, tray and installers.
 pub const APP_DISPLAY_NAME: &str = "iCreate";
 /// macOS bundle id, Linux app id and Windows AppUserModelID.
@@ -679,7 +680,8 @@ mod tests {
         assert_eq!(LAUNCHER.repo, "iCreativate/icreate-launcher");
         assert_eq!(LAUNCHER.bundle_id(), "za.co.icreativate.icreate");
         assert_eq!(LAUNCHER_REPO, "iCreativate/icreate-launcher");
-        assert_eq!(LAUNCHER_ID, "artcraft-launcher");
+        assert_eq!(LAUNCHER_ID, "icreate-launcher");
+        assert_eq!(LAUNCHER.stems().collect::<Vec<_>>(), ["icreate-launcher", "artcraft-launcher"]);
         assert_eq!(APP_DISPLAY_NAME, "iCreate");
         assert_eq!(APP_BUNDLE_ID, "za.co.icreativate.icreate");
         assert_eq!(WEBSITE_URL, "https://icreativate.co.za");

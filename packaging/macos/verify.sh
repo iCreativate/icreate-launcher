@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Check the macOS release artifact exactly as users download it:
 #
-#   $DIST/artcraft-launcher-<version>-macos-<arch>.dmg   signed, notarized, ticket stapled; the
+#   $DIST/icreate-launcher-<version>-macos-<arch>.dmg   signed, notarized, ticket stapled; the
 #                                                       app inside is Developer ID signed with the
 #                                                       hardened runtime and carries every arch
 #
@@ -17,6 +17,7 @@ set -euo pipefail
 . "$(dirname "${BASH_SOURCE[0]}")/../env.sh"
 
 PKG=artcraft-launcher
+ASSET=icreate-launcher
 APP_NAME="iCreate"
 
 ARCH=universal
@@ -34,7 +35,7 @@ case "$ARCH" in
   *) echo "unknown --arch $ARCH" >&2; exit 2 ;;
 esac
 
-DMG="$DIST/$PKG-$VERSION-macos-$ARCH.dmg"
+DMG="$DIST/$ASSET-$VERSION-macos-$ARCH.dmg"
 IDENTITY="${MACOS_SIGN_IDENTITY:--}"
 STRICT=0
 if [[ "$IDENTITY" != "-" ]] && [[ -n "${APPLE_ID:-}" ]] && [[ -n "${APPLE_PASSWORD:-}" ]] && [[ -n "${APPLE_TEAM_ID:-}" ]]; then

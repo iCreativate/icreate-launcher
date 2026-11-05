@@ -1,6 +1,6 @@
 # Tag v1.0.0 (or any vMAJOR.MINOR.PATCH[-prerelease]) to build installers and publish a GitHub
 # Release. The launcher's self-update reads iCreativate/icreate-launcher releases, SHA256SUMS.txt,
-# and the artcraft-launcher-<ver>-… asset names.
+# and the icreate-launcher-<ver>-… asset names.
 #
 # Signing secrets are optional. Without them the job still publishes: macOS is ad-hoc signed (not
 # notarised), Windows is unsigned, Linux is unsigned. See docs/releasing.md.
@@ -300,9 +300,9 @@ jobs:
               echo
               echo "### Linux"
               echo
-              echo "AppImage: \`chmod +x artcraft-launcher-${VERSION}-linux-<arch>.AppImage && ./artcraft-launcher-${VERSION}-linux-<arch>.AppImage\`"
+              echo "AppImage: \`chmod +x icreate-launcher-${VERSION}-linux-<arch>.AppImage && ./icreate-launcher-${VERSION}-linux-<arch>.AppImage\`"
               echo
-              echo "Debian/Ubuntu: \`sudo apt install ./artcraft-launcher-${VERSION}-linux-<arch>.deb\`"
+              echo "Debian/Ubuntu: \`sudo apt install ./icreate-launcher-${VERSION}-linux-<arch>.deb\`"
               echo
               echo "See [docs/releasing.md](https://github.com/${GITHUB_REPOSITORY}/blob/main/docs/releasing.md) for certificates."
             fi

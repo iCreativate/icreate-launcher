@@ -1375,7 +1375,8 @@ pub(crate) fn launcher_download(r: &artcraft_launcher_core::Release, p: artcraft
         artcraft_launcher_core::Os::Linux => &[PackageKind::AppImage, PackageKind::Deb],
         _ => p.default_kinds(),
     };
-    pick_asset(r, &[artcraft_launcher_core::catalog::LAUNCHER_ID], p, kinds).map(|(a, _)| a.url.clone())
+    let stems: Vec<&str> = artcraft_launcher_core::catalog::LAUNCHER.stems().collect();
+    pick_asset(r, &stems, p, kinds).map(|(a, _)| a.url.clone())
 }
 
 /// A column of single-line texts, one per font and `gap` apart, centred across the row it is in.

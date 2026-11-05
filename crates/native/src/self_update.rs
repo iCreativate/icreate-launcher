@@ -169,6 +169,6 @@ mod tests {
     fn self_update_checks_icreativate_github() {
         assert_eq!(launcher_app().repo, "iCreativate/icreate-launcher");
         assert_eq!(launcher_app().name, "iCreate");
-        assert_eq!(launcher_app().id, "artcraft-launcher");
+        assert_eq!(launcher_app().id, "icreate-launcher");
     }
 }

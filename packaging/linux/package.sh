@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Build and package ArtCraft Launcher for Linux (<arch> is x86_64, aarch64 or riscv64):
 #
-#   $DIST/artcraft-launcher-<version>-linux-<arch>.AppImage  any distro with glibc >= the build host's
-#   $DIST/artcraft-launcher-<version>-linux-<arch>.AppImage.zsync  delta updates (needs zsyncmake)
-#   $DIST/artcraft-launcher-<version>-linux-<arch>.deb       Debian, Ubuntu, Mint, Pop!_OS, ...
-#   $DIST/artcraft-launcher-<version>-linux-<arch>.rpm       Fedora, openSUSE, RHEL, ...
-#   $DIST/artcraft-launcher-<version>-linux-<arch>.tar.gz    plain FHS-style tree (bin/, share/)
+#   $DIST/icreate-launcher-<version>-linux-<arch>.AppImage  any distro with glibc >= the build host's
+#   $DIST/icreate-launcher-<version>-linux-<arch>.AppImage.zsync  delta updates (needs zsyncmake)
+#   $DIST/icreate-launcher-<version>-linux-<arch>.deb       Debian, Ubuntu, Mint, Pop!_OS, ...
+#   $DIST/icreate-launcher-<version>-linux-<arch>.rpm       Fedora, openSUSE, RHEL, ...
+#   $DIST/icreate-launcher-<version>-linux-<arch>.tar.gz    plain FHS-style tree (bin/, share/)
 #
 # Usage: packaging/linux/package.sh [--skip-build] [--formats "appimage deb rpm tar" or appimage,deb,rpm,tar]
 #
@@ -23,7 +23,8 @@ set -euo pipefail
 . "$(dirname "${BASH_SOURCE[0]}")/../env.sh"
 HERE="$ROOT/packaging/linux"
 APP_ID=za.co.icreativate.icreate
-PKG=artcraft-launcher
+PKG=artcraft-launcher   # cargo package / installed binary name
+ASSET=icreate-launcher  # GitHub release / download file prefix
 # Verify a downloaded file's sha256 against its expected hex digest.
 check_sha256() {
   local expected="$1"
@@ -58,7 +59,7 @@ case "$ARCH" in
   *) echo "unsupported architecture $ARCH" >&2; exit 2 ;;
 esac
 export ARTCRAFT_LAUNCHER_MAINTAINER="${ARTCRAFT_LAUNCHER_MAINTAINER:-iCreativate <hello@icreativate.co.za>}"
-BASENAME="$PKG-$VERSION-linux-$ARCH"
+BASENAME="$ASSET-$VERSION-linux-$ARCH"
 
 echo "==> iCreate $VERSION for Linux $ARCH ($FORMATS)"
 

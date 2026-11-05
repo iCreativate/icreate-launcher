@@ -401,7 +401,7 @@ fn version_choices_have_room_and_nightly_scrolls_with_the_versions() {
     let releases: Vec<_> = (1..=25)
         .rev()
         .map(|v| {
-            let mut r = release("artcraft-launcher", &format!("0.{v}.0"), NOW);
+            let mut r = release("icreate-launcher", &format!("0.{v}.0"), NOW);
             r.assets[0].sha256 = Some("0".repeat(64));
             r
         })
@@ -1359,8 +1359,8 @@ fn an_install_waiting_for_another_says_so_and_can_be_cancelled() {
 #[test]
 fn the_launcher_update_waiting_for_other_installs_can_be_cancelled() {
     let mut ev = events();
-    ev.push(Event::LauncherUpdate(release("artcraft-launcher", "0.2.0", NOW)));
-    ev.push(Event::Progress { app: "artcraft-launcher".into(), phase: JobPhase::Waiting });
+    ev.push(Event::LauncherUpdate(release("icreate-launcher", "0.2.0", NOW)));
+    ev.push(Event::Progress { app: "icreate-launcher".into(), phase: JobPhase::Waiting });
     let (mut h, sent) = harness_with(ev, ViewMode::Grid, egui::Theme::Dark, true, 1.0);
     h.run_steps(6);
     snapshot(&mut h, "grid-launcher-waiting-dark");
@@ -1368,15 +1368,15 @@ fn the_launcher_update_waiting_for_other_installs_can_be_cancelled() {
     sent.borrow_mut().clear();
     h.get_by_label("Cancel update").click();
     h.run_steps(2);
-    assert_eq!(*sent.borrow(), [Command::Cancel { app: "artcraft-launcher".into() }]);
+    assert_eq!(*sent.borrow(), [Command::Cancel { app: "icreate-launcher".into() }]);
 }
 
 #[test]
 /// The launcher banner's Cancel crosses the action boundary once per visible frame.
 fn the_launcher_banner_cancel_is_sent_once_across_discarded_passes() {
     let mut ev = events();
-    ev.push(Event::LauncherUpdate(release("artcraft-launcher", "0.2.0", NOW)));
-    ev.push(Event::Progress { app: "artcraft-launcher".into(), phase: JobPhase::Waiting });
+    ev.push(Event::LauncherUpdate(release("icreate-launcher", "0.2.0", NOW)));
+    ev.push(Event::Progress { app: "icreate-launcher".into(), phase: JobPhase::Waiting });
     let (mut h, sent) = harness_with(ev, ViewMode::Grid, egui::Theme::Dark, true, 1.0);
     h.run_steps(6);
     let at = h.get_by_label("Cancel update").rect().center();
@@ -1397,9 +1397,9 @@ fn each_cancellation_says_what_it_called_off() {
     ev.push(Event::Progress { app: "lightcraft".into(), phase: JobPhase::Waiting });
     ev.push(finished("lightcraft", CANCELLED));
     // The launcher's own update, cancelled while it waited.
-    ev.push(Event::LauncherUpdate(release("artcraft-launcher", "0.2.0", NOW)));
-    ev.push(Event::Progress { app: "artcraft-launcher".into(), phase: JobPhase::Waiting });
-    ev.push(finished("artcraft-launcher", CANCELLED));
+    ev.push(Event::LauncherUpdate(release("icreate-launcher", "0.2.0", NOW)));
+    ev.push(Event::Progress { app: "icreate-launcher".into(), phase: JobPhase::Waiting });
+    ev.push(finished("icreate-launcher", CANCELLED));
     // A download cancelled mid-way.
     ev.push(finished("filmcraft", CANCELLED));
     let (mut h, _) = harness_with(ev, ViewMode::Grid, egui::Theme::Dark, true, 1.0);
@@ -2010,7 +2010,7 @@ fn hostile_release_asset_urls_never_reach_the_opener() {
     assert!(!opened.iter().any(|url| url.as_str() == HOSTILE), "a hostile card asset URL reached the opener: {opened:?}");
 
     let mut ev = events();
-    let mut launcher_release = release("artcraft-launcher", "0.2.0", NOW);
+    let mut launcher_release = release("icreate-launcher", "0.2.0", NOW);
     launcher_release.assets[0].url = HOSTILE.to_string();
     ev.push(Event::LauncherUpdate(launcher_release));
     let (mut h, _) = harness_with(ev, ViewMode::Grid, egui::Theme::Dark, false, 1.0);
@@ -2071,7 +2071,7 @@ fn the_launcher_updates_itself_and_quits_to_restart() {
     }
     let sent = Rc::new(RefCell::new(Vec::new()));
     let mut events = events();
-    events.push(Event::LauncherUpdate(release("artcraft-launcher", "0.2.0", NOW)));
+    events.push(Event::LauncherUpdate(release("icreate-launcher", "0.2.0", NOW)));
     let shared_events = Rc::new(RefCell::new(Vec::new()));
     struct Scripted {
         inner: Fake,
@@ -2129,7 +2129,7 @@ fn the_launcher_updates_itself_and_quits_to_restart() {
     // Downloading: the banner shows progress instead of the button.
     shared_events
         .borrow_mut()
-        .push(Event::Progress { app: "artcraft-launcher".into(), phase: JobPhase::Downloading { done: 5 << 20, total: 10 << 20 } });
+        .push(Event::Progress { app: "icreate-launcher".into(), phase: JobPhase::Downloading { done: 5 << 20, total: 10 << 20 } });
     h.run_steps(3);
     assert!(h.query_by_label("Update and restart").is_none());
     assert!(!quit.get());
@@ -2144,7 +2144,7 @@ fn the_launcher_updates_itself_and_quits_to_restart() {
 /// toolbar banner.
 fn launcher_update_prompts_to_relaunch_with_updated_version() {
     let mut ev = events();
-    ev.push(Event::LauncherUpdate(release("artcraft-launcher", "0.2.0", NOW)));
+    ev.push(Event::LauncherUpdate(release("icreate-launcher", "0.2.0", NOW)));
     let (mut h, _) = harness_with(ev, ViewMode::Grid, egui::Theme::Dark, true, 1.0);
     h.run_steps(6);
     // Dialog pops up on launch with the update prompt
@@ -2240,7 +2240,7 @@ fn automatic_checks_run_every_twelve_minutes() {
 /// `UpdateLauncher`.
 fn automatic_updates_queue_installs_for_outdated_apps_and_launcher() {
     let mut ev = events();
-    ev.push(Event::LauncherUpdate(release("artcraft-launcher", "0.2.0", NOW)));
+    ev.push(Event::LauncherUpdate(release("icreate-launcher", "0.2.0", NOW)));
     let sent = Rc::new(RefCell::new(Vec::new()));
     let sent2 = sent.clone();
     let mut backend =
@@ -2270,7 +2270,7 @@ fn automatic_updates_queue_installs_for_outdated_apps_and_launcher() {
 /// With auto-update off, no app install or launcher update is queued.
 fn automatic_updates_are_disabled_by_default() {
     let mut ev = events();
-    ev.push(Event::LauncherUpdate(release("artcraft-launcher", "0.2.0", NOW)));
+    ev.push(Event::LauncherUpdate(release("icreate-launcher", "0.2.0", NOW)));
     let sent = Rc::new(RefCell::new(Vec::new()));
     let sent2 = sent.clone();
     let mut backend =

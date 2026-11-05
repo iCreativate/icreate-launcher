@@ -18,6 +18,7 @@ set -euo pipefail
 LINUX="$ROOT/packaging/linux"
 APP_ID=za.co.icreativate.icreate
 PKG=artcraft-launcher
+ASSET=icreate-launcher
 
 SKIP_BUILD=0
 DRY_RUN=0
@@ -51,7 +52,7 @@ if [[ "$DRY_RUN" = 0 ]] && [[ "$(uname -s)" != FreeBSD ]]; then
   echo "error: build on FreeBSD (or pass --dry-run to check the tree layout)" >&2
   exit 2
 fi
-BASENAME="$PKG-$VERSION-freebsd-$ARCH"
+BASENAME="$ASSET-$VERSION-freebsd-$ARCH"
 
 echo "==> iCreate $VERSION for FreeBSD $ARCH"
 
